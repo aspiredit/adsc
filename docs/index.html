@@ -2041,13 +2041,9 @@
     <p class="rsvp-intro">Drop your name and we'll have a chair waiting. Show up or don't. We won't chase you. But the seat's there.</p>
 
     <div class="rsvp-grid">
-      <!-- Featured next event -->
+      <!-- Featured next event — populated from docs/_data/events.json by docs/js/events.js -->
       <div class="rsvp-featured">
-        <div class="rsvp-featured-tag">Next Meetup</div>
-        <h3>Dads Social — May Edition</h3>
-        <div class="rsvp-featured-when">Saturday, May 17 · 6:30 PM</div>
-        <div class="rsvp-featured-where">Slick Willie's Pool Hall, Bellaire<br>5750 Bellaire Blvd, Houston, TX 77081<br>Look for the table with the "ADSC" reserved sign.</div>
-        <div class="rsvp-featured-spots">12 dads coming · 4 spots open</div>
+        <div class="rsvp-featured-tag">Loading…</div>
       </div>
 
       <!-- Working RSVP form -->
@@ -2076,7 +2072,7 @@
           </div>
         </div>
 
-        <button type="submit">Save my seat at Slick Willie's</button>
+        <button type="submit" id="rsvp-submit">Save my seat at Slick Willie's</button>
         <div class="rsvp-form-mini">Free. No charge. We'll send the meetup address and a reminder the morning of.</div>
       </form>
     </div>
@@ -2438,6 +2434,11 @@
     </div>
   </div>
 </footer>
+
+<script type="module">
+  import { init } from "./js/events.js";
+  init();
+</script>
 
 </body>
 </html>

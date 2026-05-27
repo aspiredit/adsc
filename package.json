@@ -1,0 +1,15 @@
+{
+  "name": "adsc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Autism Dads Social Club — Houston brotherhood for autism dads. GitHub Pages site.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "vitest": "^2.1.8"
+  }
+}

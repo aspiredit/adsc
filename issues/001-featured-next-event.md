@@ -1,7 +1,7 @@
 # Issue 001 — Frontend renders Featured Next Event from events.json
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 

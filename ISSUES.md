@@ -8,7 +8,7 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 
 | # | Title | Type | Status | Blocked by |
 |---|---|---|---|---|
-| [001](issues/001-featured-next-event.md) | Frontend renders Featured Next Event from events.json | AFK | Open | — |
+| [001](issues/001-featured-next-event.md) | Frontend renders Featured Next Event from events.json | AFK | Done | — |
 | [002](issues/002-pages-cms-connected.md) | Pages CMS connected; admin can CRUD events | HITL | Open | 001 |
 | [003](issues/003-more-upcoming-events.md) | "More Upcoming Events" list renders below Featured | AFK | Open | 001 |
 | [004](issues/004-past-events-grace-period.md) | Past events filtered with 12hr grace | AFK | Open | 001 |
