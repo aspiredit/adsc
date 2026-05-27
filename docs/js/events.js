@@ -4,6 +4,7 @@ const RSVP_UPCOMING_SECTION_SELECTOR = ".rsvp-upcoming";
 const RSVP_UPCOMING_GRID_SELECTOR = ".rsvp-upcoming-grid";
 const RSVP_SUBMIT_SELECTOR = "#rsvp-submit";
 const UPCOMING_MAX = 3;
+const GRACE_MS = 12 * 60 * 60 * 1000;
 
 const TYPE_LABELS = {
   meetup: "Next Meetup",
@@ -12,10 +13,16 @@ const TYPE_LABELS = {
   other: "Upcoming",
 };
 
+export function isUpcoming(event, now = new Date()) {
+  if (!event?.starts_at) return false;
+  const startMs = new Date(event.starts_at).getTime();
+  return startMs + GRACE_MS > now.getTime();
+}
+
 function upcomingSorted(events, now) {
   if (!Array.isArray(events)) return [];
   return events
-    .filter((e) => new Date(e.starts_at).getTime() > now.getTime())
+    .filter((e) => isUpcoming(e, now))
     .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
 }
 

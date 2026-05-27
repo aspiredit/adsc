@@ -1,7 +1,7 @@
 # Issue 004 — Past events filtered out with 12hr grace period
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 
