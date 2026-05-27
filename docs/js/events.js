@@ -13,6 +13,29 @@ const TYPE_LABELS = {
   other: "Upcoming",
 };
 
+export function isPreviewMode(searchString = "") {
+  const params = new URLSearchParams(searchString);
+  return params.get("preview") === "true";
+}
+
+export function filterDrafts(events, previewMode = false) {
+  if (!Array.isArray(events)) return [];
+  if (previewMode) return events.slice();
+  return events.filter((e) => e.draft !== true);
+}
+
+const PREVIEW_BANNER_ATTR = "data-preview-banner";
+
+export function showPreviewBanner() {
+  if (document.querySelector(`[${PREVIEW_BANNER_ATTR}]`)) return;
+  const banner = document.createElement("div");
+  banner.setAttribute(PREVIEW_BANNER_ATTR, "");
+  banner.textContent = "PREVIEW MODE — drafts visible. Remove ?preview=true from the URL to see the live site.";
+  banner.style.cssText =
+    "background:#B8843D;color:#fff;padding:10px 16px;text-align:center;font-family:'Source Sans 3',system-ui,sans-serif;font-weight:600;font-size:0.9rem;letter-spacing:0.02em;position:sticky;top:0;z-index:9999;";
+  document.body.prepend(banner);
+}
+
 export function isUpcoming(event, now = new Date()) {
   if (!event?.starts_at) return false;
   const startMs = new Date(event.starts_at).getTime();
@@ -145,10 +168,14 @@ function escapeHtml(str) {
 }
 
 export async function init() {
+  const previewMode = isPreviewMode(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  if (previewMode) showPreviewBanner();
   try {
     const res = await fetch(EVENTS_JSON_PATH);
     if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
-    const events = await res.json();
+    const events = filterDrafts(await res.json(), previewMode);
     const featured = pickFeaturedEvent(events);
     renderFeatured(featured);
     renderUpcoming(pickUpcomingEvents(events, new Date(), featured?.id ?? null));

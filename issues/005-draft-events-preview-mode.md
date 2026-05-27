@@ -1,7 +1,7 @@
 # Issue 005 — Draft events hidden by default; `?preview=true` reveals them
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 
