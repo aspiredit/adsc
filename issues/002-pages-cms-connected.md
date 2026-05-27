@@ -1,7 +1,13 @@
 # Issue 002 — Pages CMS connected; admin can CRUD events
 
 **Type**: HITL
-**Status**: Open
+**Status**: AFK portion done (schema written); awaiting HITL connect step
+
+## Progress
+
+- ✅ `.pages.yml` schema written at repo root with all 11 fields
+- ⏳ Pages CMS connection at `app.pagescms.org` — needs you to do manually
+- ⏳ End-to-end edit verification — needs the connection to work first
 
 ## What to build
 

@@ -1,0 +1,117 @@
+# Pages CMS configuration — see https://pagescms.org/docs/configuration
+#
+# Notes for whoever connects Pages CMS:
+# - When you sign in to app.pagescms.org and add this repo, Pages CMS reads
+#   this file and renders the admin form below.
+# - All events live in a single JSON file (docs/_data/events.json) per
+#   the design decision documented in ADR-0002 and the CONTEXT.md Schema/Data
+#   term. Pages CMS treats this file as a list of event objects.
+# - If the connection rejects this YAML, cross-check against pagescms.org/docs
+#   for syntax updates — the format below reflects the docs as of 2026-05.
+
+media:
+  input: docs/assets/events
+  output: /assets/events
+
+content:
+  - name: events
+    label: Events
+    path: docs/_data/events.json
+    type: file
+    format: json
+    fields:
+      - name: events
+        label: Events
+        type: object
+        list: true
+        fields:
+          - name: id
+            label: ID (slug, e.g. 2026-06-13-slick-willies)
+            type: string
+            required: true
+            description: |
+              Used as the URL anchor and file basename for the flyer.
+              Recommended format: YYYY-MM-DD-short-slug. Lowercase, hyphens.
+
+          - name: title
+            label: Title
+            type: string
+            required: true
+
+          - name: type
+            label: Type
+            type: select
+            options:
+              values:
+                - { value: meetup, label: "Dads-only meetup" }
+                - { value: family_event, label: "Family event (bring kids)" }
+                - { value: fundraiser, label: "Fundraiser" }
+                - { value: other, label: "Other" }
+            default: meetup
+            required: true
+
+          - name: starts_at
+            label: Start (Central Time)
+            type: datetime
+            required: true
+            options:
+              time_format: HH:mm
+            description: |
+              Enter the local Houston time. All events are stored in
+              America/Chicago — you don't need to think about UTC.
+
+          - name: location
+            label: Location
+            type: string
+            required: true
+            description: |
+              Freeform. Include the venue and address.
+              Example: "Slick Willie's Pool Hall, 5750 Bellaire Blvd, Houston, TX 77081"
+
+          - name: description
+            label: Description
+            type: text
+            description: |
+              1-3 sentences. Tone matches the site voice.
+              Plain text only — no markdown or HTML.
+
+          - name: flyer
+            label: Flyer (Canva PNG, 1080×1080 square, max 2 MB)
+            type: image
+            description: |
+              Export from Canva at Instagram Post size (1080×1080).
+              If you skip this, the card uses a typographic fallback.
+
+          - name: rsvp_url
+            label: External RSVP link (optional)
+            type: string
+            description: |
+              Leave blank to use the master RSVP form on the homepage.
+              Override only for special cases — paid fundraisers via
+              Eventbrite, etc.
+
+          - name: cta_label
+            label: Button text (optional)
+            type: string
+            description: |
+              Custom RSVP button copy.
+              Defaults to "RSVP". Example: "Save my seat at Slick Willie's"
+
+          - name: status
+            label: Status
+            type: select
+            options:
+              values:
+                - { value: scheduled, label: "Scheduled" }
+                - { value: cancelled, label: "Cancelled (show banner)" }
+                - { value: postponed, label: "Postponed (show banner)" }
+            default: scheduled
+            required: true
+
+          - name: draft
+            label: Save as draft (hidden from public site until unchecked)
+            type: boolean
+            default: false
+            description: |
+              Drafts are not visible on the live site.
+              To preview: append ?preview=true to the homepage URL.
