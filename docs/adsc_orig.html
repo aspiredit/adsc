@@ -852,204 +852,6 @@
     box-shadow: 0 0 0 4px rgba(184,132,61,0.25);
   }
 
-  /* Flyer slot — 1:1 square, image or typographic fallback (issue 006) */
-  .rsvp-featured-flyer {
-    aspect-ratio: 1 / 1;
-    width: 100%;
-    margin-bottom: 22px;
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--blue-deep);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .rsvp-featured-flyer-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .flyer-fallback {
-    width: 100%;
-    height: 100%;
-    padding: 32px;
-    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    text-align: left;
-    box-sizing: border-box;
-  }
-  .flyer-type-pill {
-    display: inline-block;
-    padding: 6px 12px;
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.28);
-    border-radius: 999px;
-    font-family: var(--font-body);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #fff;
-  }
-  .flyer-fallback-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 600;
-    line-height: 1.15;
-    color: #fff;
-  }
-
-  /* ====== ADD TO CALENDAR BUTTON (issue 008) ====== */
-  .event-cal-add {
-    display: inline-block;
-    margin-top: 14px;
-    padding: 8px 16px;
-    background: transparent;
-    color: rgba(255,255,255,0.78);
-    border: 1px solid rgba(255,255,255,0.28);
-    border-radius: 3px;
-    font-family: var(--font-body);
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .event-cal-add:hover {
-    background: rgba(255,255,255,0.06);
-    color: #fff;
-    border-color: rgba(255,255,255,0.5);
-  }
-  .event-cal-add--compact {
-    margin-top: 0;
-    padding: 4px 10px;
-    font-size: 0.72rem;
-    background: transparent;
-    color: var(--ink-mute);
-    border-color: var(--line);
-  }
-  .event-cal-add--compact:hover {
-    background: var(--bg-warm);
-    color: var(--blue-deep);
-    border-color: var(--blue-soft);
-  }
-  .upcoming-event-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  /* ====== CALENDAR (issue 007) ====== */
-  .calendar-section {
-    background: var(--bg);
-    padding: 80px 0;
-    border-top: 1px solid var(--line);
-  }
-  #calendar {
-    max-width: 720px;
-    margin: 0 auto;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 28px;
-  }
-  .calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
-  }
-  .calendar-title {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: var(--blue-deep);
-    margin: 0;
-  }
-  .calendar-nav {
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--blue-deep);
-    width: 36px;
-    height: 36px;
-    border-radius: 4px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-  .calendar-nav:hover { background: var(--bg-warm); }
-  .calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 8px;
-    font-family: var(--font-body);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-mute);
-    text-align: center;
-  }
-  .calendar-weekdays > * { padding: 6px 0; }
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-  .calendar-day {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--ink);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    cursor: default;
-    padding: 0;
-  }
-  .calendar-day.out-of-month { color: var(--ink-mute); opacity: 0.4; }
-  .calendar-day.is-today {
-    background: var(--bg-warm);
-    border-color: var(--blue-mid);
-    font-weight: 600;
-    color: var(--blue-deep);
-  }
-  .calendar-day.has-events { cursor: pointer; }
-  .calendar-day.has-events:hover { background: var(--bg-warm); }
-  .calendar-day-num { line-height: 1; }
-  .calendar-dots {
-    display: flex;
-    gap: 3px;
-    height: 6px;
-    align-items: center;
-  }
-  .calendar-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
-  }
-  .calendar-dot--blue { background: var(--blue-deep); }
-  .calendar-dot--gold { background: var(--gold-soft); }
-
-  @media (max-width: 540px) {
-    #calendar { padding: 16px; }
-    .calendar-day { font-size: 0.85rem; }
-    .calendar-title { font-size: 1.3rem; }
-  }
-
   /* RSVP form */
   .rsvp-form {
     background: rgba(255,255,255,0.04);
@@ -2239,9 +2041,13 @@
     <p class="rsvp-intro">Drop your name and we'll have a chair waiting. Show up or don't. We won't chase you. But the seat's there.</p>
 
     <div class="rsvp-grid">
-      <!-- Featured next event — populated from docs/_data/events.json by docs/js/events.js -->
+      <!-- Featured next event -->
       <div class="rsvp-featured">
-        <div class="rsvp-featured-tag">Loading…</div>
+        <div class="rsvp-featured-tag">Next Meetup</div>
+        <h3>Dads Social — May Edition</h3>
+        <div class="rsvp-featured-when">Saturday, May 17 · 6:30 PM</div>
+        <div class="rsvp-featured-where">Slick Willie's Pool Hall, Bellaire<br>5750 Bellaire Blvd, Houston, TX 77081<br>Look for the table with the "ADSC" reserved sign.</div>
+        <div class="rsvp-featured-spots">12 dads coming · 4 spots open</div>
       </div>
 
       <!-- Working RSVP form -->
@@ -2270,25 +2076,33 @@
           </div>
         </div>
 
-        <button type="submit" id="rsvp-submit">Save my seat at Slick Willie's</button>
+        <button type="submit">Save my seat at Slick Willie's</button>
         <div class="rsvp-form-mini">Free. No charge. We'll send the meetup address and a reminder the morning of.</div>
       </form>
     </div>
 
-    <!-- Upcoming events — populated from docs/_data/events.json by docs/js/events.js -->
+    <!-- Upcoming events -->
     <div class="rsvp-upcoming">
       <div class="rsvp-upcoming-label">Also Coming Up</div>
-      <div class="rsvp-upcoming-grid"></div>
+      <div class="rsvp-upcoming-grid">
+        <div class="upcoming-event">
+          <div class="upcoming-event-info">
+            <div class="upcoming-event-when">Sat · June 14 · 1:00 PM</div>
+            <div class="upcoming-event-name">Summer Kickoff Family Day</div>
+            <div class="upcoming-event-where">Hermann Park · Whole family</div>
+          </div>
+          <a href="#">RSVP →</a>
+        </div>
+        <div class="upcoming-event">
+          <div class="upcoming-event-info">
+            <div class="upcoming-event-when">Sat · June 28 · 6:30 PM</div>
+            <div class="upcoming-event-name">Dads Social — June Edition</div>
+            <div class="upcoming-event-where">Bowl & Barrel, Sugar Land · Dads only</div>
+          </div>
+          <a href="#">RSVP →</a>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
-
-<!-- ============================ -->
-<!-- 8b. CALENDAR (issue 007)     -->
-<!-- ============================ -->
-<section class="calendar-section">
-  <div class="container">
-    <section id="calendar" aria-label="Event calendar"></section>
   </div>
 </section>
 
@@ -2603,7 +2417,6 @@
         <h4>Get Involved</h4>
         <ul>
           <li><a href="#rsvp">Upcoming Events</a></li>
-          <li><a href="past-events/">Past Events</a></li>
           <li><a href="#leadmag">Survival Guide</a></li>
           <li><a href="#sponsors">Sponsors &amp; Partners</a></li>
           <li><a href="#sponsors">Sponsor an Event</a></li>
@@ -2625,11 +2438,6 @@
     </div>
   </div>
 </footer>
-
-<script type="module">
-  import { init } from "./js/events.js";
-  init();
-</script>
 
 </body>
 </html>

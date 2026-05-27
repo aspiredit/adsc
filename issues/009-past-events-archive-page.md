@@ -1,7 +1,7 @@
 # Issue 009 — Past Events archive page at `/past-events/`
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 

@@ -16,7 +16,7 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 | [006](issues/006-flyer-with-fallback.md) | Flyer image with typographic fallback | AFK | Done | 001 |
 | [007](issues/007-calendar-month-grid.md) | Calendar month-grid component | AFK | Done | 001 |
 | [008](issues/008-add-to-my-calendar-ics.md) | "Add to My Calendar" `.ics` download | AFK | Done | 006 |
-| [009](issues/009-past-events-archive-page.md) | Past Events archive page at `/past-events/` | AFK | Open | 004, 006 |
+| [009](issues/009-past-events-archive-page.md) | Past Events archive page at `/past-events/` | AFK | Done | 004, 006 |
 | [010](issues/010-admin-onboarding.md) | Admin onboarding: second admin end-to-end | HITL | Open | 002 |
 
 ## Suggested order
