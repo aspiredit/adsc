@@ -1,7 +1,7 @@
 # Issue 007 — Calendar month-grid component
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 

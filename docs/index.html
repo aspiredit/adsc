@@ -904,6 +904,112 @@
     color: #fff;
   }
 
+  /* ====== CALENDAR (issue 007) ====== */
+  .calendar-section {
+    background: var(--bg);
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+  }
+  #calendar {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+  }
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .calendar-title {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--blue-deep);
+    margin: 0;
+  }
+  .calendar-nav {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--blue-deep);
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .calendar-nav:hover { background: var(--bg-warm); }
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    text-align: center;
+  }
+  .calendar-weekdays > * { padding: 6px 0; }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .calendar-day {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: default;
+    padding: 0;
+  }
+  .calendar-day.out-of-month { color: var(--ink-mute); opacity: 0.4; }
+  .calendar-day.is-today {
+    background: var(--bg-warm);
+    border-color: var(--blue-mid);
+    font-weight: 600;
+    color: var(--blue-deep);
+  }
+  .calendar-day.has-events { cursor: pointer; }
+  .calendar-day.has-events:hover { background: var(--bg-warm); }
+  .calendar-day-num { line-height: 1; }
+  .calendar-dots {
+    display: flex;
+    gap: 3px;
+    height: 6px;
+    align-items: center;
+  }
+  .calendar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .calendar-dot--blue { background: var(--blue-deep); }
+  .calendar-dot--gold { background: var(--gold-soft); }
+
+  @media (max-width: 540px) {
+    #calendar { padding: 16px; }
+    .calendar-day { font-size: 0.85rem; }
+    .calendar-title { font-size: 1.3rem; }
+  }
+
   /* RSVP form */
   .rsvp-form {
     background: rgba(255,255,255,0.04);
@@ -2134,6 +2240,15 @@
       <div class="rsvp-upcoming-label">Also Coming Up</div>
       <div class="rsvp-upcoming-grid"></div>
     </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 8b. CALENDAR (issue 007)     -->
+<!-- ============================ -->
+<section class="calendar-section">
+  <div class="container">
+    <section id="calendar" aria-label="Event calendar"></section>
   </div>
 </section>
 

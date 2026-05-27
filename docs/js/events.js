@@ -188,6 +188,8 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
+import { renderCalendar } from "./calendar.js";
+
 export async function init() {
   const previewMode = isPreviewMode(
     typeof window !== "undefined" ? window.location.search : ""
@@ -200,9 +202,11 @@ export async function init() {
     const featured = pickFeaturedEvent(events);
     renderFeatured(featured);
     renderUpcoming(pickUpcomingEvents(events, new Date(), featured?.id ?? null));
+    renderCalendar(events);
   } catch (err) {
     console.error("Could not load events:", err);
     renderFeatured(null);
     renderUpcoming([]);
+    renderCalendar([]);
   }
 }
