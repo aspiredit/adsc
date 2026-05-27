@@ -11,5 +11,31 @@
     "cta_label": "Save my seat at Slick Willie's",
     "status": "scheduled",
     "draft": false
+  },
+  {
+    "id": "2026-06-27-family-day",
+    "title": "Summer Kickoff Family Day",
+    "type": "family_event",
+    "starts_at": "2026-06-27T13:00:00-05:00",
+    "location": "Hermann Park · Whole family",
+    "description": "Bring the kids, bring snacks, bring sunscreen. We grab a shaded spot near the playground.",
+    "flyer": "",
+    "rsvp_url": "",
+    "cta_label": "Bring the family",
+    "status": "scheduled",
+    "draft": false
+  },
+  {
+    "id": "2026-07-11-bowl-barrel",
+    "title": "Dads Social — July Edition",
+    "type": "meetup",
+    "starts_at": "2026-07-11T18:30:00-05:00",
+    "location": "Bowl & Barrel, Sugar Land · Dads only",
+    "description": "Bowling and burgers. Same crew, different lanes.",
+    "flyer": "",
+    "rsvp_url": "",
+    "cta_label": "Reserve a lane",
+    "status": "scheduled",
+    "draft": false
   }
 ]

@@ -1,7 +1,7 @@
 # Issue 003 — "More Upcoming Events" list renders below Featured
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 

@@ -1,6 +1,9 @@
 const EVENTS_JSON_PATH = "_data/events.json";
 const RSVP_FEATURED_SELECTOR = ".rsvp-featured";
+const RSVP_UPCOMING_SECTION_SELECTOR = ".rsvp-upcoming";
+const RSVP_UPCOMING_GRID_SELECTOR = ".rsvp-upcoming-grid";
 const RSVP_SUBMIT_SELECTOR = "#rsvp-submit";
+const UPCOMING_MAX = 3;
 
 const TYPE_LABELS = {
   meetup: "Next Meetup",
@@ -9,12 +12,21 @@ const TYPE_LABELS = {
   other: "Upcoming",
 };
 
-export function pickFeaturedEvent(events, now = new Date()) {
-  if (!Array.isArray(events) || events.length === 0) return null;
-  const upcoming = events
+function upcomingSorted(events, now) {
+  if (!Array.isArray(events)) return [];
+  return events
     .filter((e) => new Date(e.starts_at).getTime() > now.getTime())
     .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
-  return upcoming[0] ?? null;
+}
+
+export function pickFeaturedEvent(events, now = new Date()) {
+  return upcomingSorted(events, now)[0] ?? null;
+}
+
+export function pickUpcomingEvents(events, now = new Date(), excludeId = null) {
+  return upcomingSorted(events, now)
+    .filter((e) => e.id !== excludeId)
+    .slice(0, UPCOMING_MAX);
 }
 
 export function formatStartCT(isoString) {
@@ -29,6 +41,26 @@ export function formatStartCT(isoString) {
     hour12: true,
   });
   return `${formatter.format(date)} (CT)`;
+}
+
+export function formatStartCompactCT(isoString) {
+  const date = new Date(isoString);
+  const dayFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    weekday: "short",
+  });
+  const monthDayFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    month: "short",
+    day: "numeric",
+  });
+  const timeFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+  return `${dayFmt.format(date)} · ${monthDayFmt.format(date)} · ${timeFmt.format(date)}`;
 }
 
 export function buildCtaLabel(event) {
@@ -70,6 +102,32 @@ export function renderFeatured(event) {
   updateSubmitButton(event);
 }
 
+function buildUpcomingCardHtml(event) {
+  return `
+    <div class="upcoming-event">
+      <div class="upcoming-event-info">
+        <div class="upcoming-event-when">${escapeHtml(formatStartCompactCT(event.starts_at))}</div>
+        <div class="upcoming-event-name">${escapeHtml(event.title)}</div>
+        <div class="upcoming-event-where">${escapeHtml(event.location ?? "")}</div>
+      </div>
+      <a href="${escapeHtml(event.rsvp_url || "#rsvp")}">${escapeHtml(buildCtaLabel(event))} →</a>
+    </div>
+  `;
+}
+
+export function renderUpcoming(events) {
+  const section = document.querySelector(RSVP_UPCOMING_SECTION_SELECTOR);
+  const grid = document.querySelector(RSVP_UPCOMING_GRID_SELECTOR);
+  if (!section || !grid) return;
+  if (!Array.isArray(events) || events.length === 0) {
+    section.hidden = true;
+    grid.innerHTML = "";
+    return;
+  }
+  section.hidden = false;
+  grid.innerHTML = events.map(buildUpcomingCardHtml).join("");
+}
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -86,8 +144,10 @@ export async function init() {
     const events = await res.json();
     const featured = pickFeaturedEvent(events);
     renderFeatured(featured);
+    renderUpcoming(pickUpcomingEvents(events, new Date(), featured?.id ?? null));
   } catch (err) {
     console.error("Could not load events:", err);
     renderFeatured(null);
+    renderUpcoming([]);
   }
 }
