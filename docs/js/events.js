@@ -128,12 +128,14 @@ export function renderFlyer(event) {
 
 function renderCard(card, event) {
   const tag = TYPE_LABELS[event.type] ?? TYPE_LABELS.other;
+  card.setAttribute("data-event-id", event.id);
   card.innerHTML = `
     <div class="rsvp-featured-flyer">${renderFlyer(event)}</div>
     <div class="rsvp-featured-tag">${escapeHtml(tag)}</div>
     <h3>${escapeHtml(event.title)}</h3>
     <div class="rsvp-featured-when">${escapeHtml(formatStartCT(event.starts_at))}</div>
     <div class="rsvp-featured-where">${escapeHtml(event.location ?? "")}</div>
+    <button type="button" class="event-cal-add" data-ics-event>Add to my calendar</button>
   `;
 }
 
@@ -155,13 +157,16 @@ export function renderFeatured(event) {
 
 function buildUpcomingCardHtml(event) {
   return `
-    <div class="upcoming-event">
+    <div class="upcoming-event" data-event-id="${escapeHtml(event.id)}">
       <div class="upcoming-event-info">
         <div class="upcoming-event-when">${escapeHtml(formatStartCompactCT(event.starts_at))}</div>
         <div class="upcoming-event-name">${escapeHtml(event.title)}</div>
         <div class="upcoming-event-where">${escapeHtml(event.location ?? "")}</div>
       </div>
-      <a href="${escapeHtml(event.rsvp_url || "#rsvp")}">${escapeHtml(buildCtaLabel(event))} →</a>
+      <div class="upcoming-event-actions">
+        <a href="${escapeHtml(event.rsvp_url || "#rsvp")}">${escapeHtml(buildCtaLabel(event))} →</a>
+        <button type="button" class="event-cal-add event-cal-add--compact" data-ics-event>+ calendar</button>
+      </div>
     </div>
   `;
 }
@@ -189,6 +194,21 @@ function escapeHtml(str) {
 }
 
 import { renderCalendar } from "./calendar.js";
+import { downloadEventICS } from "./ics.js";
+
+function attachIcsHandlers(events) {
+  const byId = new Map(events.map((e) => [e.id, e]));
+  document.querySelectorAll("[data-ics-event]").forEach((btn) => {
+    const card = btn.closest("[data-event-id]");
+    const id = card?.getAttribute("data-event-id");
+    const event = byId.get(id);
+    if (!event) return;
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      downloadEventICS(event);
+    });
+  });
+}
 
 export async function init() {
   const previewMode = isPreviewMode(
@@ -200,9 +220,11 @@ export async function init() {
     if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
     const events = filterDrafts(await res.json(), previewMode);
     const featured = pickFeaturedEvent(events);
+    const upcoming = pickUpcomingEvents(events, new Date(), featured?.id ?? null);
     renderFeatured(featured);
-    renderUpcoming(pickUpcomingEvents(events, new Date(), featured?.id ?? null));
+    renderUpcoming(upcoming);
     renderCalendar(events);
+    attachIcsHandlers([featured, ...upcoming].filter(Boolean));
   } catch (err) {
     console.error("Could not load events:", err);
     renderFeatured(null);

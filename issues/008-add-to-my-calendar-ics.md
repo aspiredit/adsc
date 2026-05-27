@@ -1,7 +1,7 @@
 # Issue 008 — "Add to My Calendar" (.ics) download on each event card
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 

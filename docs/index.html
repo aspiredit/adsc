@@ -904,6 +904,46 @@
     color: #fff;
   }
 
+  /* ====== ADD TO CALENDAR BUTTON (issue 008) ====== */
+  .event-cal-add {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 8px 16px;
+    background: transparent;
+    color: rgba(255,255,255,0.78);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 3px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .event-cal-add:hover {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    border-color: rgba(255,255,255,0.5);
+  }
+  .event-cal-add--compact {
+    margin-top: 0;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    background: transparent;
+    color: var(--ink-mute);
+    border-color: var(--line);
+  }
+  .event-cal-add--compact:hover {
+    background: var(--bg-warm);
+    color: var(--blue-deep);
+    border-color: var(--blue-soft);
+  }
+  .upcoming-event-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
   /* ====== CALENDAR (issue 007) ====== */
   .calendar-section {
     background: var(--bg);
