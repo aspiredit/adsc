@@ -1,41 +1,15 @@
-[
-  {
-    "id": "2026-06-13-slick-willies",
-    "title": "Dads Social — June Edition",
-    "type": "meetup",
-    "starts_at": "2026-06-13T18:30:00-05:00",
-    "location": "Slick Willie's Pool Hall, Bellaire — 5750 Bellaire Blvd, Houston, TX 77081",
-    "description": "Pool, beers, no agenda. Look for the table with the ADSC reserved sign. First-timers welcome.",
-    "flyer": "",
-    "rsvp_url": "",
-    "cta_label": "Save my seat at Slick Willie's",
-    "status": "scheduled",
-    "draft": false
-  },
-  {
-    "id": "2026-06-27-family-day",
-    "title": "Summer Kickoff Family Day",
-    "type": "family_event",
-    "starts_at": "2026-06-27T13:00:00-05:00",
-    "location": "Hermann Park · Whole family",
-    "description": "Bring the kids, bring snacks, bring sunscreen. We grab a shaded spot near the playground.",
-    "flyer": "",
-    "rsvp_url": "",
-    "cta_label": "Bring the family",
-    "status": "scheduled",
-    "draft": false
-  },
-  {
-    "id": "2026-07-11-bowl-barrel",
-    "title": "Dads Social — July Edition",
-    "type": "meetup",
-    "starts_at": "2026-07-11T18:30:00-05:00",
-    "location": "Bowl & Barrel, Sugar Land · Dads only",
-    "description": "Bowling and burgers. Same crew, different lanes.",
-    "flyer": "",
-    "rsvp_url": "",
-    "cta_label": "Reserve a lane",
-    "status": "scheduled",
-    "draft": false
-  }
-]
+{
+  "events": [
+    {
+      "id": "New Event",
+      "title": "Meet Up",
+      "type": "meetup",
+      "starts_at": "May 30 2026 5 PM CST",
+      "location": "Remote",
+      "description": "This is a great way to do things",
+      "flyer": "/assets/events/ChatGPT Image May 26, 2026, 09_21_05 PM.png",
+      "status": "scheduled",
+      "draft": false
+    }
+  ]
+}
