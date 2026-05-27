@@ -13,7 +13,7 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 | [003](issues/003-more-upcoming-events.md) | "More Upcoming Events" list renders below Featured | AFK | Done | 001 |
 | [004](issues/004-past-events-grace-period.md) | Past events filtered with 12hr grace | AFK | Done | 001 |
 | [005](issues/005-draft-events-preview-mode.md) | Draft events hidden; `?preview=true` reveals | AFK | Done | 001 |
-| [006](issues/006-flyer-with-fallback.md) | Flyer image with typographic fallback | AFK | Open | 001 |
+| [006](issues/006-flyer-with-fallback.md) | Flyer image with typographic fallback | AFK | Done | 001 |
 | [007](issues/007-calendar-month-grid.md) | Calendar month-grid component | AFK | Open | 001 |
 | [008](issues/008-add-to-my-calendar-ics.md) | "Add to My Calendar" `.ics` download | AFK | Open | 006 |
 | [009](issues/009-past-events-archive-page.md) | Past Events archive page at `/past-events/` | AFK | Open | 004, 006 |

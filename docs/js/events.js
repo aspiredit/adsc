@@ -13,6 +13,13 @@ const TYPE_LABELS = {
   other: "Upcoming",
 };
 
+const TYPE_PILL_LABELS = {
+  meetup: "Meetup",
+  family_event: "Family Event",
+  fundraiser: "Fundraiser",
+  other: "Event",
+};
+
 export function isPreviewMode(searchString = "") {
   const params = new URLSearchParams(searchString);
   return params.get("preview") === "true";
@@ -106,9 +113,23 @@ function renderFallback(card) {
   `;
 }
 
+export function renderFlyer(event) {
+  if (event?.flyer) {
+    return `<img class="rsvp-featured-flyer-img" src="${escapeHtml(event.flyer)}" alt="${escapeHtml(event.title ?? "")}" loading="lazy">`;
+  }
+  const pill = TYPE_PILL_LABELS[event?.type] ?? TYPE_PILL_LABELS.other;
+  return `
+    <div class="flyer-fallback">
+      <span class="flyer-type-pill">${escapeHtml(pill)}</span>
+      <span class="flyer-fallback-title">${escapeHtml(event?.title ?? "")}</span>
+    </div>
+  `;
+}
+
 function renderCard(card, event) {
   const tag = TYPE_LABELS[event.type] ?? TYPE_LABELS.other;
   card.innerHTML = `
+    <div class="rsvp-featured-flyer">${renderFlyer(event)}</div>
     <div class="rsvp-featured-tag">${escapeHtml(tag)}</div>
     <h3>${escapeHtml(event.title)}</h3>
     <div class="rsvp-featured-when">${escapeHtml(formatStartCT(event.starts_at))}</div>

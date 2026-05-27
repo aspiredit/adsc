@@ -852,6 +852,58 @@
     box-shadow: 0 0 0 4px rgba(184,132,61,0.25);
   }
 
+  /* Flyer slot — 1:1 square, image or typographic fallback (issue 006) */
+  .rsvp-featured-flyer {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    margin-bottom: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--blue-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rsvp-featured-flyer-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .flyer-fallback {
+    width: 100%;
+    height: 100%;
+    padding: 32px;
+    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: left;
+    box-sizing: border-box;
+  }
+  .flyer-type-pill {
+    display: inline-block;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .flyer-fallback-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: #fff;
+  }
+
   /* RSVP form */
   .rsvp-form {
     background: rgba(255,255,255,0.04);

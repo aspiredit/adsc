@@ -1,7 +1,7 @@
 # Issue 006 — Flyer image renders on event cards with typographic fallback
 
 **Type**: AFK
-**Status**: Open
+**Status**: Done
 
 ## What to build
 
