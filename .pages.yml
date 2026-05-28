@@ -115,3 +115,32 @@ content:
             description: |
               Drafts are not visible on the live site.
               To preview: append ?preview=true to the homepage URL.
+              media:
+  input: images
+  output: /images
+
+content:
+  - name: blogs
+    label: Blog Posts
+    path: content/blogs
+    type: collection
+    fields:
+      - { name: title,            label: Title,            type: string }
+      - { name: date,             label: Publish Date,     type: date }
+      - { name: author,           label: Author Name,      type: string }
+      - { name: author_initials,  label: Author Initials,  type: string }
+      - { name: cover_image,      label: Cover Image,      type: image }
+      - { name: excerpt,          label: Excerpt / Intro,  type: text }
+      - { name: body,             label: Content,          type: rich-text }
+      - { name: meta_description, label: Meta Description, type: text }
+      - { name: meta_image,       label: Meta/OG Image,    type: image }
+      - { name: meta_keywords,    label: Meta Keywords,    type: string }
+
+  - name: photos
+    label: Photos
+    path: content/photos
+    type: collection
+    fields:
+      - { name: title,   label: Title,   type: string }
+      - { name: image,   label: Photo,   type: image }
+      - { name: caption, label: Caption, type: string }
