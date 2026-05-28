@@ -115,3 +115,82 @@ content:
             description: |
               Drafts are not visible on the live site.
               To preview: append ?preview=true to the homepage URL.
+              # ── BLOG POSTS (new) ───────────────────────────────────────────
+  - name: blogs
+    label: Blog Posts
+    path: docs/_data/blogs
+    type: collection
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+        description: |
+          Example: "From Parenting a Child with a Disability to Founding a Nonprofit"
+
+      - name: slug
+        label: Slug (URL-friendly, e.g. founding-a-nonprofit)
+        type: string
+        required: true
+        description: |
+          Lowercase, hyphens only. This becomes the blog post URL.
+
+      - name: date
+        label: Publish Date
+        type: date
+        required: true
+
+      - name: author
+        label: Author
+        type: string
+        required: true
+        description: |
+          Example: "Don Lewis"
+
+      - name: author_initials
+        label: Author Initials (shown as avatar fallback)
+        type: string
+        description: |
+          Example: "DL" — shown when no author photo is available.
+
+      - name: featured_image
+        label: Featured Image
+        type: image
+        description: |
+          Main banner image for the blog post.
+          Recommended: 1080×600px.
+
+      - name: meta_description
+        label: Meta Description (SEO)
+        type: text
+        description: |
+          1-2 sentences summarizing the post. Used for Google previews.
+          Example: "Some of the most impactful nonprofits were born from
+          parents who refused to accept that their child's needs didn't matter."
+
+      - name: category
+        label: Category
+        type: select
+        options:
+          values:
+            - { value: nonprofit,   label: "Nonprofit & Advocacy" }
+            - { value: parenting,   label: "Parenting & Family" }
+            - { value: community,   label: "Community Stories" }
+            - { value: resources,   label: "Resources & Guides" }
+            - { value: other,       label: "Other" }
+        default: community
+
+      - name: body
+        label: Blog Content
+        type: rich-text
+        required: true
+        description: |
+          Full blog post content. Supports headings, bold, links, images,
+          and tables — just like your existing post.
+
+      - name: draft
+        label: Save as draft (hidden from public site until unchecked)
+        type: boolean
+        default: false
+        description: |
+          Drafts are not visible on the live site.
