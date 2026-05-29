@@ -1,5 +1,5 @@
 ---
-title: From Parenting a Child with a Disability to Founding a Nonprofit
+title: From Parenting a Child with a Disability to Founding a Nonprofit.
 date: 2026-05-28
 author: By Don Lewis
 author_initials: DL
