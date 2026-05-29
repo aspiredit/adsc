@@ -122,7 +122,7 @@ content:
 content:
   - name: blogs
     label: Blog Posts
-    path: content/blogs
+    path: docs/_data/events.json
     type: collection
     fields:
       - { name: title,            label: Title,            type: string }
@@ -138,7 +138,7 @@ content:
 
   - name: photos
     label: Photos
-    path: content/photos
+    path:  docs/_data/events.json
     type: collection
     fields:
       - { name: title,   label: Title,   type: string }
