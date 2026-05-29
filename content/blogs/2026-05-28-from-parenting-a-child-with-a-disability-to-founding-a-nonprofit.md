@@ -3,6 +3,7 @@ title: From Parenting a Child with a Disability to Founding a Nonprofit
 date: 2026-05-28
 author: By Don Lewis
 author_initials: DL
+cover_image: /assets/events/Screenshot 2026-05-28 192846.png
 excerpt: >
   Organizations like the Autism Dads Social Club, HollyRod Foundation (founded
   by actress Holly Robinson Peete and her husband Rodney after their son's
