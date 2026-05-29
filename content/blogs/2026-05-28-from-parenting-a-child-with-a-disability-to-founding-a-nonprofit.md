@@ -3,7 +3,7 @@ title: From Parenting a Child with a Disability to Founding a Nonprofit
 date: 2026-05-28
 author: By Don Lewis
 author_initials: DL
-excerpt: >+
+excerpt: >
   Organizations like the Autism Dads Social Club, HollyRod Foundation (founded
   by actress Holly Robinson Peete and her husband Rodney after their son's
   autism diagnosis), and The Charlie Foundation (started by a father after his
@@ -53,7 +53,6 @@ This table compares the most common nonprofit revenue streams so you can match y
 | Government funding |  | Stable contracts for eligible services | Mature operations and compliance readiness |
 
 
-  
 If you need fast learning and list-building, events and donor campaigns can move quickly, while grants and government funding often reward stronger systems and patience. Many nonprofits start with one “now” option and one “later” option, then expand as delivery becomes predictable. Knowing which option fits best makes your next move clear.
 
 ### **Your nonprofit startup questions, answered**
