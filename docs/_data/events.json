@@ -10,6 +10,15 @@
       "flyer": "/assets/events/ChatGPT Image May 26, 2026, 09_21_05 PM.png",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "new item  ",
+      "title": "testing events",
+      "type": "meetup",
+      "starts_at": "june 1 2026",
+      "location": "remote",
+      "status": "postponed",
+      "draft": false
     }
   ]
 }
