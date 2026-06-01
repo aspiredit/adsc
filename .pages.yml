@@ -76,7 +76,7 @@ content:
   # ── BLOG POSTS ──────────────────────────────────────
   - name: blogs
     label: Blog Posts
-    path: docs/_data/blogs        # ← correct path ✅
+    path: content/blogs        # ← correct path ✅
     type: collection
     fields:
       - { name: title,            label: Title,            type: string }
@@ -97,7 +97,7 @@ content:
   # ── PHOTOS ──────────────────────────────────────────
   - name: photos
     label: Photos
-    path: docs/_data/photos       # ← correct path ✅
+    path: content/photos       # ← correct path ✅
     type: collection
     fields:
       - { name: title,   label: Title,   type: string }
