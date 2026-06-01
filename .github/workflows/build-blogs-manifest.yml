@@ -1,0 +1,36 @@
+name: Build blogs manifest
+
+on:
+  push:
+    paths:
+      - 'content/blogs/**'
+  workflow_dispatch:   # lets you trigger it manually from GitHub Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit the manifest back to the repo
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install gray-matter (markdown frontmatter parser)
+        run: npm install gray-matter
+
+      - name: Convert .md posts to JSON manifest
+        run: node .github/scripts/build-blogs-manifest.js
+
+      - name: Commit and push manifest
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name  "GitHub Actions"
+          git add docs/_data/blogs-manifest.json
+          git diff --cached --quiet || git commit -m "chore: rebuild blogs manifest [skip ci]"
+          git push
