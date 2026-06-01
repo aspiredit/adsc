@@ -76,7 +76,7 @@ content:
   # ── BLOG POSTS ──────────────────────────────────────
   - name: blogs
     label: Blog Posts
-    path: content/blogs        # ← correct path ✅
+    path: content        # ← correct path ✅
     type: collection
     fields:
       - { name: title,            label: Title,            type: string }
