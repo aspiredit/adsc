@@ -17,7 +17,8 @@
       "type": "meetup",
       "starts_at": "june 1st 2026",
       "location": "remote",
-      "status": "postponed",
+      "description": "dads meet up ",
+      "status": "cancelled",
       "draft": false
     }
   ]
