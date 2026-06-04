@@ -174,13 +174,22 @@
     padding: 22px 0;
   }
   .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 600;
     color: var(--blue-deep);
     letter-spacing: -0.01em;
   }
+  .logo-img { width: 52px; height: 52px; object-fit: contain; flex-shrink: 0; }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
   .logo small { display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
+  @media (max-width: 540px) {
+    .logo-img { width: 42px; height: 42px; }
+    .logo { font-size: 1.1rem; gap: 10px; }
+  }
   .nav-links { display: flex; gap: 30px; align-items: center; }
   .nav-links a {
     color: var(--ink-soft);
@@ -242,6 +251,20 @@
   .hero-trust-micro span { color: var(--ink-mute); }
   .hero-trust-micro .trust-dot { color: var(--gold); font-size: 0.9rem; }
   .hero-trust-micro .trust-501 { color: var(--blue-deep); font-weight: 600; }
+
+  /* Hero intro paragraph (added per 2026 content rewrite) */
+  .hero-intro {
+    font-size: 1.0rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+    max-width: 580px;
+    padding: 16px 18px;
+    background: rgba(31,94,150,0.04);
+    border-left: 3px solid var(--blue-mid);
+    border-radius: 0 4px 4px 0;
+  }
+  .hero-intro strong { color: var(--ink); font-weight: 600; }
 
   /* v4: activity proof line below the institutional trust micro */
   .hero-trust-activity {
@@ -1925,6 +1948,13 @@
     font-size: 0.92rem;
   }
   footer ul a:hover { color: #fff; text-decoration: none; }
+  .footer-mailing {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 22px 0 18px;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.88rem;
+  }
+  .footer-mailing strong { color: var(--gold-soft); font-weight: 600; margin-right: 8px; }
   .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.1);
     padding-top: 24px;
@@ -1964,13 +1994,16 @@
   <div class="container">
     <nav class="nav">
       <div class="logo">
-        Autism Dads Social Club
-        <small>Houston, TX · Est. 2022</small>
+        <img class="logo-img" src="assets/logo.png" alt="Autism Dads Social Club logo">
+        <span class="logo-text">
+          Autism Dads Social Club
+          <small>Houston, TX · Est. 2022</small>
+        </span>
       </div>
       <div class="nav-links">
         <a href="#origin">Our Story</a>
         <a href="#programs">Programs</a>
-        <a href="#rsvp">Events</a>
+        <a href="#calendar">Events</a>
         <a href="#membership">Join</a>
         <a href="#sponsors">Sponsors</a>
         <a href="#donate" class="nav-cta">Donate</a>
@@ -1994,13 +2027,13 @@
           <span class="trust-dot">·</span>
           <span class="trust-501">Registered 501(c)(3) Nonprofit</span>
         </div>
-        <div class="hero-trust-activity">[##] dads · [##] meetups since 2022 · zero salaries paid</div>
+        <div class="hero-trust-activity">73 members · 42 meetups since 2022 · zero salaries paid</div>
+        <p class="hero-intro"><strong>ADSC is more than a nonprofit organization—we are a brotherhood.</strong> The Autism Dads Social Club began with a simple realization: the autism journey is easier when no father walks it alone. What started as conversations between a few dads grew into a brotherhood committed to supporting one another and strengthening our families.</p>
         <div class="hero-eyebrow">A Houston Brotherhood</div>
         <h1>You're the dad in the <em>background.</em><br>We're building the club for you.</h1>
         <p class="hero-sub">If you've ever sat alone in your truck after an IEP meeting, smiled through a meltdown in public, or watched your wife answer all the questions while you stood there nodding, this is your brotherhood. Three Houston dads started Autism Dads Social Club in 2022 because no one was building a room for us.</p>
         <div class="hero-ctas">
-          <a href="#rsvp" class="btn-primary">RSVP for the next meetup</a>
-          <a href="#leadmag" class="btn-secondary">Read the Survival Guide first</a>
+          <a href="#calendar" class="btn-primary">See what's coming up</a>
         </div>
         <div class="hero-trust">It's free to come. There's nothing to sign up for. Just show up.</div>
       </div>
@@ -2391,7 +2424,7 @@
       </div>
     </div>
 
-    <p class="tax-note">All memberships and donations are tax-deductible. Autism Dads Social Club is a registered 501(c)(3) nonprofit. EIN: XX-XXXXXXX.</p>
+    <p class="tax-note">All memberships and donations are tax-deductible. Autism Dads Social Club is a registered 501(c)(3) nonprofit. EIN: 99-2055011.</p>
   </div>
 </section>
 
@@ -2432,7 +2465,7 @@
         </a>
       </div>
 
-      <p class="donate-tax">Tax-deductible. EIN: XX-XXXXXXX. Receipt arrives in a minute. We don't add you to anything you didn't ask for.</p>
+      <p class="donate-tax">Tax-deductible. EIN: 99-2055011. Receipt arrives in a minute. We don't add you to anything you didn't ask for.</p>
     </div>
   </div>
 </section>
@@ -2516,7 +2549,7 @@
       <h3>Want to put your business <em>on this page?</em></h3>
       <p>If your business serves the Houston autism community and you want to sponsor a meetup, a family event, or the year, we'd like to talk. Same goes for vendors who want a table at our signature family events.</p>
       <div class="sponsor-cta-buttons">
-        <a href="mailto:hello@autismdadssocialclub.org?subject=Sponsorship%20Inquiry" class="cta-primary">Become a Sponsor</a>
+        <a href="mailto:info@autismdadssocialclub.org?subject=Sponsorship%20Inquiry" class="cta-primary">Become a Sponsor</a>
         <a href="https://form.jotform.com/231637325042146" class="cta-secondary" target="_blank" rel="noopener">Register as a Vendor</a>
       </div>
     </div>
@@ -2587,7 +2620,7 @@
         <p class="footer-tag">A Houston brotherhood for the dads in the background. Founded 2022.</p>
         <div class="footer-501">
           <strong>Registered 501(c)(3) Nonprofit</strong>
-          EIN: XX-XXXXXXX · All memberships and donations are tax-deductible.
+          EIN: 99-2055011 · All memberships and donations are tax-deductible.
         </div>
       </div>
       <div>
@@ -2602,9 +2635,8 @@
       <div>
         <h4>Get Involved</h4>
         <ul>
-          <li><a href="#rsvp">Upcoming Events</a></li>
+          <li><a href="#calendar">Upcoming Events</a></li>
           <li><a href="past-events/">Past Events</a></li>
-          <li><a href="#leadmag">Survival Guide</a></li>
           <li><a href="#sponsors">Sponsors &amp; Partners</a></li>
           <li><a href="#sponsors">Sponsor an Event</a></li>
         </ul>
@@ -2612,12 +2644,16 @@
       <div>
         <h4>Connect</h4>
         <ul>
-          <li><a href="mailto:hello@autismdadssocialclub.org">hello@autismdadssocialclub.org</a></li>
-          <li><a href="#">Facebook</a></li>
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">LinkedIn</a></li>
+          <li><a href="mailto:info@autismdadssocialclub.org">info@autismdadssocialclub.org</a></li>
+          <li><a href="https://www.facebook.com/AutismDadsSocialClub" target="_blank" rel="noopener">Facebook — AutismDadsSocialClub</a></li>
+          <li><a href="https://www.instagram.com/autismdadshtown/" target="_blank" rel="noopener">Instagram — autismdadshtown</a></li>
+          <li><a href="https://www.linkedin.com/company/autism-dads-social-club/" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://www.youtube.com/@AutismDSCVP/featured" target="_blank" rel="noopener">YouTube — @AutismDSCVP</a></li>
         </ul>
       </div>
+    </div>
+    <div class="footer-mailing">
+      <strong>Mailing Address:</strong> 10330 Highway 6 Suite D, #1065, Missouri City, TX 77459
     </div>
     <div class="footer-bottom">
       <div>© 2026 Autism Dads Social Club · Houston, TX</div>
