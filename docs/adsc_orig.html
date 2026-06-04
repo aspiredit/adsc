@@ -1,5 +1,3 @@
-
-
 cat > /home/claude/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
@@ -58,11 +56,23 @@ cat > /home/claude/index.html << 'HTMLEOF'
   .urgency-bar .rsvp-link { color: #fff; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; margin-left: 14px; white-space: nowrap; }
   .urgency-bar .rsvp-link:hover { color: var(--gold-soft); }
   @media (max-width: 720px) { .urgency-bar { font-size: 0.85rem; padding: 10px 16px; line-height: 1.4; } }
+  /* ====== SITE LOGO HEADER ====== */
+</style>
+<div style="background: var(--bg); text-align: center; padding: 18px 24px 10px; border-bottom: 1px solid var(--line-soft);">
+  <img
+    src="assets/images/adsc-logo.png"
+    alt="Autism Dads Social Club"
+    style="height: 140px; width: auto; display: inline-block;"
+  >
+</div>
 
+<style>
   /* ====== NAV ====== */
   .nav-wrap { background: var(--bg); border-bottom: 1px solid var(--line-soft); }
-  .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
-  .logo { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--blue-deep); letter-spacing: -0.01em; }
+  .nav { display: flex; align-items: center; justify-content: flex-end; padding: 22px 0; }
+  .logo { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--blue-deep); letter-spacing: -0.01em; }
+  .logo a { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; }
+  .logo img { height: 140px; width: auto; display: block; }
   .logo small { display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
   .nav-links { display: flex; gap: 30px; align-items: center; }
   .nav-links a { color: var(--ink-soft); font-size: 0.96rem; font-weight: 500; }
@@ -543,10 +553,6 @@ cat > /home/claude/index.html << 'HTMLEOF'
 <div class="nav-wrap">
   <div class="container">
     <nav class="nav">
-      <div class="logo">
-        Autism Dads Social Club
-        <small>Houston, TX · Est. 2022</small>
-      </div>
       <div class="nav-links">
         <a href="#origin">Our Story</a>
         <a href="#programs">Programs</a>
@@ -571,7 +577,7 @@ cat > /home/claude/index.html << 'HTMLEOF'
           <span class="trust-dot">·</span>
           <span class="trust-501">Registered 501(c)(3) Nonprofit</span>
         </div>
-        <div class="hero-trust-activity">[##] dads · [##] meetups since 2022 · zero salaries paid</div>
+        <div class="hero-trust-activity">[69] dads · [30] meetups since 2022 · zero salaries paid</div>
         <div class="hero-eyebrow">A Houston Brotherhood</div>
         <h1>You're the dad in the <em>background.</em><br>We're building the club for you.</h1>
         <p class="hero-sub">If you've ever sat alone in your truck after an IEP meeting, smiled through a meltdown in public, or watched your wife answer all the questions while you stood there nodding, this is your brotherhood. Three Houston dads started Autism Dads Social Club in 2022 because no one was building a room for us.</p>
