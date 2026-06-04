@@ -35,10 +35,17 @@
   }
   .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
 
+  html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+
   header.page-header {
     border-bottom: 1px solid var(--line);
-    background: #fff;
-    padding: 28px 0;
+    background: rgba(255,255,255,0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
   .page-header-inner {
     display: flex;
@@ -46,11 +53,28 @@
     justify-content: space-between;
     gap: 18px;
   }
+  .page-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--blue-deep);
+  }
+  .page-header-brand:hover { text-decoration: none; }
+  .page-header-logo {
+    width: 44px; height: 44px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 50%;
+    padding: 4px;
+    box-shadow: 0 2px 6px rgba(31,94,150,0.18), 0 0 0 1px var(--line);
+  }
   .page-header h1 {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: 1.6rem;
+    font-size: 1.35rem;
     color: var(--blue-deep);
+    line-height: 1.2;
   }
   .home-link {
     font-family: var(--font-body);
@@ -106,8 +130,10 @@
   }
   .archive-card-flyer .rsvp-featured-flyer-img {
     width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: saturate(0.85);
+    filter: saturate(0.92);
+    transition: filter 0.25s ease, transform 0.4s ease;
   }
+  .archive-card:hover .rsvp-featured-flyer-img { filter: saturate(1); transform: scale(1.03); }
   .archive-card-flyer .flyer-fallback {
     width: 100%;
     height: 100%;
@@ -188,7 +214,10 @@
 
 <header class="page-header">
   <div class="container page-header-inner">
-    <h1>Past Events</h1>
+    <a href="../" class="page-header-brand" aria-label="Autism Dads Social Club — back to home">
+      <img class="page-header-logo" src="../assets/logo.png" alt="">
+      <h1>Past Events</h1>
+    </a>
     <a href="../" class="home-link">← Back to home</a>
   </div>
 </header>
