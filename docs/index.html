@@ -495,53 +495,149 @@
   .board-card {
     text-align: center;
   }
-  .board-photo {
-    width: 88px;
-    height: 88px;
+  /* Executive Board photo wrap — supports real image OR initials fallback */
+  .board-photo-wrap {
+    width: 112px;
+    height: 112px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue-mid), var(--blue-soft));
     margin: 0 auto 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 8px 20px -6px rgba(31,94,150,0.28);
+  }
+  .board-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .board-photo-initials {
     color: #fff;
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 500;
-    box-shadow: 0 6px 16px -6px rgba(31,94,150,0.22);
-  }
-  .board-photo.placeholder {
-    background: linear-gradient(135deg, var(--blue-pale), var(--blue-soft));
-    color: var(--blue-deep);
-    font-size: 1rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
   .board-name {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     font-weight: 500;
     color: var(--ink);
     margin-bottom: 3px;
-    line-height: 1.2;
+    line-height: 1.22;
   }
   .board-role {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--blue-deep);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.3;
   }
   .board-cred {
+    font-size: 0.82rem;
+    color: var(--ink-mute);
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  .board-human {
+    font-size: 0.84rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    margin-bottom: 10px;
+    min-height: 80px;
+  }
+  .board-dad {
+    font-size: 0.76rem;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  @media (max-width: 1000px) {
+    .board-grid { grid-template-columns: repeat(3, 1fr); gap: 36px 20px; max-width: 720px; }
+  }
+  @media (max-width: 620px) {
+    .board-grid { grid-template-columns: repeat(2, 1fr); max-width: 420px; }
+    .board-human { min-height: 0; }
+  }
+
+  /* ====== ADVISORY BOARD (v6) ====== */
+  .advisory-strip {
+    padding: 60px 0 90px;
+    background: var(--bg-warm);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .advisory-strip .strip-header { margin-bottom: 18px; }
+  .advisory-intro {
+    text-align: center;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 auto 44px;
+    font-size: 1.0rem;
+    line-height: 1.6;
+  }
+  .advisory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px 24px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .advisor-card { text-align: center; }
+  .advisor-photo-wrap {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--blue-mid), var(--blue-soft));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .advisor-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .advisor-photo-initials {
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+  .advisor-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .advisor-role {
+    font-size: 0.74rem;
+    color: var(--blue-deep);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+  .advisor-bio {
     font-size: 0.8rem;
     color: var(--ink-mute);
-    line-height: 1.4;
+    line-height: 1.45;
+    margin-top: 8px;
   }
   @media (max-width: 900px) {
-    .board-grid { grid-template-columns: repeat(3, 1fr); gap: 32px 20px; max-width: 600px; }
+    .advisory-grid { grid-template-columns: repeat(3, 1fr); max-width: 640px; }
   }
   @media (max-width: 560px) {
-    .board-grid { grid-template-columns: repeat(2, 1fr); max-width: 380px; }
+    .advisory-grid { grid-template-columns: repeat(2, 1fr); max-width: 420px; }
   }
 
   /* ====== ORIGIN STORY ====== */
@@ -610,8 +706,8 @@
   }
   .test-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
     margin-top: 50px;
   }
   .test-card {
@@ -661,7 +757,10 @@
     margin-top: 2px;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
+    .test-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
     .test-grid { grid-template-columns: 1fr; gap: 20px; }
   }
 
@@ -2049,83 +2148,127 @@
 </section>
 
 <!-- ============================ -->
-<!-- 3. FOUNDED BY (Authority)    -->
+<!-- 3. EXECUTIVE BOARD (v6)      -->
 <!-- ============================ -->
-<section class="founders-strip">
+<!-- Founded By section merged into Executive Board per 2026 content rewrite. -->
+<section class="board-strip" id="leadership">
   <div class="container">
     <div class="strip-header">
-      <div class="strip-eyebrow">Founded By</div>
-      <h2>Three Houston dads <em>who know.</em></h2>
+      <div class="strip-eyebrow">Executive Board</div>
+      <h2>The team that <em>keeps ADSC running.</em></h2>
     </div>
-    <div class="founders-grid">
-      <div class="founder-card">
-        <div class="founder-photo">JC</div>
-        <div class="founder-name">Jonathan Chism, PhD</div>
-        <div class="founder-cred">University of Houston-Downtown</div>
-        <div class="founder-role">Associate Professor of History · 15+ years grassroots organizing</div>
-        <div class="founder-human">The one who keeps every meetup actually on the calendar. Will pick up the phone if you're three days into a meltdown spiral.</div>
-        <div class="founder-dad">Dad to Jonathan Jr.</div>
+    <div class="board-grid">
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/chism.jpg" alt="Jonathan Chism" loading="lazy"></div>
+        <div class="board-name">Jonathan Chism, PhD</div>
+        <div class="board-role">CoFounder &amp; Inaugural President</div>
+        <div class="board-cred">Associate Professor of History at University of Houston-Downtown · 15+ years grassroots organizing</div>
+        <div class="board-human">Frequently mistaken for the event coordinator, fundraiser, speaker recruiter, newsletter editor, and guy carrying the folding tables.</div>
+        <div class="board-dad">Dad to Jonathan Jr.</div>
       </div>
-      <div class="founder-card">
-        <div class="founder-photo">JE</div>
-        <div class="founder-name">Jesse Esparza, PhD</div>
-        <div class="founder-cred">Texas Southern University</div>
-        <div class="founder-role">Associate Professor of History · Graduate Program Director</div>
-        <div class="founder-human">Tells the worst dad jokes. We let him because he's the one who remembers your kid's name from one meetup to the next.</div>
-        <div class="founder-dad">Dad to Mateo</div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/esparza.jpg" alt="Jesse Esparza" loading="lazy"></div>
+        <div class="board-name">Jesse Esparza, PhD</div>
+        <div class="board-role">CoFounder, Inaugural Treasurer &amp; Director of Family Engagement</div>
+        <div class="board-cred">Associate Professor of History at Texas Southern University · Graduate Program Director</div>
+        <div class="board-human">Keeps the books balanced and the mission moving forward. Known for showing up with his entire family in tow — he believes supporting autism dads is a family affair, and his family leads by example.</div>
+        <div class="board-dad">Dad to Mateo</div>
       </div>
-      <div class="founder-card">
-        <div class="founder-photo">EA</div>
-        <div class="founder-name">Emmanuel Arowolo, Esq.</div>
-        <div class="founder-cred">Foster LLP</div>
-        <div class="founder-role">Senior Business Immigration Attorney</div>
-        <div class="founder-human">The reason we're a real 501(c)(3) and not a Facebook group. Knows every family-leave question you'll ever have to ask your employer.</div>
-        <div class="founder-dad">Dad to Preye</div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/arowolo.jpg" alt="Emmanuel Arowolo" loading="lazy"></div>
+        <div class="board-name">Emmanuel Arowolo, Esq.</div>
+        <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
+        <div class="board-cred">Senior Business Immigration Attorney at Foster LLP</div>
+        <div class="board-human">Helps transform good intentions into sustainable impact by ensuring ADSC operates with integrity, transparency, and compliance. Keeps us organized so we can stay focused on serving dads and families.</div>
+        <div class="board-dad">Dad to Preye</div>
       </div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/hinton.jpg" alt="DeAndrae Hinton" loading="lazy"></div>
+        <div class="board-name">DeAndrae Hinton</div>
+        <div class="board-role">Director of Education &amp; Autism Awareness</div>
+        <div class="board-cred">Houston ISD Special Ed Dept. Chair · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
+        <div class="board-human">Turns years of special education experience into practical guidance for dads and families navigating the autism journey.</div>
+        <div class="board-dad">Dad to Dillon</div>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/notice.jpg" alt="John Notice" loading="lazy"></div>
+        <div class="board-name">John Notice, CMHC</div>
+        <div class="board-role">Director of Emotional Well-Being</div>
+        <div class="board-cred">Mental Health Counselor · PhD Candidate</div>
+        <div class="board-human">Encourages dads to prioritize self-care, mental wellness, and resilience — so they can show up as their best selves for their families.</div>
+        <div class="board-dad">Dad to Tyler &amp; Kyle</div>
+      </div>
+
     </div>
   </div>
 </section>
 
 <!-- ============================ -->
-<!-- 3b. EXECUTIVE BOARD (v5)     -->
+<!-- 3b. ADVISORY BOARD (v6)      -->
 <!-- ============================ -->
-<section class="board-strip">
+<section class="advisory-strip">
   <div class="container">
     <div class="strip-header">
-      <div class="strip-eyebrow">Executive Board</div>
-      <h2>The team that <em>keeps it running.</em></h2>
+      <div class="strip-eyebrow">Advisory Board</div>
+      <h2>The voices that <em>sharpen our work.</em></h2>
     </div>
-    <div class="board-grid">
-      <div class="board-card">
-        <div class="board-photo">DH</div>
-        <div class="board-name">DeAndrae Hinton</div>
-        <div class="board-role">Education Chair</div>
-        <div class="board-cred">Houston ISD Special Ed Dept. Chair · Author, <em>My Favorite Mistakes</em> · Dad to Dillon</div>
+    <p class="advisory-intro">Community members and partners who offer wisdom and feedback on ADSC programming.</p>
+    <div class="advisory-grid">
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">WM</div></div>
+        <div class="advisor-name">Wes Morgan</div>
+        <div class="advisor-role">Advisor</div>
       </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><img src="assets/people/farmer.jpg" alt="Darla Farmer" loading="lazy"></div>
+        <div class="advisor-name">Darla Farmer</div>
+        <div class="advisor-role">Advisor</div>
       </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">EL</div></div>
+        <div class="advisor-name">Edmond Lee</div>
+        <div class="advisor-role">Advisor</div>
       </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">AJ</div></div>
+        <div class="advisor-name">Amanda Jaloway</div>
+        <div class="advisor-role">Advisor</div>
       </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">HM</div></div>
+        <div class="advisor-name">Hope Montgomery</div>
+        <div class="advisor-role">Advisor</div>
       </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
+        <div class="advisor-name">Melody DiPasca</div>
+        <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
+        <div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">DT</div></div>
+        <div class="advisor-name">Derrick Thomas</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">PL</div></div>
+        <div class="advisor-name">Paul LeBlanc</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -2188,6 +2331,16 @@
           <div>
             <div class="test-name">David T.</div>
             <div class="test-meta">Sugar Land · Joined 2023 · Dad to Hannah, 11</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card">
+        <p class="test-quote">If you're an autism dad looking for fun activities for your family and yourself, ADSC is the answer. Autism Dads Social Club gave my family — through different activities — an opportunity to meet other dads and families while we travel this unique autism journey.</p>
+        <div class="test-author">
+          <div class="test-avatar">AK</div>
+          <div>
+            <div class="test-name">Angel King</div>
+            <div class="test-meta">Pearland · Joined 2023</div>
           </div>
         </div>
       </div>
