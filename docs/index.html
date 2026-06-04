@@ -1972,8 +1972,8 @@
   }
   .sponsor-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 18px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     max-width: 1080px;
     margin: 0 auto 60px;
   }
@@ -2001,15 +2001,17 @@
     color: var(--blue-deep);
     text-decoration: none;
   }
-  .sponsor-grid.year-2025 {
-    grid-template-columns: repeat(6, 1fr);
-    max-width: 1080px;
+  .sponsor-card--logo {
+    padding: 18px 22px;
+    min-height: 110px;
   }
-  .sponsor-grid.year-2025 .sponsor-card {
-    min-height: 70px;
-    padding: 16px 12px;
-    font-size: 0.84rem;
-    background: var(--bg-warm);
+  .sponsor-card--logo img {
+    max-width: 100%;
+    max-height: 64px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
   }
   .sponsor-lists {
     max-width: 1040px;
@@ -2112,12 +2114,10 @@
 
   @media (max-width: 900px) {
     .sponsor-grid { grid-template-columns: repeat(3, 1fr); }
-    .sponsor-grid.year-2025 { grid-template-columns: repeat(3, 1fr); }
     .sponsor-lists { grid-template-columns: repeat(2, 1fr); padding: 28px 22px; }
   }
   @media (max-width: 600px) {
     .sponsor-grid { grid-template-columns: repeat(2, 1fr); }
-    .sponsor-grid.year-2025 { grid-template-columns: repeat(2, 1fr); }
     .sponsor-lists { grid-template-columns: 1fr; }
   }
 
@@ -2798,28 +2798,20 @@
 
     <div class="sponsor-tier-label">2026 Sponsors</div>
     <div class="sponsor-grid">
-      <a href="https://www.fazlilaw.com" class="sponsor-card" target="_blank" rel="noopener">Fazli Law</a>
-      <a href="https://www.duqueroofing.com/" class="sponsor-card" target="_blank" rel="noopener">Duque Roofing</a>
-      <a href="https://www.texasabacenters.com/" class="sponsor-card" target="_blank" rel="noopener">Texas ABA Centers</a>
-      <a href="https://www.omconstructionhtx.com/stafford/" class="sponsor-card" target="_blank" rel="noopener">O&amp;M Construction Services</a>
-      <a href="https://txroofingandservices.com/sugar-land/" class="sponsor-card" target="_blank" rel="noopener">TX Roofing &amp; Services LLC</a>
-    </div>
-
-    <div class="sponsor-tier-label muted">2025 Sponsors</div>
-    <div class="sponsor-grid year-2025">
-      <a href="https://behavioral-innovations.com/" class="sponsor-card" target="_blank" rel="noopener">Behavioral Innovations</a>
-      <a href="https://listen2meaba.com/" class="sponsor-card" target="_blank" rel="noopener">Listen to Me ABA</a>
-      <a href="https://www.zenbusiness.com/" class="sponsor-card" target="_blank" rel="noopener">ZenBusiness</a>
-      <a href="https://www.adobe.com/acrobat/online/rotate-pdf.html" class="sponsor-card" target="_blank" rel="noopener">Adobe Acrobat</a>
-      <a href="https://www.werockthespectrumsugarland.com/" class="sponsor-card" target="_blank" rel="noopener">We Rock the Spectrum (Sugar Land)</a>
-      <a href="https://www.doubledaves.com/locations/tx/missouri-city/missouricity/" class="sponsor-card" target="_blank" rel="noopener">Double Dave's Pizzaworks (Missouri City)</a>
+      <a href="https://www.fazlilaw.com" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Fazli Law"><img src="assets/sponsors/fazli-law.jpg" alt="Fazli Law" loading="lazy"></a>
+      <a href="https://www.duqueroofing.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Duque Roofing"><img src="assets/sponsors/duque-roofing.png" alt="Duque Roofing" loading="lazy"></a>
+      <a href="https://www.texasabacenters.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Texas ABA Centers"><img src="assets/sponsors/texas-aba.png" alt="Texas ABA Centers" loading="lazy"></a>
+      <a href="https://www.omconstructionhtx.com/stafford/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="O&amp;M Construction Services"><img src="assets/sponsors/om-construction.png" alt="O&amp;M Construction Services" loading="lazy"></a>
+      <a href="https://www.hopeforthree.org/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Hope for Three"><img src="assets/sponsors/hope-for-three.jpg" alt="Hope for Three" loading="lazy"></a>
+      <a href="https://behavioral-innovations.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Behavioral Innovations"><img src="assets/sponsors/behavioral-innovations.webp" alt="Behavioral Innovations" loading="lazy"></a>
+      <a href="https://listen2meaba.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Listen to Me ABA"><img src="assets/sponsors/listen-to-me-aba.png" alt="Listen to Me ABA" loading="lazy"></a>
+      <a href="#" class="sponsor-card sponsor-card--logo" rel="noopener" aria-label="NAC" title="URL pending — update via CMS"><img src="assets/sponsors/nac.jpg" alt="NAC" loading="lazy"></a>
     </div>
 
     <div class="sponsor-lists">
       <div class="sponsor-list">
         <h4>Past Sponsors</h4>
         <ul>
-          <li><a href="https://behavioral-innovations.com/" target="_blank" rel="noopener">Behavioral Innovations</a></li>
           <li>Pursley McNamara &amp; Flint</li>
           <li>Joyful Journey ABA</li>
           <li>H-E-B (Missouri City)</li>
@@ -2832,6 +2824,10 @@
           <li>Houston Astros</li>
           <li>Lonestar Santas</li>
           <li>DJ Jakey Jake "Bubble DJ"</li>
+          <li><a href="https://www.zenbusiness.com/" target="_blank" rel="noopener">ZenBusiness</a></li>
+          <li>Adobe Acrobat</li>
+          <li><a href="https://www.werockthespectrumsugarland.com/" target="_blank" rel="noopener">We Rock the Spectrum (Sugar Land)</a></li>
+          <li><a href="https://www.doubledaves.com/" target="_blank" rel="noopener">Double Dave's Pizzaworks (Missouri City)</a></li>
         </ul>
       </div>
       <div class="sponsor-list">
