@@ -38,11 +38,18 @@ export function getPostBySlug(posts, slug) {
 
 // ---------- rendering ----------
 
-function detailHref(slug, basePath) {
+function detailHref(slug, basePath, preview) {
   // Caller decides the base. From home it's "blog/post.html?slug=...",
   // from the list page it's "post.html?slug=..."
-  return `${basePath}post.html?slug=${encodeURIComponent(slug)}`;
+  // In preview mode, carry the flag through so draft links stay previewable.
+  const q = preview ? "&preview=1" : "";
+  return `${basePath}post.html?slug=${encodeURIComponent(slug)}${q}`;
 }
+
+// Small amber "DRAFT" pill shown on cards/detail in preview mode so the author
+// always knows what's public vs. what's still hidden. Inline-styled so it needs
+// no CSS in the host pages.
+const DRAFT_BADGE = `<span style="display:inline-block;background:#B8843D;color:#fff;font-size:0.62rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-right:8px;vertical-align:middle;">Draft · not public</span>`;
 
 function escapeHTML(str) {
   return String(str).replace(/[&<>"']/g, (ch) =>
@@ -59,25 +66,27 @@ function resolveAsset(pathValue, assetBase) {
   return `${assetBase || ""}${pathValue}`;
 }
 
-function buildCard(post, basePath, assetBase) {
+function buildCard(post, basePath, assetBase, preview) {
   const card = document.createElement("article");
   card.className = "blog-card";
 
+  const href = detailHref(post.slug, basePath, preview);
   const coverSrc = resolveAsset(post.cover_image, assetBase);
   const cover = coverSrc
-    ? `<a class="blog-card-cover" href="${detailHref(post.slug, basePath)}"><img src="${escapeHTML(coverSrc)}" alt="" loading="lazy"></a>`
+    ? `<a class="blog-card-cover" href="${href}"><img src="${escapeHTML(coverSrc)}" alt="" loading="lazy"></a>`
     : "";
 
   const dateText = formatBlogDate(post.date);
   const author = post.author ? `<span class="blog-card-author"> · ${escapeHTML(post.author)}</span>` : "";
+  const badge = preview && post.draft ? DRAFT_BADGE : "";
 
   card.innerHTML = `
     ${cover}
     <div class="blog-card-body">
-      <div class="blog-card-meta">${escapeHTML(dateText)}${author}</div>
-      <h3 class="blog-card-title"><a href="${detailHref(post.slug, basePath)}">${escapeHTML(post.title)}</a></h3>
+      <div class="blog-card-meta">${badge}${escapeHTML(dateText)}${author}</div>
+      <h3 class="blog-card-title"><a href="${href}">${escapeHTML(post.title)}</a></h3>
       <p class="blog-card-excerpt">${escapeHTML(post.excerpt || "")}</p>
-      <a class="blog-card-readmore" href="${detailHref(post.slug, basePath)}">Read the post →</a>
+      <a class="blog-card-readmore" href="${href}">Read the post →</a>
     </div>
   `;
   return card;
@@ -89,12 +98,13 @@ export function renderBlogCards(container, posts, options = {}) {
   if (!Array.isArray(posts) || posts.length === 0) return;
   const basePath = options.basePath ?? "blog/";
   const assetBase = options.assetBase ?? "";
+  const preview = options.preview ?? false;
   const frag = document.createDocumentFragment();
-  for (const post of posts) frag.appendChild(buildCard(post, basePath, assetBase));
+  for (const post of posts) frag.appendChild(buildCard(post, basePath, assetBase, preview));
   container.appendChild(frag);
 }
 
-export function renderBlogList(container, posts, assetBase = "") {
+export function renderBlogList(container, posts, assetBase = "", preview = false) {
   if (!container) return;
   container.innerHTML = "";
   if (!Array.isArray(posts) || posts.length === 0) {
@@ -104,10 +114,10 @@ export function renderBlogList(container, posts, assetBase = "") {
     container.appendChild(empty);
     return;
   }
-  renderBlogCards(container, posts, { basePath: "", assetBase });
+  renderBlogCards(container, posts, { basePath: "", assetBase, preview });
 }
 
-export function renderBlogDetail(container, post, assetBase = "") {
+export function renderBlogDetail(container, post, assetBase = "", preview = false) {
   if (!container) return;
   container.innerHTML = "";
   if (!post) {
@@ -119,6 +129,11 @@ export function renderBlogDetail(container, post, assetBase = "") {
       </div>`;
     return;
   }
+  // Sticky banner in preview mode so the author never mistakes a private draft
+  // for the live page. Only shown for drafts being previewed.
+  const previewBanner = preview && post.draft
+    ? `<div style="position:sticky;top:0;z-index:200;background:#B8843D;color:#fff;text-align:center;font-weight:600;font-size:0.9rem;padding:10px 16px;">🔒 Preview — this is a DRAFT and is not visible to the public. Uncheck “Save as draft” in the CMS to publish it.</div>`
+    : "";
   const coverSrc = resolveAsset(post.cover_image, assetBase);
   const cover = coverSrc
     ? `<img class="blog-detail-cover" src="${escapeHTML(coverSrc)}" alt="">`
@@ -126,6 +141,7 @@ export function renderBlogDetail(container, post, assetBase = "") {
   const author = post.author ? `<span class="blog-detail-author"> · ${escapeHTML(post.author)}</span>` : "";
   // Note: post.html is already sanitized at build time by scripts/build_manifests.py
   container.innerHTML = `
+    ${previewBanner}
     <article class="blog-detail">
       ${cover}
       <header class="blog-detail-header">
@@ -142,12 +158,14 @@ export function renderBlogDetail(container, post, assetBase = "") {
 
 // ---------- orchestrator ----------
 
-async function loadManifest(path) {
+async function loadManifest(path, includeDrafts = false) {
   const res = await fetch(path, { cache: "no-cache" });
   if (!res.ok) throw new Error(`Failed to load ${path}: ${res.status}`);
   const data = await res.json();
   if (!Array.isArray(data)) return [];
-  return data.filter((p) => p && p.draft !== true);
+  // Public views drop drafts. Preview mode (includeDrafts) keeps them so the
+  // author can see unpublished posts rendered with the real site theme.
+  return includeDrafts ? data.filter(Boolean) : data.filter((p) => p && p.draft !== true);
 }
 
 export async function init() {
@@ -163,9 +181,13 @@ export async function init() {
   const path = home ? BLOGS_JSON_PATH_HOME : BLOGS_JSON_PATH_NESTED;
   const assetBase = home ? "" : "../";
 
+  // Preview mode: ?preview=1 on the /blog/ list or post page reveals drafts so
+  // the author can review unpublished posts with the real theme. Never on home.
+  const preview = !home && new URLSearchParams(window.location.search).get("preview") != null;
+
   let posts = [];
   try {
-    posts = await loadManifest(path);
+    posts = await loadManifest(path, preview);
   } catch (err) {
     console.error("Could not load blog manifest:", err);
   }
@@ -181,7 +203,7 @@ export async function init() {
   }
 
   if (list) {
-    renderBlogList(list, posts, assetBase);
+    renderBlogList(list, posts, assetBase, preview);
   }
 
   if (detail) {
@@ -190,6 +212,6 @@ export async function init() {
     if (post) {
       document.title = `${post.title} — Autism Dads Social Club`;
     }
-    renderBlogDetail(detail, post, assetBase);
+    renderBlogDetail(detail, post, assetBase, preview);
   }
 }

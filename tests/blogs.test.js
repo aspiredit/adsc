@@ -128,3 +128,35 @@ describe("renderBlogDetail", () => {
     expect(container.textContent.toLowerCase()).toContain("not found");
   });
 });
+
+describe("preview mode", () => {
+  let container;
+  beforeEach(() => {
+    container = document.createElement("div");
+  });
+
+  it("shows a DRAFT badge on draft cards only in preview mode", () => {
+    renderBlogCards(container, [samplePost({ draft: true })], { preview: true });
+    expect(container.textContent.toLowerCase()).toContain("draft");
+  });
+
+  it("does NOT badge drafts when not in preview mode", () => {
+    renderBlogCards(container, [samplePost({ draft: true })]);
+    expect(container.textContent.toLowerCase()).not.toContain("draft");
+  });
+
+  it("carries the preview flag into card links so draft links stay previewable", () => {
+    renderBlogCards(container, [samplePost({ slug: "x" })], { preview: true });
+    expect(container.querySelector(".blog-card-title a").getAttribute("href")).toContain("preview=1");
+  });
+
+  it("shows a preview banner on a draft detail page in preview mode", () => {
+    renderBlogDetail(container, samplePost({ draft: true }), "", true);
+    expect(container.textContent.toLowerCase()).toContain("not visible to the public");
+  });
+
+  it("shows no preview banner for a published post even in preview mode", () => {
+    renderBlogDetail(container, samplePost({ draft: false }), "", true);
+    expect(container.textContent.toLowerCase()).not.toContain("not visible to the public");
+  });
+});
