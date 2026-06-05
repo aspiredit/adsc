@@ -50,12 +50,22 @@ function escapeHTML(str) {
   );
 }
 
-function buildCard(post, basePath) {
+// Manifest stores asset paths relative to the docs/ root ("assets/images/x.png").
+// Each page prepends the prefix that reaches that root: "" from home,
+// "../" from /blog/. External URLs and absolute paths are returned untouched.
+function resolveAsset(pathValue, assetBase) {
+  if (!pathValue) return "";
+  if (/^https?:\/\//.test(pathValue) || pathValue.startsWith("/")) return pathValue;
+  return `${assetBase || ""}${pathValue}`;
+}
+
+function buildCard(post, basePath, assetBase) {
   const card = document.createElement("article");
   card.className = "blog-card";
 
-  const cover = post.cover_image
-    ? `<a class="blog-card-cover" href="${detailHref(post.slug, basePath)}"><img src="${escapeHTML(post.cover_image)}" alt="" loading="lazy"></a>`
+  const coverSrc = resolveAsset(post.cover_image, assetBase);
+  const cover = coverSrc
+    ? `<a class="blog-card-cover" href="${detailHref(post.slug, basePath)}"><img src="${escapeHTML(coverSrc)}" alt="" loading="lazy"></a>`
     : "";
 
   const dateText = formatBlogDate(post.date);
@@ -78,12 +88,13 @@ export function renderBlogCards(container, posts, options = {}) {
   container.innerHTML = "";
   if (!Array.isArray(posts) || posts.length === 0) return;
   const basePath = options.basePath ?? "blog/";
+  const assetBase = options.assetBase ?? "";
   const frag = document.createDocumentFragment();
-  for (const post of posts) frag.appendChild(buildCard(post, basePath));
+  for (const post of posts) frag.appendChild(buildCard(post, basePath, assetBase));
   container.appendChild(frag);
 }
 
-export function renderBlogList(container, posts) {
+export function renderBlogList(container, posts, assetBase = "") {
   if (!container) return;
   container.innerHTML = "";
   if (!Array.isArray(posts) || posts.length === 0) {
@@ -93,10 +104,10 @@ export function renderBlogList(container, posts) {
     container.appendChild(empty);
     return;
   }
-  renderBlogCards(container, posts, { basePath: "" });
+  renderBlogCards(container, posts, { basePath: "", assetBase });
 }
 
-export function renderBlogDetail(container, post) {
+export function renderBlogDetail(container, post, assetBase = "") {
   if (!container) return;
   container.innerHTML = "";
   if (!post) {
@@ -108,8 +119,9 @@ export function renderBlogDetail(container, post) {
       </div>`;
     return;
   }
-  const cover = post.cover_image
-    ? `<img class="blog-detail-cover" src="${escapeHTML(post.cover_image)}" alt="">`
+  const coverSrc = resolveAsset(post.cover_image, assetBase);
+  const cover = coverSrc
+    ? `<img class="blog-detail-cover" src="${escapeHTML(coverSrc)}" alt="">`
     : "";
   const author = post.author ? `<span class="blog-detail-author"> · ${escapeHTML(post.author)}</span>` : "";
   // Note: post.html is already sanitized at build time by scripts/build_manifests.py
@@ -147,7 +159,9 @@ export async function init() {
 
   // Decide which manifest path to use based on which container is on the page.
   // (home is on /index.html → "_data/...", list/detail are under /blog/ → "../_data/...")
+  // assetBase mirrors this: "" reaches the docs root from home, "../" from /blog/.
   const path = home ? BLOGS_JSON_PATH_HOME : BLOGS_JSON_PATH_NESTED;
+  const assetBase = home ? "" : "../";
 
   let posts = [];
   try {
@@ -162,12 +176,12 @@ export async function init() {
       home.style.display = "none"; // hide the whole section on home when empty
     } else {
       const grid = home.querySelector(".blog-latest-grid") || home;
-      renderBlogCards(grid, latest, { basePath: "blog/" });
+      renderBlogCards(grid, latest, { basePath: "blog/", assetBase });
     }
   }
 
   if (list) {
-    renderBlogList(list, posts);
+    renderBlogList(list, posts, assetBase);
   }
 
   if (detail) {
@@ -176,6 +190,6 @@ export async function init() {
     if (post) {
       document.title = `${post.title} — Autism Dads Social Club`;
     }
-    renderBlogDetail(detail, post);
+    renderBlogDetail(detail, post, assetBase);
   }
 }

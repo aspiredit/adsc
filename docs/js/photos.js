@@ -24,6 +24,15 @@ export function pickLatestPhotos(photos, n) {
   return sorted.slice(0, n);
 }
 
+// Manifest stores image paths relative to the docs/ root ("assets/images/x.png").
+// Each page prepends the prefix that reaches that root: "" from home,
+// "../" from /photos/. External URLs and absolute paths are returned untouched.
+export function resolveAsset(pathValue, assetBase) {
+  if (!pathValue) return "";
+  if (/^https?:\/\//.test(pathValue) || pathValue.startsWith("/")) return pathValue;
+  return `${assetBase || ""}${pathValue}`;
+}
+
 export function encodePhotoUrl(url) {
   if (!url) return "";
   // Preserve path slashes; encode only the per-segment unsafe chars (e.g. spaces).
@@ -169,10 +178,14 @@ export async function init() {
   if (!homeSection && !galleryGrid) return;
 
   const path = homeSection ? PHOTOS_JSON_PATH_HOME : PHOTOS_JSON_PATH_NESTED;
+  // assetBase mirrors the manifest path: "" reaches the docs root from home,
+  // "../" from /photos/. Resolve image paths once so tiles and lightbox agree.
+  const assetBase = homeSection ? "" : "../";
 
   let photos = [];
   try {
     photos = await loadManifest(path);
+    photos = photos.map((p) => ({ ...p, image: resolveAsset(p.image, assetBase) }));
   } catch (err) {
     console.error("Could not load photo manifest:", err);
   }

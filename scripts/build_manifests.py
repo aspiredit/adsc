@@ -99,6 +99,21 @@ def render_markdown(body: str) -> str:
     )
 
 
+def normalize_asset(value: str) -> str:
+    """Make a CMS media path relative to the docs/ site root.
+
+    Pages CMS writes media as absolute paths ('/assets/images/...'), which only
+    resolve when the site is served from the domain root. This site is served
+    from a subpath (…/adsc/docs/), so an absolute '/assets' 404s. Strip the
+    leading slash to make it root-relative ('assets/images/...'); the renderer
+    then prepends the correct depth prefix per page. External URLs are left as-is.
+    """
+    v = (value or "").strip()
+    if not v or v.startswith(("http://", "https://", "//")):
+        return v
+    return v.lstrip("/")
+
+
 def build_blog_entry(path: Path) -> dict[str, Any] | None:
     slug, fname_date = slug_and_date_from_filename(path)
     text = path.read_text(encoding="utf-8")
@@ -114,7 +129,7 @@ def build_blog_entry(path: Path) -> dict[str, Any] | None:
         "date": date_str,
         "author": fm.get("author", "").strip(),
         "author_initials": fm.get("author_initials", "").strip(),
-        "cover_image": fm.get("cover_image", "").strip(),
+        "cover_image": normalize_asset(fm.get("cover_image", "")),
         "excerpt": fm.get("excerpt", "").strip(),
         "html": render_markdown(body),
         "meta_description": fm.get("meta_description", "").strip(),
@@ -127,7 +142,7 @@ def build_photo_entry(path: Path) -> dict[str, Any] | None:
     slug, fname_date = slug_and_date_from_filename(path)
     text = path.read_text(encoding="utf-8")
     fm, _ = split_frontmatter(text)
-    image = fm.get("image", "").strip()
+    image = normalize_asset(fm.get("image", ""))
     if not image:
         return None  # photo with no image is meaningless; skip silently
     date_value = fm.get("date") or fname_date
