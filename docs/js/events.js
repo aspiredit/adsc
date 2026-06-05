@@ -129,9 +129,18 @@ function renderFallback(card) {
   `;
 }
 
+// Events render on the home page (docs root). Pages CMS writes flyer paths as
+// absolute "/assets/...", which 404 on the subpath host; strip the leading
+// slash so the relative path resolves. External URLs are left untouched.
+export function resolveFlyer(path) {
+  if (!path) return "";
+  if (/^https?:\/\//.test(path)) return path;
+  return path.replace(/^\/+/, "");
+}
+
 export function renderFlyer(event) {
   if (event?.flyer) {
-    return `<img class="rsvp-featured-flyer-img" src="${escapeHtml(event.flyer)}" alt="${escapeHtml(event.title ?? "")}" loading="lazy">`;
+    return `<img class="rsvp-featured-flyer-img" src="${escapeHtml(resolveFlyer(event.flyer))}" alt="${escapeHtml(event.title ?? "")}" loading="lazy">`;
   }
   const pill = TYPE_PILL_LABELS[event?.type] ?? TYPE_PILL_LABELS.other;
   return `

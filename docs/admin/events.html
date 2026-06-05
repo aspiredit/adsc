@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Add an Event — ADSC Admin</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --blue-deep: #1F5E96;
+    --blue-mid: #4FA0D8;
+    --gold: #B8843D;
+    --bg: #F8FAFC;
+    --bg-warm: #E8F0F8;
+    --card: #FFFFFF;
+    --ink: #1A2533;
+    --ink-soft: #38475A;
+    --ink-mute: #5A6B7C;
+    --line: #D8E4ED;
+    --ok: #2E7D52;
+    --err: #B23A3A;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Source Sans 3', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.55; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-family: var(--font-display); font-weight: 500; color: var(--blue-deep); font-size: 1.9rem; margin-bottom: 6px; }
+  .sub { color: var(--ink-mute); margin-bottom: 28px; }
+  a { color: var(--blue-deep); }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 22px; }
+  .card h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 14px; }
+
+  label { display: block; font-weight: 600; font-size: 0.85rem; margin: 14px 0 5px; color: var(--ink-soft); }
+  input[type=text], input[type=url], input[type=password], input[type=datetime-local], select, textarea {
+    width: 100%; font-family: inherit; font-size: 0.95rem; color: var(--ink);
+    padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; background: #fff;
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  input[type=file] { font-size: 0.9rem; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .check input { width: auto; }
+  .check label { margin: 0; }
+  .hint { font-size: 0.8rem; color: var(--ink-mute); margin-top: 4px; }
+
+  button { font-family: inherit; font-weight: 600; cursor: pointer; border: none; border-radius: 7px; padding: 11px 18px; font-size: 0.95rem; }
+  .btn-primary { background: var(--blue-deep); color: #fff; }
+  .btn-primary:hover { background: var(--blue-mid); }
+  .btn-ghost { background: transparent; color: var(--ink-mute); border: 1px solid var(--line); }
+  .actions { margin-top: 20px; display: flex; gap: 12px; align-items: center; }
+
+  .msg { font-size: 0.9rem; font-weight: 600; }
+  .msg[data-kind="ok"] { color: var(--ok); }
+  .msg[data-kind="error"] { color: var(--err); }
+
+  .note { background: var(--bg-warm); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 0.85rem; color: var(--ink-soft); }
+  .note strong { color: var(--ink); }
+  ol.note-steps { margin: 8px 0 0 18px; }
+  ol.note-steps li { margin-bottom: 4px; }
+
+  .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .admin-row:last-child { border-bottom: none; }
+  .admin-row-sub { font-size: 0.82rem; color: var(--ink-mute); margin-top: 2px; }
+  .admin-tag { display: inline-block; background: var(--gold); color: #fff; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 999px; }
+  .admin-tag--warn { background: var(--err); }
+  .admin-del { background: #fff; color: var(--err); border: 1px solid var(--line); padding: 6px 12px; font-size: 0.85rem; }
+  .admin-del:hover { border-color: var(--err); }
+  .admin-empty { color: var(--ink-mute); font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Add an Event</h1>
+  <p class="sub">Events you add here go straight to the website calendar — no Pages CMS needed.</p>
+
+  <!-- AUTH -->
+  <section class="card" id="admin-auth">
+    <h2>Connect</h2>
+    <div class="note">
+      <strong>First time?</strong> You need a GitHub access token (one-time setup):
+      <ol class="note-steps">
+        <li>Go to GitHub → Settings → Developer settings → <em>Fine-grained tokens</em> → Generate new token.</li>
+        <li>Repository access: <em>Only select repositories</em> → <strong>aspiredit/adsc</strong>.</li>
+        <li>Permissions → Repository → <strong>Contents: Read and write</strong>.</li>
+        <li>Generate, copy the token, and paste it below.</li>
+      </ol>
+    </div>
+    <label for="gh-token">GitHub access token</label>
+    <input type="password" id="gh-token" placeholder="github_pat_…" autocomplete="off">
+    <div class="check">
+      <input type="checkbox" id="save-token" checked>
+      <label for="save-token">Remember on this device (don't tick on shared computers)</label>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn-primary" id="btn-connect">Connect</button>
+      <span class="msg" id="auth-status"></span>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <section id="admin-app" hidden>
+    <div class="card">
+      <h2>New event</h2>
+      <form id="event-form">
+        <label for="f-title">Title *</label>
+        <input type="text" id="f-title" placeholder="June Dads Meetup">
+
+        <div class="row2">
+          <div>
+            <label for="f-type">Type *</label>
+            <select id="f-type"></select>
+          </div>
+          <div>
+            <label for="f-datetime">Date &amp; time (Central) *</label>
+            <input type="datetime-local" id="f-datetime">
+          </div>
+        </div>
+
+        <label for="f-location">Location *</label>
+        <input type="text" id="f-location" placeholder="Slick Willie's, Bellaire">
+
+        <label for="f-description">Description</label>
+        <textarea id="f-description" placeholder="What to expect, who it's for…"></textarea>
+
+        <div class="row2">
+          <div>
+            <label for="f-rsvp">RSVP link (optional)</label>
+            <input type="url" id="f-rsvp" placeholder="https://…">
+          </div>
+          <div>
+            <label for="f-cta">Button text (optional)</label>
+            <input type="text" id="f-cta" placeholder="RSVP free">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label for="f-status">Status</label>
+            <select id="f-status"></select>
+          </div>
+          <div>
+            <label for="f-flyer">Flyer image (optional)</label>
+            <input type="file" id="f-flyer" accept="image/*">
+          </div>
+        </div>
+
+        <div class="check">
+          <input type="checkbox" id="f-draft">
+          <label for="f-draft">Save as draft (hidden from public until unchecked)</label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btn-add">Add event</button>
+          <span class="msg" id="form-msg"></span>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Current events</h2>
+      <div id="events-list"></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-ghost" id="btn-logout">Forget token on this device</button>
+      <a href="../" style="margin-left:auto;">View the live site →</a>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+  import { init } from "../js/admin.js";
+  init();
+</script>
+</body>
+</html>

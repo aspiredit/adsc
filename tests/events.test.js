@@ -4,7 +4,23 @@ import {
   formatStartCT,
   buildCtaLabel,
   renderFeatured,
+  resolveFlyer,
 } from "../docs/js/events.js";
+
+describe("resolveFlyer", () => {
+  it("strips a leading slash so absolute CMS paths resolve on the subpath host", () => {
+    expect(resolveFlyer("/assets/events/x.png")).toBe("assets/events/x.png");
+  });
+  it("leaves already-relative paths untouched", () => {
+    expect(resolveFlyer("assets/events/x.png")).toBe("assets/events/x.png");
+  });
+  it("leaves external URLs untouched", () => {
+    expect(resolveFlyer("https://cdn.example/x.png")).toBe("https://cdn.example/x.png");
+  });
+  it("returns empty for missing flyer", () => {
+    expect(resolveFlyer("")).toBe("");
+  });
+});
 
 const fixedNow = new Date("2026-06-01T12:00:00-05:00");
 
