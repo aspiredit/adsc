@@ -41,9 +41,10 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
+          cache-dependency-path: scripts/requirements.txt
 
       - name: Install dependencies
-        run: pip install pyyaml markdown bleach
+        run: pip install -r scripts/requirements.txt
 
       - name: Build manifests
         run: python scripts/build_manifests.py
