@@ -1,18 +1,5 @@
 [
   {
-    "slug": "test-post-please-ignore",
-    "title": "[TEST] Practice Post — Safe to Delete",
-    "date": "2026-06-04",
-    "author": "ADSC Test",
-    "author_initials": "TT",
-    "cover_image": "",
-    "excerpt": "This is a temporary test post created to confirm that adding a blog post works end to end. It will be deleted shortly. If you can read this on the live site, the publishing pipeline is working.",
-    "html": "<p>This is a <strong>practice blog post</strong>. It exists only to confirm that the \"add a blog post\" workflow works from start to finish:</p>\n<ol>\n<li>A new post file is created.</li>\n<li>The site automatically rebuilds its blog list.</li>\n<li>The post appears on the live Blog page.</li>\n</ol>\n<p>If you are reading this on the live site, everything is working correctly. This post is safe to delete at any time.</p>",
-    "meta_description": "",
-    "meta_image": "",
-    "draft": false
-  },
-  {
     "slug": "from-parenting-a-child-with-a-disability-to-founding-a-nonprofit",
     "title": "From Parenting a Child with a Disability to Founding a Nonprofit",
     "date": "2026-05-28",
