@@ -147,16 +147,16 @@ describe("preview mode", () => {
 
   it("carries the preview flag into card links so draft links stay previewable", () => {
     renderBlogCards(container, [samplePost({ slug: "x" })], { preview: true });
-    expect(container.querySelector(".blog-card-title a").getAttribute("href")).toContain("preview=1");
+    expect(container.querySelector(".blog-card-title a").getAttribute("href")).toContain("preview=true");
   });
 
-  it("shows a preview banner on a draft detail page in preview mode", () => {
+  it("badges a draft on the detail page in preview mode", () => {
     renderBlogDetail(container, samplePost({ draft: true }), "", true);
-    expect(container.textContent.toLowerCase()).toContain("not visible to the public");
+    expect(container.textContent.toLowerCase()).toContain("draft");
   });
 
-  it("shows no preview banner for a published post even in preview mode", () => {
+  it("does not badge a published post on the detail page", () => {
     renderBlogDetail(container, samplePost({ draft: false }), "", true);
-    expect(container.textContent.toLowerCase()).not.toContain("not visible to the public");
+    expect(container.textContent.toLowerCase()).not.toContain("draft");
   });
 });

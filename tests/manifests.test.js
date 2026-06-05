@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, "..");
 const BLOGS_JSON = resolve(REPO, "docs/_data/blogs.json");
+const BLOGS_ALL_JSON = resolve(REPO, "docs/_data/blogs-all.json");
 const PHOTOS_JSON = resolve(REPO, "docs/_data/photos.json");
 
 let pythonAvailable = false;
@@ -59,6 +60,18 @@ describe("manifest builder", () => {
       expect(entry).toHaveProperty("draft");
       expect(entry.draft).toBe(false); // drafts must be filtered out at build time
     }
+  });
+
+  it.runIf(pythonAvailable)("blogs-all.json is a superset that may include drafts", () => {
+    const pub = JSON.parse(readFileSync(BLOGS_JSON, "utf-8"));
+    const all = JSON.parse(readFileSync(BLOGS_ALL_JSON, "utf-8"));
+    expect(Array.isArray(all)).toBe(true);
+    // Every published post appears in the preview manifest too.
+    expect(all.length).toBeGreaterThanOrEqual(pub.length);
+    const allSlugs = new Set(all.map((p) => p.slug));
+    for (const p of pub) expect(allSlugs.has(p.slug)).toBe(true);
+    // The public manifest never leaks drafts; the preview one may carry them.
+    expect(pub.every((p) => p.draft === false)).toBe(true);
   });
 
   it.runIf(pythonAvailable)("blog entries sort newest first", () => {

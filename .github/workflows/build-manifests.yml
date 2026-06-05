@@ -53,7 +53,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/_data/blogs.json docs/_data/photos.json
+          git add docs/_data/blogs.json docs/_data/blogs-all.json docs/_data/photos.json
           if git diff --staged --quiet; then
             echo "No manifest changes to commit."
             exit 0

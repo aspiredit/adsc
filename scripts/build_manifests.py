@@ -26,7 +26,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "docs" / "_data"
 BLOGS_DIR = DATA_DIR / "blogs"
 PHOTOS_DIR = DATA_DIR / "photos"
-BLOGS_OUT = DATA_DIR / "blogs.json"
+BLOGS_OUT = DATA_DIR / "blogs.json"          # public: published posts only
+BLOGS_ALL_OUT = DATA_DIR / "blogs-all.json"  # preview: includes drafts (?preview=true)
 PHOTOS_OUT = DATA_DIR / "photos.json"
 
 # Sanitization allow-list — conservative. Markdown produces these tags; anything
@@ -118,8 +119,8 @@ def build_blog_entry(path: Path) -> dict[str, Any] | None:
     slug, fname_date = slug_and_date_from_filename(path)
     text = path.read_text(encoding="utf-8")
     fm, body = split_frontmatter(text)
-    if fm.get("draft") is True:
-        return None
+    # NOTE: drafts are kept here (with draft=True) so the preview manifest can
+    # render them. The PUBLIC manifest filters them out — see build_blog_manifests.
     date_value = fm.get("date") or fname_date
     # yaml may parse a bare date into a date object; coerce to ISO string
     date_str = date_value.isoformat() if hasattr(date_value, "isoformat") else str(date_value or "")
@@ -134,7 +135,7 @@ def build_blog_entry(path: Path) -> dict[str, Any] | None:
         "html": render_markdown(body),
         "meta_description": fm.get("meta_description", "").strip(),
         "meta_image": fm.get("meta_image", "").strip(),
-        "draft": False,
+        "draft": fm.get("draft") is True,
     }
 
 
@@ -175,10 +176,45 @@ def build_manifest(src_dir: Path, builder, out_path: Path) -> int:
     return len(entries)
 
 
+def build_blog_manifests() -> tuple[int, int]:
+    """Build both blog manifests from docs/_data/blogs/.
+
+    Writes two files:
+      blogs.json      — published posts only (what the public site loads)
+      blogs-all.json  — every post incl. drafts (loaded only in ?preview=true)
+
+    Drafts are kept out of the public file by design (privacy + smaller payload)
+    but available in the preview file so authors can review unpublished work
+    rendered with the real site theme.
+    """
+    if not BLOGS_DIR.exists():
+        print(f"  (no {BLOGS_DIR.name}/ directory; writing empty manifests)")
+        BLOGS_OUT.write_text("[]\n", encoding="utf-8")
+        BLOGS_ALL_OUT.write_text("[]\n", encoding="utf-8")
+        return 0, 0
+
+    all_entries = []
+    for path in sorted(BLOGS_DIR.glob("*.md")):
+        entry = build_blog_entry(path)
+        if entry is None:
+            print(f"  - skipped (invalid): {path.name}")
+            continue
+        all_entries.append(entry)
+        flag = " (draft)" if entry["draft"] else ""
+        print(f"  + {path.name}{flag}")
+    all_entries.sort(key=lambda e: e.get("date", ""), reverse=True)
+
+    published = [e for e in all_entries if not e["draft"]]
+    BLOGS_OUT.write_text(json.dumps(published, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    BLOGS_ALL_OUT.write_text(json.dumps(all_entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return len(published), len(all_entries) - len(published)
+
+
 def main() -> int:
-    print("Building blog manifest from", BLOGS_DIR.relative_to(REPO_ROOT))
-    n_blogs = build_manifest(BLOGS_DIR, build_blog_entry, BLOGS_OUT)
-    print(f"  ->{BLOGS_OUT.relative_to(REPO_ROOT)} ({n_blogs} posts)")
+    print("Building blog manifests from", BLOGS_DIR.relative_to(REPO_ROOT))
+    n_pub, n_draft = build_blog_manifests()
+    print(f"  ->{BLOGS_OUT.relative_to(REPO_ROOT)} ({n_pub} published)")
+    print(f"  ->{BLOGS_ALL_OUT.relative_to(REPO_ROOT)} ({n_pub + n_draft} total, {n_draft} draft)")
     print()
     print("Building photo manifest from", PHOTOS_DIR.relative_to(REPO_ROOT))
     n_photos = build_manifest(PHOTOS_DIR, build_photo_entry, PHOTOS_OUT)

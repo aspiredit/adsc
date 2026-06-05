@@ -5,10 +5,19 @@
  *
  * Architecture note: this is intentionally client-side (per ADR-0002) until
  * the Astro migration (ADR-0004) moves rendering into the build pipeline.
+ *
+ * Preview: the public manifest (blogs.json) has no drafts. With ?preview=true
+ * on the /blog/ list or post page we load blogs-all.json instead, which the
+ * build step also emits with drafts included, so authors can review a post
+ * rendered in the real theme before publishing. Reuses the shared preview
+ * helpers from events.js for a single site-wide convention.
  */
 
+import { isPreviewMode, showPreviewBanner } from "./events.js";
+
 const BLOGS_JSON_PATH_HOME = "_data/blogs.json";
-const BLOGS_JSON_PATH_NESTED = "../_data/blogs.json"; // when called from /blog/
+const BLOGS_JSON_PATH_NESTED = "../_data/blogs.json";      // public, from /blog/
+const BLOGS_ALL_PATH_NESTED = "../_data/blogs-all.json";   // preview (incl. drafts), from /blog/
 
 const HOME_LATEST_COUNT = 3;
 
@@ -42,7 +51,7 @@ function detailHref(slug, basePath, preview) {
   // Caller decides the base. From home it's "blog/post.html?slug=...",
   // from the list page it's "post.html?slug=..."
   // In preview mode, carry the flag through so draft links stay previewable.
-  const q = preview ? "&preview=1" : "";
+  const q = preview ? "&preview=true" : "";
   return `${basePath}post.html?slug=${encodeURIComponent(slug)}${q}`;
 }
 
@@ -129,11 +138,8 @@ export function renderBlogDetail(container, post, assetBase = "", preview = fals
       </div>`;
     return;
   }
-  // Sticky banner in preview mode so the author never mistakes a private draft
-  // for the live page. Only shown for drafts being previewed.
-  const previewBanner = preview && post.draft
-    ? `<div style="position:sticky;top:0;z-index:200;background:#B8843D;color:#fff;text-align:center;font-weight:600;font-size:0.9rem;padding:10px 16px;">🔒 Preview — this is a DRAFT and is not visible to the public. Uncheck “Save as draft” in the CMS to publish it.</div>`
-    : "";
+  // A draft badge by the meta line reinforces the site-wide preview banner.
+  const badge = preview && post.draft ? DRAFT_BADGE : "";
   const coverSrc = resolveAsset(post.cover_image, assetBase);
   const cover = coverSrc
     ? `<img class="blog-detail-cover" src="${escapeHTML(coverSrc)}" alt="">`
@@ -141,12 +147,11 @@ export function renderBlogDetail(container, post, assetBase = "", preview = fals
   const author = post.author ? `<span class="blog-detail-author"> · ${escapeHTML(post.author)}</span>` : "";
   // Note: post.html is already sanitized at build time by scripts/build_manifests.py
   container.innerHTML = `
-    ${previewBanner}
     <article class="blog-detail">
       ${cover}
       <header class="blog-detail-header">
         <h1>${escapeHTML(post.title)}</h1>
-        <div class="blog-detail-meta">${escapeHTML(formatBlogDate(post.date))}${author}</div>
+        <div class="blog-detail-meta">${badge}${escapeHTML(formatBlogDate(post.date))}${author}</div>
       </header>
       <div class="blog-detail-body">${post.html || ""}</div>
       <footer class="blog-detail-footer">
@@ -175,15 +180,19 @@ export async function init() {
 
   if (!home && !list && !detail) return;
 
-  // Decide which manifest path to use based on which container is on the page.
-  // (home is on /index.html → "_data/...", list/detail are under /blog/ → "../_data/...")
-  // assetBase mirrors this: "" reaches the docs root from home, "../" from /blog/.
-  const path = home ? BLOGS_JSON_PATH_HOME : BLOGS_JSON_PATH_NESTED;
-  const assetBase = home ? "" : "../";
+  // Preview mode: ?preview=true on the /blog/ list or post page loads the
+  // drafts-included manifest so the author can review unpublished posts with
+  // the real theme. Never on home (keeps the public landing page clean).
+  const preview = !home && isPreviewMode(window.location.search);
+  if (preview) showPreviewBanner();
 
-  // Preview mode: ?preview=1 on the /blog/ list or post page reveals drafts so
-  // the author can review unpublished posts with the real theme. Never on home.
-  const preview = !home && new URLSearchParams(window.location.search).get("preview") != null;
+  // assetBase mirrors page depth: "" reaches the docs root from home, "../" from /blog/.
+  const assetBase = home ? "" : "../";
+  const path = home
+    ? BLOGS_JSON_PATH_HOME
+    : preview
+      ? BLOGS_ALL_PATH_NESTED
+      : BLOGS_JSON_PATH_NESTED;
 
   let posts = [];
   try {
