@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photos — Autism Dads Social Club</title>
+<meta name="description" content="Photos from meetups, family events, and gatherings of the Autism Dads Social Club brotherhood in Houston.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --blue-deep: #1F5E96;
+    --blue-mid: #4FA0D8;
+    --blue-soft: #8FBCDB;
+    --gold-soft: #B8843D;
+    --bg: #F8FAFC;
+    --bg-warm: #E8F0F8;
+    --bg-card: #FFFFFF;
+    --ink: #1A2533;
+    --ink-soft: #38475A;
+    --ink-mute: #5A6B7C;
+    --line: #D8E4ED;
+    --line-soft: #E8EFF5;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.55; }
+  body.lightbox-open { overflow: hidden; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 28px; }
+
+  header.page-header {
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    padding: 16px 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .page-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+  .page-header-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--blue-deep); }
+  .page-header-brand:hover { text-decoration: none; }
+  .page-header-logo { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(31,94,150,0.15)); }
+  .page-header h1 { font-family: var(--font-display); font-weight: 500; font-size: 1.35rem; color: var(--blue-deep); line-height: 1.2; }
+  .home-link { font-family: var(--font-body); font-size: 0.95rem; color: var(--ink-mute); text-decoration: none; }
+  .home-link:hover { color: var(--blue-deep); }
+
+  main { padding: 60px 0 100px; }
+  .page-intro { text-align: center; max-width: 600px; margin: 0 auto 50px; color: var(--ink-soft); font-size: 1.05rem; }
+  .page-intro h2 { font-family: var(--font-display); font-size: clamp(1.9rem, 3.4vw, 2.6rem); font-weight: 500; color: var(--ink); margin-bottom: 14px; line-height: 1.2; }
+
+  #photo-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .photo-tile {
+    appearance: none;
+    border: 0; padding: 0;
+    background: var(--blue-deep);
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(31,94,150,0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .photo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .photo-tile:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -4px rgba(31,94,150,0.3); }
+  .photo-tile:hover img { transform: scale(1.05); }
+  .photo-tile:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+  .photo-empty { text-align: center; padding: 80px 20px; color: var(--ink-mute); font-style: italic; grid-column: 1 / -1; }
+
+  @media (max-width: 800px) {
+    #photo-gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  }
+  @media (max-width: 480px) {
+    #photo-gallery-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Lightbox (same styles as the home page) */
+  .photo-lightbox {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 32, 0.92);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    animation: lightbox-fade-in 0.15s ease;
+  }
+  @keyframes lightbox-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .photo-lightbox-figure { max-width: min(1100px, 100%); max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .photo-lightbox-figure img { max-width: 100%; max-height: 76vh; object-fit: contain; border-radius: 4px; box-shadow: 0 22px 60px -10px rgba(0,0,0,0.5); }
+  .photo-lightbox figcaption { text-align: center; color: rgba(255,255,255,0.9); max-width: 720px; }
+  .photo-lightbox-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; margin-bottom: 4px; }
+  .photo-lightbox-caption { font-size: 0.9rem; color: rgba(255,255,255,0.7); font-style: italic; }
+  .photo-lightbox-close, .photo-lightbox-prev, .photo-lightbox-next {
+    position: absolute;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 1.4rem;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .photo-lightbox-close:hover, .photo-lightbox-prev:hover, .photo-lightbox-next:hover { background: rgba(255,255,255,0.22); transform: scale(1.06); }
+  .photo-lightbox-close:focus-visible, .photo-lightbox-prev:focus-visible, .photo-lightbox-next:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+  .photo-lightbox-close { top: 20px; right: 22px; font-size: 1.6rem; }
+  .photo-lightbox-prev  { left: 22px;  top: 50%; transform: translateY(-50%); }
+  .photo-lightbox-next  { right: 22px; top: 50%; transform: translateY(-50%); }
+  .photo-lightbox-prev:hover { transform: translateY(-50%) scale(1.06); }
+  .photo-lightbox-next:hover { transform: translateY(-50%) scale(1.06); }
+
+  @media (max-width: 600px) {
+    .photo-lightbox { padding: 24px 12px; }
+    .photo-lightbox-prev { left: 8px; }
+    .photo-lightbox-next { right: 8px; }
+  }
+
+  footer { border-top: 1px solid var(--line); background: #fff; padding: 24px 0; color: var(--ink-mute); font-size: 0.85rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container page-header-inner">
+    <a href="../" class="page-header-brand" aria-label="Autism Dads Social Club — home">
+      <img class="page-header-logo" src="../assets/logo.png" alt="">
+      <h1>Photos</h1>
+    </a>
+    <a href="../" class="home-link">← Back to home</a>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div class="page-intro">
+      <h2>The brotherhood in pictures.</h2>
+      <p>Meetups. Family gatherings. The moments that remind us why we're doing this.</p>
+    </div>
+    <div id="photo-gallery-grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">© 2026 Autism Dads Social Club · Houston, TX</div>
+</footer>
+
+<script type="module">
+  import { init } from "../js/photos.js";
+  init();
+</script>
+
+</body>
+</html>
