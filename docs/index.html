@@ -196,18 +196,16 @@
   }
   a.logo:hover { text-decoration: none; }
   .logo-img {
-    width: 56px; height: 56px;
+    width: 72px; height: 72px;
     object-fit: contain;
     flex-shrink: 0;
-    background: #fff;
-    border-radius: 50%;
-    padding: 5px;
-    box-shadow: 0 2px 6px rgba(31,94,150,0.18), 0 0 0 1px var(--line-soft);
+    /* Transparent PNG — no wrapper. Subtle drop-shadow gives it some lift. */
+    filter: drop-shadow(0 2px 4px rgba(31,94,150,0.15));
   }
   .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
   .logo small { display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
   @media (max-width: 540px) {
-    .logo-img { width: 44px; height: 44px; padding: 4px; }
+    .logo-img { width: 54px; height: 54px; }
     .logo, a.logo { font-size: 1.05rem; gap: 10px; }
     .logo small { font-size: 0.62rem; letter-spacing: 0.1em; }
   }
@@ -585,16 +583,16 @@
   }
   /* Executive Board photo wrap — supports real image OR initials fallback */
   .board-photo-wrap {
-    width: 112px;
-    height: 112px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    margin: 0 auto 16px;
+    margin: 0 auto 18px;
     overflow: hidden;
     background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 20px -6px rgba(31,94,150,0.28);
+    box-shadow: 0 10px 24px -8px rgba(31,94,150,0.32);
   }
   .board-photo-wrap img {
     width: 100%;
@@ -603,6 +601,11 @@
     object-position: center 22%;
     display: block;
   }
+  /* Per-person object-position overrides — applied by data attribute on the wrap */
+  .board-photo-wrap[data-pos="chism"] img    { object-position: center 14%; }
+  .board-photo-wrap[data-pos="notice"] img   { object-position: center 18%; }
+  .advisor-photo-wrap[data-pos="farmer"] img  { object-position: center 16%; }
+  .advisor-photo-wrap[data-pos="dipasca"] img { object-position: center 28%; }
   .board-photo-initials {
     color: #fff;
     font-family: var(--font-display);
@@ -683,16 +686,17 @@
   }
   .advisor-card { text-align: center; }
   .advisor-photo-wrap {
-    width: 78px;
-    height: 78px;
+    width: 104px;
+    height: 104px;
     border-radius: 50%;
-    margin: 0 auto 12px;
+    margin: 0 auto 14px;
     overflow: hidden;
     background: linear-gradient(135deg, var(--blue-mid), var(--blue-soft));
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 6px 16px -6px rgba(31,94,150,0.22);
   }
   .advisor-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; display: block; }
   .advisor-photo-initials {
@@ -2463,7 +2467,7 @@
     <div class="board-grid">
 
       <div class="board-card">
-        <div class="board-photo-wrap"><img src="assets/people/chism.jpg" alt="Jonathan Chism" loading="lazy"></div>
+        <div class="board-photo-wrap" data-pos="chism"><img src="assets/people/chism.jpg" alt="Jonathan Chism" loading="lazy"></div>
         <div class="board-name">Jonathan Chism, PhD</div>
         <div class="board-role">CoFounder &amp; Inaugural President</div>
         <div class="board-cred">Associate Professor of History at University of Houston-Downtown · 15+ years grassroots organizing</div>
@@ -2499,7 +2503,7 @@
       </div>
 
       <div class="board-card">
-        <div class="board-photo-wrap"><img src="assets/people/notice.jpg" alt="John Notice" loading="lazy"></div>
+        <div class="board-photo-wrap" data-pos="notice"><img src="assets/people/notice.jpg" alt="John Notice" loading="lazy"></div>
         <div class="board-name">John Notice, CMHC</div>
         <div class="board-role">Director of Emotional Well-Being</div>
         <div class="board-cred">Mental Health Counselor · PhD Candidate</div>
@@ -2530,7 +2534,7 @@
       </div>
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><img src="assets/people/farmer.jpg" alt="Darla Farmer" loading="lazy"></div>
+        <div class="advisor-photo-wrap" data-pos="farmer"><img src="assets/people/farmer.jpg" alt="Darla Farmer" loading="lazy"></div>
         <div class="advisor-name">Darla Farmer</div>
         <div class="advisor-role">Advisor</div>
       </div>
@@ -2554,7 +2558,7 @@
       </div>
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
+        <div class="advisor-photo-wrap" data-pos="dipasca"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
         <div class="advisor-name">Melody DiPasca</div>
         <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
         <div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div>
