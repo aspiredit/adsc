@@ -19,7 +19,7 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 | [009](issues/009-past-events-archive-page.md) | Past Events archive page at `/past-events/` | AFK | Done | 004, 006 |
 | [010](issues/010-admin-onboarding.md) | Admin onboarding: second admin end-to-end | HITL | Open | 002 |
 | [011](issues/011-content-manifests.md) | Auto-generate blogs.json + photos.json manifests on push | AFK | Done | 002 |
-| [012](issues/012-blog-rendering.md) | Blog rendering: home section + list page + detail page | AFK | Open | 011 |
+| [012](issues/012-blog-rendering.md) | Blog rendering: home section + list page + detail page | AFK | Done | 011 |
 | [013](issues/013-photo-gallery.md) | Photo gallery: home strip + gallery page + lightbox | AFK | Open | 011 |
 
 ## Suggested order
