@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading… — Autism Dads Social Club</title>
+<meta name="description" content="A blog post from the Autism Dads Social Club brotherhood.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --blue-deep: #1F5E96;
+    --blue-mid: #4FA0D8;
+    --blue-soft: #8FBCDB;
+    --gold-soft: #B8843D;
+    --bg: #F8FAFC;
+    --bg-warm: #E8F0F8;
+    --bg-card: #FFFFFF;
+    --ink: #1A2533;
+    --ink-soft: #38475A;
+    --ink-mute: #5A6B7C;
+    --line: #D8E4ED;
+    --line-soft: #E8EFF5;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Source Sans 3', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 92px; }
+  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.65; font-size: 17px; }
+  .container { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  header.page-header {
+    border-bottom: 1px solid var(--line);
+    background: rgba(255,255,255,0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    padding: 16px 0;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .page-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+  .page-header-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--blue-deep); }
+  .page-header-brand:hover { text-decoration: none; }
+  .page-header-logo { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(31,94,150,0.15)); }
+  .page-header-brand h1 { font-family: var(--font-display); font-weight: 500; font-size: 1.2rem; color: var(--blue-deep); line-height: 1.2; }
+  .home-link { font-family: var(--font-body); font-size: 0.95rem; color: var(--ink-mute); text-decoration: none; }
+  .home-link:hover { color: var(--blue-deep); }
+
+  main { padding: 60px 0 100px; }
+
+  .blog-detail-cover {
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 38px;
+    background: var(--blue-deep);
+  }
+  .blog-detail-header { margin-bottom: 38px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+  .blog-detail-header h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  .blog-detail-meta {
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  .blog-detail-author { text-transform: none; letter-spacing: 0; font-weight: 500; }
+
+  .blog-detail-body { color: var(--ink-soft); }
+  .blog-detail-body h1, .blog-detail-body h2, .blog-detail-body h3, .blog-detail-body h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.25;
+    margin: 38px 0 14px;
+  }
+  .blog-detail-body h2 { font-size: 1.7rem; }
+  .blog-detail-body h3 { font-size: 1.35rem; }
+  .blog-detail-body h4 { font-size: 1.15rem; }
+  .blog-detail-body p { margin-bottom: 22px; }
+  .blog-detail-body ul, .blog-detail-body ol { margin: 0 0 22px 1.4em; }
+  .blog-detail-body li { margin-bottom: 10px; }
+  .blog-detail-body a { color: var(--blue-deep); text-decoration: underline; text-underline-offset: 2px; }
+  .blog-detail-body a:hover { color: var(--blue-mid); }
+  .blog-detail-body strong { color: var(--ink); font-weight: 600; }
+  .blog-detail-body blockquote {
+    border-left: 4px solid var(--blue-soft);
+    background: var(--bg-warm);
+    padding: 16px 22px;
+    margin: 22px 0;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .blog-detail-body code {
+    background: var(--bg-warm);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.92em;
+  }
+  .blog-detail-body pre {
+    background: var(--bg-warm);
+    padding: 16px 18px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 22px 0;
+  }
+  .blog-detail-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 26px 0;
+    font-size: 0.93rem;
+  }
+  .blog-detail-body th, .blog-detail-body td {
+    text-align: left;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+  }
+  .blog-detail-body th {
+    background: var(--bg-warm);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .blog-detail-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 22px 0;
+  }
+  .blog-detail-body hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 38px 0;
+  }
+  .blog-detail-footer {
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .blog-detail-footer a {
+    color: var(--blue-deep);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .blog-detail-footer a:hover { text-decoration: underline; }
+
+  .blog-detail-empty { text-align: center; padding: 80px 20px; }
+  .blog-detail-empty h2 { font-family: var(--font-display); font-weight: 500; color: var(--ink); margin-bottom: 14px; }
+  .blog-detail-empty p { color: var(--ink-soft); margin-bottom: 14px; }
+
+  footer { border-top: 1px solid var(--line); background: #fff; padding: 24px 0; color: var(--ink-mute); font-size: 0.85rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <a href="../" class="page-header-brand" aria-label="Autism Dads Social Club — home">
+      <img class="page-header-logo" src="../assets/logo.png" alt="">
+      <h1>Blog</h1>
+    </a>
+    <a href="./" class="home-link">← All posts</a>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <div id="blog-detail">Loading…</div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">© 2026 Autism Dads Social Club · Houston, TX</div>
+</footer>
+
+<script type="module">
+  import { init } from "../js/blogs.js";
+  init();
+</script>
+
+</body>
+</html>

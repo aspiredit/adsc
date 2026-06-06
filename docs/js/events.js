@@ -25,6 +25,22 @@ export function isPreviewMode(searchString = "") {
   return params.get("preview") === "true";
 }
 
+// Pages CMS writes events.json as { "events": [...] } (a single file with a
+// top-level list field). Older/hand-written data may be a bare array. Accept both.
+export function extractEvents(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.events)) return data.events;
+  return [];
+}
+
+// An event with an unparseable starts_at must never reach the renderer:
+// Intl.DateTimeFormat.format() throws on Invalid Date and would crash the
+// calendar. Filter such events out at load time (with a console warning) so a
+// single bad CMS entry can't white-screen the whole page.
+export function hasValidDate(event) {
+  return !!event?.starts_at && !Number.isNaN(new Date(event.starts_at).getTime());
+}
+
 export function filterDrafts(events, previewMode = false) {
   if (!Array.isArray(events)) return [];
   if (previewMode) return events.slice();
@@ -113,9 +129,18 @@ function renderFallback(card) {
   `;
 }
 
+// Events render on the home page (docs root). Pages CMS writes flyer paths as
+// absolute "/assets/...", which 404 on the subpath host; strip the leading
+// slash so the relative path resolves. External URLs are left untouched.
+export function resolveFlyer(path) {
+  if (!path) return "";
+  if (/^https?:\/\//.test(path)) return path;
+  return path.replace(/^\/+/, "");
+}
+
 export function renderFlyer(event) {
   if (event?.flyer) {
-    return `<img class="rsvp-featured-flyer-img" src="${escapeHtml(event.flyer)}" alt="${escapeHtml(event.title ?? "")}" loading="lazy">`;
+    return `<img class="rsvp-featured-flyer-img" src="${escapeHtml(resolveFlyer(event.flyer))}" alt="${escapeHtml(event.title ?? "")}" loading="lazy">`;
   }
   const pill = TYPE_PILL_LABELS[event?.type] ?? TYPE_PILL_LABELS.other;
   return `
@@ -218,7 +243,14 @@ export async function init() {
   try {
     const res = await fetch(EVENTS_JSON_PATH);
     if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
-    const events = filterDrafts(await res.json(), previewMode);
+    const all = extractEvents(await res.json());
+    const dated = all.filter(hasValidDate);
+    if (dated.length !== all.length) {
+      console.warn(
+        `Skipped ${all.length - dated.length} event(s) with an invalid start date.`
+      );
+    }
+    const events = filterDrafts(dated, previewMode);
     const featured = pickFeaturedEvent(events);
     const upcoming = pickUpcomingEvents(events, new Date(), featured?.id ?? null);
     renderFeatured(featured);

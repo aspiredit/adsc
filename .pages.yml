@@ -41,6 +41,12 @@ content:
             type: datetime
             required: true
             options:
+              # Store as ISO 8601 with offset (e.g. 2026-05-30T17:00:00-05:00)
+              # so the site can parse it reliably across timezones.
+              # VERIFY after saving an event: if the stored value isn't ISO,
+              # report what it produced and this token string needs adjusting.
+              # (The renderer defensively skips unparseable dates either way.)
+              format: "yyyy-MM-dd'T'HH:mm:ssXXX"
               time_format: HH:mm
           - name: location
             label: Location

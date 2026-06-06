@@ -4,7 +4,7 @@
       "id": "New Event",
       "title": "Meet Up",
       "type": "meetup",
-      "starts_at": "May 30 2026 5 PM CST",
+      "starts_at": "2026-05-30T17:00:00-05:00",
       "location": "Remote",
       "description": "This is a great way to do things",
       "flyer": "/assets/events/ChatGPT Image May 26, 2026, 09_21_05 PM.png",

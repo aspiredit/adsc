@@ -102,7 +102,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 116px; }
 
   body {
     font-family: var(--font-body);
@@ -162,38 +162,75 @@
     .urgency-bar .rsvp-link { display: inline-block; margin-left: 8px; }
   }
 
-  /* ====== NAV ====== */
+  /* ====== NAV (sticky, glass) ====== */
   .nav-wrap {
-    background: var(--bg);
+    background: rgba(248,250,252,0.88);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
     border-bottom: 1px solid var(--line-soft);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: box-shadow 0.2s ease;
+  }
+  .nav-wrap.scrolled {
+    box-shadow: 0 4px 16px -8px rgba(31,94,150,0.18);
   }
   .nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 22px 0;
+    padding: 10px 0;
+    gap: 16px;
   }
-  .logo {
+  .logo, a.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: var(--font-display);
-    font-size: 1.35rem;
+    font-size: 1.3rem;
     font-weight: 600;
     color: var(--blue-deep);
     letter-spacing: -0.01em;
+    text-decoration: none;
   }
-  .logo-image {
-    display: block;
-    max-width: 155px;
-    height: auto;
-    margin-bottom: 10px;
+  a.logo:hover { text-decoration: none; }
+  .logo-img {
+    width: 96px; height: 96px;
+    object-fit: contain;
+    flex-shrink: 0;
+    /* Transparent PNG — no wrapper. Subtle drop-shadow gives it some lift. */
+    filter: drop-shadow(0 2px 4px rgba(31,94,150,0.15));
   }
+  .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
   .logo small { display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
-  .nav-links { display: flex; gap: 30px; align-items: center; }
+  @media (max-width: 540px) {
+    .logo-img { width: 68px; height: 68px; }
+    .logo, a.logo { font-size: 1.05rem; gap: 10px; }
+    .logo small { font-size: 0.62rem; letter-spacing: 0.1em; }
+  }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
   .nav-links a {
     color: var(--ink-soft);
     font-size: 0.96rem;
     font-weight: 500;
+    position: relative;
+    padding: 6px 0;
   }
+  .nav-links a:not(.nav-cta)::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: var(--blue-deep);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.2s ease;
+  }
+  .nav-links a:not(.nav-cta):hover::after,
+  .nav-links a:not(.nav-cta).active::after { transform: scaleX(1); }
   .nav-links a:hover { color: var(--blue-deep); text-decoration: none; }
+  .nav-links a.active { color: var(--blue-deep); }
   .nav-cta {
     background: var(--blue-deep);
     color: #fff !important;
@@ -204,9 +241,61 @@
   }
   .nav-cta:hover { background: var(--blue-mid); text-decoration: none; }
 
+  /* Hamburger button */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px; height: 44px;
+    padding: 0 11px;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .nav-toggle span {
+    display: block;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
   @media (max-width: 820px) {
-    .nav-links { gap: 18px; }
-    .nav-links a:not(.nav-cta) { display: none; }
+    .nav { padding: 12px 0; }
+    .nav-toggle { display: flex; }
+    .nav-links {
+      position: fixed;
+      inset: 78px 0 0 0;
+      background: var(--bg);
+      flex-direction: column;
+      align-items: stretch;
+      padding: 24px 28px 40px;
+      gap: 0;
+      transform: translateX(100%);
+      transition: transform 0.25s ease;
+      z-index: 99;
+      overflow-y: auto;
+    }
+    .nav-links.open { transform: translateX(0); }
+    .nav-links a {
+      display: block;
+      padding: 18px 4px;
+      border-bottom: 1px solid var(--line);
+      font-size: 1.08rem;
+    }
+    .nav-links a:not(.nav-cta)::after { display: none; }
+    .nav-cta {
+      margin-top: 24px;
+      text-align: center;
+      padding: 14px 20px;
+      border-radius: 4px;
+    }
+    body.nav-open { overflow: hidden; }
   }
 
   /* ====== HERO ====== */
@@ -248,6 +337,20 @@
   .hero-trust-micro span { color: var(--ink-mute); }
   .hero-trust-micro .trust-dot { color: var(--gold); font-size: 0.9rem; }
   .hero-trust-micro .trust-501 { color: var(--blue-deep); font-weight: 600; }
+
+  /* Hero intro paragraph (added per 2026 content rewrite) */
+  .hero-intro {
+    font-size: 1.0rem;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 26px;
+    max-width: 580px;
+    padding: 16px 18px;
+    background: rgba(31,94,150,0.04);
+    border-left: 3px solid var(--blue-mid);
+    border-radius: 0 4px 4px 0;
+  }
+  .hero-intro strong { color: var(--ink); font-weight: 600; }
 
   /* v4: activity proof line below the institutional trust micro */
   .hero-trust-activity {
@@ -468,63 +571,175 @@
     background: var(--bg);
   }
   .board-strip .strip-header { margin-bottom: 44px; }
+  /* Flexbox wrap so a row that can't fit centers its trailing cards
+     (5 board members → 3 on row one, 2 centered on row two). */
   .board-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 24px;
-    max-width: 1100px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 44px 36px;
+    max-width: 880px;
     margin: 0 auto;
   }
   .board-card {
     text-align: center;
+    width: 240px;
   }
-  .board-photo {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue-mid), var(--blue-soft));
-    margin: 0 auto 16px;
+  /* Executive Board photo wrap — rounded-rectangle portrait (supports real image OR initials fallback) */
+  .board-photo-wrap {
+    width: 100%;
+    aspect-ratio: 5 / 6;
+    border-radius: 18px;
+    margin: 0 auto 18px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 16px 34px -12px rgba(31,94,150,0.38);
+  }
+  .board-photo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+  /* Per-person object-position overrides — applied by data attribute on the wrap */
+  .board-photo-wrap[data-pos="chism"] img    { object-position: center 14%; }
+  .board-photo-wrap[data-pos="notice"] img   { object-position: center 18%; }
+  .advisor-photo-wrap[data-pos="farmer"] img  { object-position: center 16%; }
+  .advisor-photo-wrap[data-pos="dipasca"] img { object-position: center 28%; }
+  .board-photo-initials {
     color: #fff;
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 500;
-    box-shadow: 0 6px 16px -6px rgba(31,94,150,0.22);
-  }
-  .board-photo.placeholder {
-    background: linear-gradient(135deg, var(--blue-pale), var(--blue-soft));
-    color: var(--blue-deep);
-    font-size: 1rem;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
   }
   .board-name {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     font-weight: 500;
     color: var(--ink);
     margin-bottom: 3px;
-    line-height: 1.2;
+    line-height: 1.22;
   }
   .board-role {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     color: var(--blue-deep);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.3;
   }
   .board-cred {
+    font-size: 0.82rem;
+    color: var(--ink-mute);
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  .board-human {
+    font-size: 0.84rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    margin-bottom: 10px;
+    min-height: 80px;
+  }
+  .board-dad {
+    font-size: 0.76rem;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  @media (max-width: 1000px) {
+    .board-grid { gap: 40px 28px; max-width: 760px; }
+    .board-card { width: 220px; }
+  }
+  @media (max-width: 620px) {
+    .board-grid { gap: 32px 18px; }
+    .board-card { width: 44%; min-width: 140px; }
+    .board-human { min-height: 0; }
+  }
+
+  /* ====== ADVISORY BOARD (v6) ====== */
+  .advisory-strip {
+    padding: 60px 0 90px;
+    background: var(--bg-warm);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .advisory-strip .strip-header { margin-bottom: 18px; }
+  .advisory-intro {
+    text-align: center;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 auto 44px;
+    font-size: 1.0rem;
+    line-height: 1.6;
+  }
+  .advisory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px 24px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .advisor-card { text-align: center; }
+  /* Medium rounded-rectangle portrait — same family as the Executive Board,
+     scaled down to keep advisors a secondary tier. */
+  .advisor-photo-wrap {
+    width: 158px;
+    max-width: 100%;
+    aspect-ratio: 5 / 6;
+    border-radius: 14px;
+    margin: 0 auto 14px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--blue-mid), var(--blue-soft));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 12px 26px -10px rgba(31,94,150,0.30);
+  }
+  .advisor-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+  .advisor-photo-initials {
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    font-weight: 500;
+  }
+  .advisor-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .advisor-role {
+    font-size: 0.74rem;
+    color: var(--blue-deep);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+  .advisor-bio {
     font-size: 0.8rem;
     color: var(--ink-mute);
-    line-height: 1.4;
+    line-height: 1.45;
+    margin-top: 8px;
   }
   @media (max-width: 900px) {
-    .board-grid { grid-template-columns: repeat(3, 1fr); gap: 32px 20px; max-width: 600px; }
+    .advisory-grid { grid-template-columns: repeat(3, 1fr); max-width: 640px; }
   }
   @media (max-width: 560px) {
-    .board-grid { grid-template-columns: repeat(2, 1fr); max-width: 380px; }
+    .advisory-grid { grid-template-columns: repeat(2, 1fr); max-width: 420px; }
   }
 
   /* ====== ORIGIN STORY ====== */
@@ -593,8 +808,8 @@
   }
   .test-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
     margin-top: 50px;
   }
   .test-card {
@@ -644,7 +859,10 @@
     margin-top: 2px;
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
+    .test-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
     .test-grid { grid-template-columns: 1fr; gap: 20px; }
   }
 
@@ -664,15 +882,34 @@
   }
   .program-card {
     background: var(--bg-card);
-    padding: 36px 30px;
     border-radius: 6px;
     border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     transition: all 0.2s;
   }
   .program-card:hover { border-color: var(--blue-soft); box-shadow: 0 12px 30px -10px rgba(31,94,150,0.15); transform: translateY(-2px); }
-  .program-icon {
-    color: var(--blue-deep);
-    margin-bottom: 18px;
+  .program-photo {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    overflow: hidden;
+    background: var(--blue-deep);
+  }
+  .program-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .program-card:hover .program-photo img { transform: scale(1.04); }
+  .program-card-body {
+    padding: 28px 26px 26px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
   .program-meta {
     font-size: 0.78rem;
@@ -689,16 +926,32 @@
     font-size: 0.98rem;
     color: var(--ink-soft);
     line-height: 1.55;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
+  .program-offerings {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+  }
+  .program-offerings li {
+    padding: 6px 0;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    border-top: 1px solid var(--line-soft);
+  }
+  .program-offerings li:first-child { border-top: 0; }
+  .program-offerings strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 2px; }
   .program-next {
     background: var(--bg-warm);
     border-left: 3px solid var(--gold);
     padding: 14px 16px;
     font-size: 0.88rem;
     border-radius: 0 4px 4px 0;
+    margin-top: auto;
   }
   .program-next strong { display: block; color: var(--ink); margin-bottom: 4px; font-weight: 600; font-size: 0.92rem; }
+  .program-next a { color: var(--blue-deep); font-weight: 600; }
 
   @media (max-width: 900px) {
     .programs-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -706,10 +959,41 @@
 
   /* ====== BRIDGE ====== */
   .bridge {
-    padding: 80px 0 70px;
+    padding: 70px 0;
     background: var(--bg);
     text-align: center;
   }
+  .bridge-photo {
+    max-width: 760px;
+    margin: 0 auto 50px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 14px 36px -14px rgba(31,94,150,0.3);
+  }
+  .bridge-photo img { display: block; width: 100%; height: auto; }
+
+  /* Our Story closing callout (added per 2026 rewrite) */
+  .origin-callout {
+    margin: 28px 0;
+    padding: 22px 24px;
+    background: var(--bg-warm);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 4px 4px 0;
+  }
+  .origin-callout strong { display: block; font-family: var(--font-display); color: var(--blue-deep); font-size: 1.15rem; font-weight: 500; margin-bottom: 4px; line-height: 1.3; }
+  .origin-callout em { display: block; color: var(--ink-soft); font-style: italic; font-size: 0.96rem; line-height: 1.55; }
+  .origin-villages {
+    margin: 30px 0 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: 1.18rem;
+    font-weight: 500;
+    color: var(--blue-deep);
+    line-height: 1.5;
+  }
+  .origin-villages span { display: block; }
+
   .bridge-rule {
     width: 60px;
     height: 1px;
@@ -1312,7 +1596,21 @@
   .tier-monthly {
     font-size: 0.88rem;
     color: rgba(255,255,255,0.6);
-    margin-bottom: 28px;
+    margin-bottom: 22px;
+  }
+  .tier-desc {
+    font-size: 0.92rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+  .tier-list-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gold-soft);
+    margin-bottom: 10px;
   }
   .tier-list {
     list-style: none;
@@ -1381,161 +1679,54 @@
     .tier.featured { order: -1; margin-top: 12px; }
   }
 
-  /* ====== BLOG SECTION ====== */
-  .blog-section {
-    padding: 100px 0;
-    background: var(--bg-warm);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+  /* ====== NEWSLETTER (v6 — replaces Lead Magnet) ====== */
+  .newsletter {
+    padding: 90px 0;
+    background: var(--bg);
   }
-  .blog-header {
+  .newsletter .container { max-width: 880px; }
+  .newsletter-intro {
     text-align: center;
-    max-width: 640px;
-    margin: 0 auto 50px;
+    margin-bottom: 40px;
   }
-  .blog-header h2 { margin-bottom: 18px; }
-  .blog-header h2 em { font-style: italic; color: var(--blue-deep); font-weight: 500; }
-  .blog-header p { color: var(--ink-soft); font-size: 1.08rem; }
-  .blog-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-bottom: 44px;
-  }
-  .blog-card {
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.2s;
-    text-decoration: none;
-    color: inherit;
-  }
-  .blog-card:hover {
-    border-color: var(--blue-soft);
-    box-shadow: 0 12px 30px -10px rgba(31,94,150,0.15);
-    transform: translateY(-2px);
-    text-decoration: none;
-  }
-  .blog-card-cover {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-    background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
-  }
-  .blog-card-cover-placeholder {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-mid) 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .blog-card-cover-placeholder svg { opacity: 0.3; }
-  .blog-card-body { padding: 24px 24px 28px; flex: 1; display: flex; flex-direction: column; }
-  .blog-card-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .newsletter-eyebrow {
+    color: var(--gold);
     font-size: 0.78rem;
-    color: var(--ink-mute);
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 14px;
   }
-  .blog-card-meta .blog-author-init {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), #C99550);
-    color: #fff;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-  .blog-card-title {
-    font-family: var(--font-display);
-    font-size: 1.18rem;
-    font-weight: 500;
+  .newsletter-intro h2 { margin-bottom: 18px; font-weight: 400; }
+  .newsletter-intro h2 em { font-style: italic; color: var(--blue-deep); font-weight: 500; }
+  .newsletter-lead {
     color: var(--ink);
-    line-height: 1.3;
-    margin-bottom: 10px;
-    flex: 1;
-  }
-  .blog-card-excerpt {
-    font-size: 0.92rem;
-    color: var(--ink-soft);
+    font-size: 1.12rem;
     line-height: 1.55;
-    margin-bottom: 18px;
-    display: -webkit-box;
-    line-clamp: 3;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin-bottom: 22px;
   }
-  .blog-card-read {
-    font-size: 0.84rem;
-    font-weight: 600;
+  .newsletter-intro p {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 640px;
+    margin: 0 auto 18px;
+  }
+  .newsletter-cta-line {
     color: var(--blue-deep);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    margin-top: 10px;
   }
-  .blog-card-read::after { content: '→'; transition: transform 0.2s; }
-  .blog-card:hover .blog-card-read::after { transform: translateX(4px); }
-
-  .blog-skeleton {
-    background: var(--bg-card);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    overflow: hidden;
+  .newsletter-form-wrap {
+    max-width: 460px;
+    margin: 0 auto;
   }
-  .blog-skeleton-cover {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--line);
-    animation: shimmer 1.4s infinite;
-  }
-  .blog-skeleton-body { padding: 24px; }
-  .blog-skeleton-line {
-    height: 12px;
-    border-radius: 6px;
-    background: var(--line);
-    margin-bottom: 10px;
-    animation: shimmer 1.4s infinite;
-  }
-  .blog-skeleton-line.short { width: 60%; }
-  .blog-skeleton-line.medium { width: 85%; }
-  @keyframes shimmer {
-    0%   { opacity: 1; }
-    50%  { opacity: 0.5; }
-    100% { opacity: 1; }
+  /* Soften the MailerLite default gray panel so it sits in our palette */
+  .newsletter-form-wrap .ml-form-embedContainer .ml-form-embedWrapper {
+    background-color: var(--bg-warm) !important;
+    border: 1px solid var(--line) !important;
   }
 
-  .blog-footer {
-    text-align: center;
-  }
-  .blog-empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--ink-mute);
-    font-style: italic;
-    font-size: 1.05rem;
-  }
-  @media (max-width: 900px) { .blog-grid { grid-template-columns: 1fr; gap: 20px; } }
-  @media (max-width: 640px) { .blog-section { padding: 70px 0; } }
-
-  /* ====== LEAD MAGNET ====== */
+  /* ====== LEAD MAGNET (legacy CSS retained for safety, unused) ====== */
   /* MOVED v3: now placed BEFORE membership for proper ascension order */
   .leadmag {
     padding: 90px 0;
@@ -1778,6 +1969,64 @@
     background: transparent;
     border-style: dashed;
   }
+  /* Static tiles (informational only — PayPal handles the actual donation) */
+  .donate-amount.static { cursor: default; }
+  .donate-amount.static:hover { transform: none; box-shadow: none; }
+  .donate-amount.static:hover, .donate-amount.static {
+    background: var(--bg-card);
+    border-color: var(--line);
+  }
+  .donate-amount.featured.static, .donate-amount.featured.static:hover {
+    background: var(--blue-deep);
+    border-color: var(--blue-deep);
+  }
+  .donate-amount.featured.static:hover .donate-amt { color: #fff; }
+  .donate-amount.featured.static:hover .donate-impact { color: rgba(255,255,255,0.78); }
+  .donate-amount.custom.static, .donate-amount.custom.static:hover {
+    background: transparent;
+    border-color: var(--line);
+  }
+  .donate-amount.static:hover .donate-amt { color: var(--blue-deep); }
+  .donate-amount.static:hover .donate-impact { color: var(--ink-mute); }
+
+  /* PayPal donate button */
+  .donate-paypal {
+    text-align: center;
+    margin: 36px auto 24px;
+  }
+  .donate-paypal-btn {
+    background: var(--blue-deep);
+    color: #fff;
+    border: none;
+    padding: 18px 44px;
+    border-radius: 5px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.06rem;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 8px 20px -8px rgba(31,94,150,0.4);
+  }
+  .donate-paypal-btn:hover {
+    background: var(--blue-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px -10px rgba(31,94,150,0.45);
+  }
+  .donate-paypal-mini {
+    color: var(--ink-mute);
+    font-size: 0.88rem;
+    margin-top: 12px;
+    font-style: italic;
+  }
+  .donate-closing {
+    text-align: center;
+    color: var(--ink);
+    font-size: 1rem;
+    margin: 14px 0 18px;
+    font-family: var(--font-display);
+    font-style: italic;
+  }
   .donate-tax {
     font-size: 0.88rem;
     color: var(--ink-mute);
@@ -1786,6 +2035,7 @@
     max-width: 640px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
   }
 
   @media (max-width: 820px) {
@@ -1827,8 +2077,8 @@
   }
   .sponsor-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 18px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     max-width: 1080px;
     margin: 0 auto 60px;
   }
@@ -1856,15 +2106,17 @@
     color: var(--blue-deep);
     text-decoration: none;
   }
-  .sponsor-grid.year-2025 {
-    grid-template-columns: repeat(6, 1fr);
-    max-width: 1080px;
+  .sponsor-card--logo {
+    padding: 18px 22px;
+    min-height: 110px;
   }
-  .sponsor-grid.year-2025 .sponsor-card {
-    min-height: 70px;
-    padding: 16px 12px;
-    font-size: 0.84rem;
-    background: var(--bg-warm);
+  .sponsor-card--logo img {
+    max-width: 100%;
+    max-height: 64px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
   }
   .sponsor-lists {
     max-width: 1040px;
@@ -1967,12 +2219,10 @@
 
   @media (max-width: 900px) {
     .sponsor-grid { grid-template-columns: repeat(3, 1fr); }
-    .sponsor-grid.year-2025 { grid-template-columns: repeat(3, 1fr); }
     .sponsor-lists { grid-template-columns: repeat(2, 1fr); padding: 28px 22px; }
   }
   @media (max-width: 600px) {
     .sponsor-grid { grid-template-columns: repeat(2, 1fr); }
-    .sponsor-grid.year-2025 { grid-template-columns: repeat(2, 1fr); }
     .sponsor-lists { grid-template-columns: 1fr; }
   }
 
@@ -2085,6 +2335,13 @@
     font-size: 0.92rem;
   }
   footer ul a:hover { color: #fff; text-decoration: none; }
+  .footer-mailing {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 22px 0 18px;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.88rem;
+  }
+  .footer-mailing strong { color: var(--gold-soft); font-weight: 600; margin-right: 8px; }
   .footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.1);
     padding-top: 24px;
@@ -2106,35 +2363,290 @@
   .section-head h2 { margin-bottom: 18px; font-weight: 400; }
   .section-head h2 em { font-style: italic; color: var(--blue-deep); font-weight: 500; }
   .section-head p { color: var(--ink-soft); font-size: 1.08rem; }
+
+  /* ====== BLOG (home strip) ====== */
+  .blog-latest-section {
+    padding: 80px 0 90px;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+  }
+  .blog-latest-section .strip-header { margin-bottom: 44px; }
+  .blog-latest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .blog-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .blog-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px -12px rgba(31,94,150,0.18);
+    border-color: var(--blue-soft);
+  }
+  .blog-card-cover {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--blue-deep);
+  }
+  .blog-card-cover img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.4s ease;
+  }
+  .blog-card:hover .blog-card-cover img { transform: scale(1.04); }
+  .blog-card-body {
+    padding: 22px 22px 24px;
+    display: flex; flex-direction: column;
+    flex-grow: 1;
+  }
+  .blog-card-meta {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .blog-card-author { text-transform: none; letter-spacing: 0; font-weight: 500; }
+  .blog-card-title {
+    font-family: var(--font-display);
+    font-size: 1.22rem;
+    font-weight: 500;
+    line-height: 1.22;
+    margin-bottom: 12px;
+  }
+  .blog-card-title a {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .blog-card-title a:hover { color: var(--blue-deep); }
+  .blog-card-excerpt {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin-bottom: 18px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .blog-card-readmore {
+    margin-top: auto;
+    color: var(--blue-deep);
+    font-weight: 600;
+    font-size: 0.93rem;
+    text-decoration: none;
+  }
+  .blog-card-readmore:hover { text-decoration: underline; }
+  .blog-latest-foot {
+    text-align: center;
+    margin-top: 38px;
+  }
+  .blog-latest-foot a {
+    color: var(--blue-deep);
+    font-weight: 600;
+  }
+  @media (max-width: 900px) {
+    .blog-latest-grid { grid-template-columns: 1fr; gap: 22px; max-width: 540px; }
+  }
+
+  /* ====== PHOTO STRIP (home) ====== */
+  .photo-strip-section {
+    padding: 70px 0 90px;
+    background: var(--bg-warm);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .photo-strip-section .strip-header { margin-bottom: 36px; }
+  #photo-strip-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .photo-tile {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: var(--blue-deep);
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(31,94,150,0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .photo-tile img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.4s ease, opacity 0.2s ease;
+  }
+  .photo-tile:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -4px rgba(31,94,150,0.28); }
+  .photo-tile:hover img { transform: scale(1.05); }
+  .photo-tile:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+  .photo-strip-foot { text-align: center; margin-top: 32px; }
+  .photo-strip-foot a { color: var(--blue-deep); font-weight: 600; }
+
+  @media (max-width: 900px) {
+    #photo-strip-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    #photo-strip-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ====== LIGHTBOX (full-screen modal) ====== */
+  body.lightbox-open { overflow: hidden; }
+  .photo-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 32, 0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    animation: lightbox-fade-in 0.15s ease;
+  }
+  @keyframes lightbox-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .photo-lightbox-figure {
+    max-width: min(1100px, 100%);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .photo-lightbox-figure img {
+    max-width: 100%;
+    max-height: 76vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 22px 60px -10px rgba(0,0,0,0.5);
+  }
+  .photo-lightbox figcaption {
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    max-width: 720px;
+  }
+  .photo-lightbox-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .photo-lightbox-caption {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+  }
+  .photo-lightbox-close,
+  .photo-lightbox-prev,
+  .photo-lightbox-next {
+    position: absolute;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 1.4rem;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .photo-lightbox-close:hover,
+  .photo-lightbox-prev:hover,
+  .photo-lightbox-next:hover { background: rgba(255,255,255,0.22); transform: scale(1.06); }
+  .photo-lightbox-close:focus-visible,
+  .photo-lightbox-prev:focus-visible,
+  .photo-lightbox-next:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 3px; }
+  .photo-lightbox-close { top: 20px; right: 22px; font-size: 1.6rem; }
+  .photo-lightbox-prev  { left: 22px;  top: 50%; transform: translateY(-50%); }
+  .photo-lightbox-next  { right: 22px; top: 50%; transform: translateY(-50%); }
+  .photo-lightbox-prev:hover  { transform: translateY(-50%) scale(1.06); }
+  .photo-lightbox-next:hover  { transform: translateY(-50%) scale(1.06); }
+
+  @media (max-width: 600px) {
+    .photo-lightbox { padding: 24px 12px; }
+    .photo-lightbox-prev { left: 8px; }
+    .photo-lightbox-next { right: 8px; }
+  }
+
+  /* Back-to-top floating button */
+  .back-to-top {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background: var(--blue-deep);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    line-height: 1;
+    box-shadow: 0 8px 22px -6px rgba(31,94,150,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    z-index: 90;
+  }
+  .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .back-to-top:hover { background: var(--blue-mid); }
+  .back-to-top:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 2px; }
+
+  /* Accessible focus rings everywhere */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--blue-mid);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
 </style>
 </head>
 <body>
 
-<!-- ====================== -->
-<!-- 1. STICKY URGENCY BAR  -->
-<!-- ====================== -->
-<div class="urgency-bar">
-  <strong>Next Meetup</strong>
-  <span class="meet-detail">Saturday, May 17 · 6:30 PM · Slick Willie's, Bellaire · 12 dads coming, 4 spots open</span>
-  <a href="#rsvp" class="rsvp-link">RSVP free →</a>
-</div>
-
 <!-- NAV -->
-<div class="nav-wrap">
+<div class="nav-wrap" id="top">
   <div class="container">
     <nav class="nav">
-      <div class="logo">
-        <img src="assets/images/adsc-logo.png" alt="Autism Dads Social Club logo" class="logo-image">
-        Autism Dads Social Club
-        <small>Houston, TX · Est. 2022</small>
-      </div>
-      <div class="nav-links">
+      <a class="logo" href="#top" aria-label="Autism Dads Social Club — home">
+        <img class="logo-img" src="assets/logo.png" alt="Autism Dads Social Club logo">
+        <span class="logo-text">
+          Autism Dads Social Club
+          <small>Houston, TX · Est. 2022</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="primary-nav">
         <a href="#origin">Our Story</a>
         <a href="#programs">Programs</a>
-        <a href="#rsvp">Events</a>
+        <a href="#events">Events</a>
+        <a href="blog/">Blog</a>
+        <a href="photos/">Photos</a>
         <a href="#membership">Join</a>
-        <a href="#blog">Blogs</a>
-        
         <a href="#sponsors">Sponsors</a>
         <a href="#donate" class="nav-cta">Donate</a>
       </div>
@@ -2157,13 +2669,13 @@
           <span class="trust-dot">·</span>
           <span class="trust-501">Registered 501(c)(3) Nonprofit</span>
         </div>
-        <div class="hero-trust-activity">[##] dads · [##] meetups since 2022 · zero salaries paid</div>
+        <div class="hero-trust-activity">73 members · 42 meetups since 2022 · zero salaries paid</div>
+        <p class="hero-intro"><strong>ADSC is more than a nonprofit organization—we are a brotherhood.</strong> The Autism Dads Social Club began with a simple realization: the autism journey is easier when no father walks it alone. What started as conversations between a few dads grew into a brotherhood committed to supporting one another and strengthening our families.</p>
         <div class="hero-eyebrow">A Houston Brotherhood</div>
         <h1>You're the dad in the <em>background.</em><br>We're building the club for you.</h1>
         <p class="hero-sub">If you've ever sat alone in your truck after an IEP meeting, smiled through a meltdown in public, or watched your wife answer all the questions while you stood there nodding, this is your brotherhood. Three Houston dads started Autism Dads Social Club in 2022 because no one was building a room for us.</p>
         <div class="hero-ctas">
-          <a href="#rsvp" class="btn-primary">RSVP for the next meetup</a>
-          <a href="#leadmag" class="btn-secondary">Read the Survival Guide first</a>
+          <a href="#calendar" class="btn-primary">See what's coming up</a>
         </div>
         <div class="hero-trust">It's free to come. There's nothing to sign up for. Just show up.</div>
       </div>
@@ -2179,113 +2691,166 @@
 </section>
 
 <!-- ============================ -->
-<!-- 3. FOUNDED BY (Authority)    -->
+<!-- 3. EXECUTIVE BOARD (v6)      -->
 <!-- ============================ -->
-<section class="founders-strip">
-  <div class="container">
-    <div class="strip-header">
-      <div class="strip-eyebrow">Founded By</div>
-      <h2>Three Houston dads <em>who know.</em></h2>
-    </div>
-    <div class="founders-grid">
-      <div class="founder-card">
-        <div class="founder-photo">JC</div>
-        <div class="founder-name">Jonathan Chism, PhD</div>
-        <div class="founder-cred">University of Houston-Downtown</div>
-        <div class="founder-role">Associate Professor of History · 15+ years grassroots organizing</div>
-        <div class="founder-human">The one who keeps every meetup actually on the calendar. Will pick up the phone if you're three days into a meltdown spiral.</div>
-        <div class="founder-dad">Dad to Jonathan Jr.</div>
-      </div>
-      <div class="founder-card">
-        <div class="founder-photo">JE</div>
-        <div class="founder-name">Jesse Esparza, PhD</div>
-        <div class="founder-cred">Texas Southern University</div>
-        <div class="founder-role">Associate Professor of History · Graduate Program Director</div>
-        <div class="founder-human">Tells the worst dad jokes. We let him because he's the one who remembers your kid's name from one meetup to the next.</div>
-        <div class="founder-dad">Dad to Mateo</div>
-      </div>
-      <div class="founder-card">
-        <div class="founder-photo">EA</div>
-        <div class="founder-name">Emmanuel Arowolo, Esq.</div>
-        <div class="founder-cred">Foster LLP</div>
-        <div class="founder-role">Senior Business Immigration Attorney</div>
-        <div class="founder-human">The reason we're a real 501(c)(3) and not a Facebook group. Knows every family-leave question you'll ever have to ask your employer.</div>
-        <div class="founder-dad">Dad to Preye</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================ -->
-<!-- 3b. EXECUTIVE BOARD (v5)     -->
-<!-- ============================ -->
-<section class="board-strip">
+<!-- Founded By section merged into Executive Board per 2026 content rewrite. -->
+<section class="board-strip" id="leadership">
   <div class="container">
     <div class="strip-header">
       <div class="strip-eyebrow">Executive Board</div>
-      <h2>The team that <em>keeps it running.</em></h2>
+      <h2>The team that <em>keeps ADSC running.</em></h2>
     </div>
     <div class="board-grid">
+
       <div class="board-card">
-        <div class="board-photo">DH</div>
+        <div class="board-photo-wrap" data-pos="chism"><img src="assets/people/chism.jpg" alt="Jonathan Chism" loading="lazy"></div>
+        <div class="board-name">Jonathan Chism, PhD</div>
+        <div class="board-role">CoFounder &amp; Inaugural President</div>
+        <div class="board-cred">Associate Professor of History at University of Houston-Downtown · 15+ years grassroots organizing</div>
+        <div class="board-human">Frequently mistaken for the event coordinator, fundraiser, speaker recruiter, newsletter editor, and guy carrying the folding tables.</div>
+        <div class="board-dad">Dad to Jonathan Jr.</div>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/esparza.jpg" alt="Jesse Esparza" loading="lazy"></div>
+        <div class="board-name">Jesse Esparza, PhD</div>
+        <div class="board-role">CoFounder, Inaugural Treasurer &amp; Director of Family Engagement</div>
+        <div class="board-cred">Associate Professor of History at Texas Southern University · Graduate Program Director</div>
+        <div class="board-human">Keeps the books balanced and the mission moving forward. Known for showing up with his entire family in tow — he believes supporting autism dads is a family affair, and his family leads by example.</div>
+        <div class="board-dad">Dad to Mateo</div>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/arowolo.jpg" alt="Emmanuel Arowolo" loading="lazy"></div>
+        <div class="board-name">Emmanuel Arowolo, Esq.</div>
+        <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
+        <div class="board-cred">Senior Business Immigration Attorney at Foster LLP</div>
+        <div class="board-human">Helps transform good intentions into sustainable impact by ensuring ADSC operates with integrity, transparency, and compliance. Keeps us organized so we can stay focused on serving dads and families.</div>
+        <div class="board-dad">Dad to Preye</div>
+      </div>
+
+      <div class="board-card">
+        <div class="board-photo-wrap"><img src="assets/people/hinton.jpg" alt="DeAndrae Hinton" loading="lazy"></div>
         <div class="board-name">DeAndrae Hinton</div>
-        <div class="board-role">Education Chair</div>
-        <div class="board-cred">Houston ISD Special Ed Dept. Chair · Author, <em>My Favorite Mistakes</em> · Dad to Dillon</div>
+        <div class="board-role">Director of Education &amp; Autism Awareness</div>
+        <div class="board-cred">Houston ISD Special Ed Dept. Chair · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
+        <div class="board-human">Turns years of special education experience into practical guidance for dads and families navigating the autism journey.</div>
+        <div class="board-dad">Dad to Dillon</div>
       </div>
+
       <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
+        <div class="board-photo-wrap" data-pos="notice"><img src="assets/people/notice.jpg" alt="John Notice" loading="lazy"></div>
+        <div class="board-name">John Notice, CMHC</div>
+        <div class="board-role">Director of Emotional Well-Being</div>
+        <div class="board-cred">Mental Health Counselor · PhD Candidate</div>
+        <div class="board-human">Encourages dads to prioritize self-care, mental wellness, and resilience — so they can show up as their best selves for their families.</div>
+        <div class="board-dad">Dad to Tyler &amp; Kyle</div>
       </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
-      </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
-      </div>
-      <div class="board-card">
-        <div class="board-photo placeholder">PHOTO</div>
-        <div class="board-name">[Board Member Name]</div>
-        <div class="board-role">[Role / Title]</div>
-        <div class="board-cred">[Short credential line · Dad to {child name}]</div>
-      </div>
+
     </div>
   </div>
 </section>
 
 <!-- ============================ -->
-<!-- 4. WHY WE BUILT THIS         -->
+<!-- 3b. ADVISORY BOARD (v6)      -->
+<!-- ============================ -->
+<section class="advisory-strip">
+  <div class="container">
+    <div class="strip-header">
+      <div class="strip-eyebrow">Advisory Board</div>
+      <h2>The voices that <em>sharpen our work.</em></h2>
+    </div>
+    <p class="advisory-intro">Community members and partners who offer wisdom and feedback on ADSC programming.</p>
+    <div class="advisory-grid">
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">WM</div></div>
+        <div class="advisor-name">Wes Morgan</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap" data-pos="farmer"><img src="assets/people/farmer.jpg" alt="Darla Farmer" loading="lazy"></div>
+        <div class="advisor-name">Darla Farmer</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">EL</div></div>
+        <div class="advisor-name">Edmond Lee</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">AJ</div></div>
+        <div class="advisor-name">Amanda Jaloway</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">HM</div></div>
+        <div class="advisor-name">Hope Montgomery</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap" data-pos="dipasca"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
+        <div class="advisor-name">Melody DiPasca</div>
+        <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
+        <div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">DT</div></div>
+        <div class="advisor-name">Derrick Thomas</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">PL</div></div>
+        <div class="advisor-name">Paul LeBlanc</div>
+        <div class="advisor-role">Advisor</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
+<!-- 4. OUR STORY (v6 rewrite)    -->
 <!-- ============================ -->
 <section class="origin" id="origin">
   <div class="container">
     <div class="origin-grid">
       <div class="origin-label">
-        <strong>Why we built this</strong>
-        A 2022 night at a school event. Three dads. One conversation that wouldn't end.
+        <strong>Our Story</strong>
+        How it began, what we believe, and why we're here.
       </div>
       <div class="origin-body">
-        <p>The Autism Dads Social Club began the same way many meaningful friendships begin—through unexpected encounters and shared experiences.</p>
-        <p>Two of us, Jonathan and Emmanuel, first met while dropping our children off at ABA therapy. After crossing paths several times, we discovered that we lived in the same neighborhood. What started as casual conversations about our kids turned into discussions about family life, autism, and the challenges and joys of parenting. We even talked about getting our children together for a neighborhood bike ride. Then we kept talking.</p>
-        <p>The other two of us, Jonathan and Jesse, met through our professional lives as historians. We both study civil rights history, and through our conversations we discovered another connection: we were both raising autistic children of similar ages. What began as academic friendship quickly became something deeper.</p>
-        <p>Eventually, all three of us connected over Zoom and began asking an important question:<br><strong>How can we better support one another—and other fathers like us?</strong></p>
-        <p>As we looked around, we noticed there were many spaces designed to support mothers. Yet fathers were often navigating the autism journey in relative isolation. Many of us felt an unspoken expectation to stay strong, keep moving forward, and carry the weight quietly. We were expected to be steady, to be the rock, to keep our hands on the wheel.</p>
-        <p>But we also knew that dads need support, friendship, and community.</p>
-        <p>So, in 2022, we founded the Autism Dads Social Club.</p>
-        <p>We did not want to create a traditional support group. We wanted to build a brotherhood.</p>
-        <p>ADSC is dads gathering for barbecue, bowling, fishing, golf, and conversation. It's autistic children playing freely while parents relax among people who understand. It's a text message from another father who has been there before. It's sharing resources, celebrating victories, offering encouragement, and showing up when someone needs support.</p>
-        <p>Most importantly, ADSC is the community we wish existed when our own children were first diagnosed.</p>
-        <p>We cannot make every IEP meeting easier. We cannot eliminate every challenge, uncertainty, or difficult day. But we can make sure that no father has to carry those burdens alone.</p>
-        <p>Today, the Autism Dads Social Club is a growing community of fathers and families across the Houston area and beyond. We are united by a common belief:<br><strong>Our autistic children are gifts to the world.</strong></p>
-        <p>In a society that too often focuses on limitations, we choose to celebrate possibility. We want our children to recognize their beauty, brilliance, dignity, and potential. We want fathers to know that they are not alone. And we want families to experience the power of genuine community.</p>
+        <p>The Autism Dads Social Club began the same way many meaningful friendships begin — through unexpected encounters and shared experiences.</p>
+        <p>Two of us, <strong>Jonathan and Emmanuel</strong>, first met while dropping our children off at ABA therapy. After crossing paths several times, we discovered we lived in the same neighborhood. What started as casual conversations about our kids turned into discussions about family life, autism, and the challenges and joys of parenting. We even talked about getting our children together for a neighborhood bike ride. Then we kept talking. The other two of us, <strong>Jonathan and Jesse</strong>, met through our professional lives as historians. We both study civil rights history, and through our conversations we discovered another connection: we were both raising autistic children of similar ages. What began as academic friendship quickly became something deeper.</p>
+        <p>Eventually, all three of us connected over Zoom and began asking an important question:</p>
+        <div class="origin-callout">
+          <strong>How can we better support one another — and other fathers like us?</strong>
+        </div>
+        <p>As we looked around, we noticed there were many spaces designed to support mothers. Yet fathers were often navigating the autism journey relatively alone. Many of us felt an unspoken expectation to stay strong, keep moving forward, and carry the weight quietly. We were expected to be steady, to be the rock, to keep our hands on the wheel.</p>
+        <p>But we also knew that dads need support, friendship, and community. So, in 2022, we founded the <strong>Autism Dads Social Club</strong>.</p>
+        <p>We did not want to create a traditional support group where we sit around in a circle. We wanted to build a brotherhood — an organization that offers meaning and joy to fathers on the journey.</p>
+        <p>ADSC is dads gathering for barbecue, bowling, fishing, golf, and conversation. It's autistic children playing freely while parents relax among people who understand. It's a text message from another father who's been there before. It's sharing resources, celebrating victories, offering encouragement, and showing up when someone needs support.</p>
+        <p>Most importantly, ADSC is the community we wish existed when our own children were first diagnosed. We can't eliminate every challenge, uncertainty, or difficult day. But we can make sure that no father feels alone.</p>
+        <p>Today, the Autism Dads Social Club is a growing community of fathers and families across the Houston area and beyond. We are united by a common belief:</p>
+        <div class="origin-callout">
+          <strong>Our autistic children are gifts to the world.</strong>
+          <em>In a society that too often focuses on limitations, we choose to celebrate possibility. We want our children to recognize their beauty, brilliance, dignity, and potential. We want fathers to know that they are not alone. And we want families to experience the power of genuine community.</em>
+        </div>
         <p>Whether you are new to this journey or have been walking it for years, there is a place for you here.</p>
-        <p class="origin-sig">You have a village.<br>You have a brotherhood.<br>You have a community willing to walk alongside you and your family.</p>
+        <div class="origin-villages">
+          <span>You have a village.</span>
+          <span>You have a brotherhood.</span>
+          <span>You have a community willing to walk alongside you and your family.</span>
+        </div>
+        <p>Welcome to the Autism Dads Social Club.</p>
+        <p class="origin-sig">— Autism Dads Social Club Leadership Team</p>
       </div>
     </div>
   </div>
@@ -2331,6 +2896,16 @@
           </div>
         </div>
       </div>
+      <div class="test-card">
+        <p class="test-quote">If you're an autism dad looking for fun activities for your family and yourself, ADSC is the answer. Autism Dads Social Club gave my family — through different activities — an opportunity to meet other dads and families while we travel this unique autism journey.</p>
+        <div class="test-author">
+          <div class="test-avatar">AK</div>
+          <div>
+            <div class="test-name">Angel King</div>
+            <div class="test-meta">Pearland · Joined 2023</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -2346,42 +2921,51 @@
       <p>Three programs, all running. Come to one. Come to all. Bring the family or come alone.</p>
     </div>
     <div class="programs-grid">
+
       <div class="program-card">
-        <div class="program-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-        <div class="program-meta">Dads only · Monthly</div>
-        <h3>Dads Socials</h3>
-        <p>Pool, beer, barbecue, bowling. A few hours with men who get it. No agenda. No therapy talk unless someone wants to. Usually 8 to 16 dads.</p>
-        <div class="program-next">
-          <strong>Saturday, May 17 · 6:30 PM</strong>
-          Slick Willie's Pool Hall, Bellaire · 4 spots left
+        <div class="program-photo"><img src="assets/programs/mixers.jpg" alt="ADSC dads gathered around a table" loading="lazy"></div>
+        <div class="program-card-body">
+          <div class="program-meta">Dads only · Monthly &amp; in-person</div>
+          <h3>Dads Only Mixers</h3>
+          <p>Sorry moms, this space is reserved for dads. Pool, barbecue, bowling. A few hours with men who get it. No agenda. No therapy talk unless someone wants to. Usually 8 to 16 dads.</p>
+          <div class="program-next">
+            <strong>Next mixer</strong>
+            <a href="#calendar">Check the calendar below →</a>
+          </div>
         </div>
       </div>
+
       <div class="program-card">
-        <div class="program-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </div>
-        <div class="program-meta">Whole family · Quarterly</div>
-        <h3>Family Events</h3>
-        <p>Kids run wild. Spouses meet other spouses. Nobody apologizes for anything. Pumpkin patches in October. Pool parties in summer. Holiday gatherings that are actually relaxing.</p>
-        <div class="program-next">
-          <strong>Saturday, June 14 · All afternoon</strong>
-          Summer kickoff at Hermann Park · Family RSVPs open · Last family event filled in 4 days
+        <div class="program-photo"><img src="assets/programs/family-gatherings.jpg" alt="ADSC family event at an outdoor pavilion" loading="lazy"></div>
+        <div class="program-card-body">
+          <div class="program-meta">Whole family · Quarterly</div>
+          <h3>Family Gatherings</h3>
+          <p>Spouses meet other spouses. Our kids — neurotypical and neuroatypical — mix and mingle. Easter egg hunts in spring. Pumpkin patches and trunk-or-treats in October. Holiday gatherings that are actually relaxing. One rule: nobody apologizes for anything. Kids have the freedom to be themselves.</p>
+          <div class="program-next">
+            <strong>Sunday, July 26 · 2:00–4:00 PM</strong>
+            Back to School Resource Fair at the Community Center · Family RSVPs open soon · Last family event filled in 4 days
+          </div>
         </div>
       </div>
+
       <div class="program-card">
-        <div class="program-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-        </div>
-        <div class="program-meta">Online · Anytime</div>
-        <h3>Education & Resources</h3>
-        <p>Podcast episodes from real dads. IEP playbooks. Guides on insurance, ABA, school transitions. Written by parents who've actually done it, not by a content team.</p>
-        <div class="program-next">
-          <strong>New this week</strong>
-          Episode 14: "Surviving the First IEP" with Jonathan & DeAndrae
+        <div class="program-photo"><img src="assets/programs/virtual-connections.jpg" alt="ADSC virtual Fatherhood Huddle session" loading="lazy"></div>
+        <div class="program-card-body">
+          <div class="program-meta">Online · Anytime</div>
+          <h3>Virtual Connections</h3>
+          <p>Not every dad can attend in person, but no father should have to navigate this alone. ADSC's virtual programming lets dads and families learn, grow, and build community from anywhere.</p>
+          <ul class="program-offerings">
+            <li><strong>Quarterly Fatherhood Huddles</strong>Conversations with autism dads, caregivers, self-advocates, and professionals sharing practical insights and lived experiences.</li>
+            <li><strong>Monthly Podcast Episodes</strong>Honest discussions and advice from fathers of autistic children, educators, therapists, and community leaders.</li>
+            <li><strong>Blog Articles &amp; Resources</strong>Parenting tips, personal reflections, and practical resources designed to support families raising autistic loved ones.</li>
+          </ul>
+          <div class="program-next">
+            <strong>Upcoming</strong>
+            Fatherhood Huddle Series · June 18 – July 16
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
@@ -2391,6 +2975,9 @@
 <!-- ============================ -->
 <section class="bridge">
   <div class="container">
+    <div class="bridge-photo">
+      <img src="assets/programs/pool-hall.jpg" alt="ADSC members gathered at the pool hall" loading="lazy">
+    </div>
     <div class="bridge-rule"></div>
     <p class="bridge-mechanism">Pool tables work better than folding chairs.<br>Always have.</p>
     <p class="bridge-mechanism-tail">Men talk shoulder-to-shoulder, not face-to-face.</p>
@@ -2401,139 +2988,55 @@
 </section>
 
 <!-- ============================ -->
-<!-- 8. RSVP SECTION (NEW v3)     -->
+<!-- BLOG (latest 3 from manifest) -->
 <!-- ============================ -->
-<!-- Fixes the broken #rsvp anchor from v2.                                -->
-<!-- Built as the primary conversion destination for the page.             -->
-<section class="rsvp-section" id="rsvp">
+<!-- Renders blogs.json (built by GH Action from _data/blogs/*.md).      -->
+<!-- Section is hidden entirely if no posts. See docs/js/blogs.js.       -->
+<section class="blog-latest-section" id="blog-latest" aria-label="Latest blog posts">
   <div class="container">
-    <div class="rsvp-eyebrow">Show up</div>
-    <h2>Save your seat at <em>the next one.</em></h2>
-    <p class="rsvp-intro">Drop your name and we'll have a chair waiting. Show up or don't. We won't chase you. But the seat's there.</p>
-
-    <div class="rsvp-grid">
-      <!-- Featured next event — populated from docs/_data/events.json by docs/js/events.js -->
-      <div class="rsvp-featured">
-        <div class="rsvp-featured-tag">Loading…</div>
-      </div>
-
-      <!-- Working RSVP form -->
-      <form class="rsvp-form" action="#" method="post" onsubmit="event.preventDefault(); alert('Thanks. We\'ll send you the address details and a reminder the morning of the meetup.');">
-        <label class="rsvp-form-label" for="rsvp-name">Name</label>
-        <input type="text" id="rsvp-name" name="name" placeholder="Your name" required>
-
-        <label class="rsvp-form-label" for="rsvp-email">Email</label>
-        <input type="email" id="rsvp-email" name="email" placeholder="your@email.com" required>
-
-        <div class="rsvp-form-row">
-          <div>
-            <label class="rsvp-form-label" for="rsvp-plus">Bringing anyone?</label>
-            <select id="rsvp-plus" name="plus">
-              <option value="0">Just me</option>
-              <option value="1">Me + 1 dad</option>
-              <option value="2">Me + 2 dads</option>
-            </select>
-          </div>
-          <div>
-            <label class="rsvp-form-label" for="rsvp-first">First time?</label>
-            <select id="rsvp-first" name="first">
-              <option value="yes">Yes, first time</option>
-              <option value="no">No, been before</option>
-            </select>
-          </div>
-        </div>
-
-        <button type="submit" id="rsvp-submit">Save my seat at Slick Willie's</button>
-        <div class="rsvp-form-mini">Free. No charge. We'll send the meetup address and a reminder the morning of.</div>
-      </form>
+    <div class="strip-header" style="text-align:center;">
+      <div class="strip-eyebrow">Stories from the brotherhood</div>
+      <h2>From the <em>blog.</em></h2>
     </div>
-
-    <!-- Upcoming events — populated from docs/_data/events.json by docs/js/events.js -->
-    <div class="rsvp-upcoming">
-      <div class="rsvp-upcoming-label">Also Coming Up</div>
-      <div class="rsvp-upcoming-grid"></div>
+    <div class="blog-latest-grid"></div>
+    <div class="blog-latest-foot">
+      <a href="blog/">Read all posts →</a>
     </div>
   </div>
 </section>
 
 <!-- ============================ -->
-<!-- 8b. CALENDAR (issue 007)     -->
+<!-- 8. EVENTS CALENDAR           -->
 <!-- ============================ -->
-<section class="calendar-section">
+<!-- The full events surface (per Q1 of 2026 rewrite): calendar reads     -->
+<!-- events.json directly. Old hardcoded RSVP section removed.            -->
+<section class="calendar-section" id="events">
   <div class="container">
+    <div class="strip-header" style="text-align:center;margin-bottom:38px;">
+      <div class="strip-eyebrow">Upcoming Events</div>
+      <h2>Find your <em>next meetup.</em></h2>
+    </div>
     <section id="calendar" aria-label="Event calendar"></section>
   </div>
 </section>
 
 <!-- ============================ -->
-<!-- 9. LEAD MAGNET (moved up)    -->
+<!-- 9. NEWSLETTER (v6 rewrite)   -->
 <!-- ============================ -->
-<section class="leadmag" id="leadmag">
+<!-- Replaces the old Survival Guide lead magnet. MailerLite embed loaded -->
+<!-- inline below; the form posts to MailerLite directly.                 -->
+<section class="newsletter" id="newsletter">
   <div class="container">
-    <div class="leadmag-card">
-      <div>
-        <div class="leadmag-eyebrow">Free Field Guide</div>
-        <h2>The first 90 days as an autism dad: what we wish we'd known.</h2>
-        <p>Forty-eight pages. Written by the four of us. The things nobody tells you in the diagnostic appointment. How to think about IEPs without losing your mind. How to talk to your spouse when neither of you is okay. The questions to ask your insurance company. The mistakes we made so you don't have to.</p>
-        <form class="leadmag-form" action="#" method="post" onsubmit="event.preventDefault(); alert('Thanks. The guide is in your inbox now. Check spam if you don\'t see it.');">
-          <input type="email" placeholder="Your email" required>
-          <button type="submit">Send me the guide</button>
-        </form>
-        <div class="leadmag-mini">Sent immediately. Plus one short email a month. Unsubscribe anytime.</div>
-        <div class="leadmag-privacy">We don't share your email. Ever. The newsletter is just us, talking to dads, once a month.</div>
-      </div>
-      <div class="leadmag-visual">
-        <div class="leadmag-cover">
-          <div class="leadmag-cover-tag">Field Guide</div>
-          <div class="leadmag-cover-title">The First 90 Days as an Autism Dad</div>
-          <div class="leadmag-cover-author">By the founders of Autism Dads Social Club</div>
-        </div>
-      </div>
+    <div class="newsletter-intro">
+      <div class="newsletter-eyebrow">Stay in the loop</div>
+      <h2>Subscribe to our <em>newsletter.</em></h2>
+      <p class="newsletter-lead"><strong>Stay informed. Stay connected. Stay involved.</strong></p>
+      <p>Get a monthly overview of upcoming events, programs, and opportunities to connect with other dads and families. Our newsletter covers everything happening within ADSC — dads mixers, family events, support initiatives, volunteer opportunities, and special announcements.</p>
+      <p>We also share information about autism-related events, resources, and programs across the Greater Houston area that may be of interest to your family. Whether you're looking for community, resources, or ways to get involved, the newsletter helps you stay connected to the people and opportunities that matter most.</p>
+      <p class="newsletter-cta-line"><strong>Join our mailing list and never miss an update.</strong></p>
     </div>
-  </div>
-</section>
-
-<!-- ============================== -->
-<!-- BLOG SECTION                   -->
-<!-- ============================== -->
-<section class="blog-section" id="blog">
-  <div class="container">
-    <div class="blog-header">
-      <div class="strip-eyebrow">From the Club</div>
-      <h2>Stories, guides, and <em>real talk.</em></h2>
-      <p>Written by autism dads, for autism dads. No content teams. No sponsored posts. Just what we've learned carrying this.</p>
-    </div>
-    <div class="blog-grid" id="blog-grid">
-      <div class="blog-skeleton">
-        <div class="blog-skeleton-cover"></div>
-        <div class="blog-skeleton-body">
-          <div class="blog-skeleton-line short"></div>
-          <div class="blog-skeleton-line medium"></div>
-          <div class="blog-skeleton-line"></div>
-          <div class="blog-skeleton-line short"></div>
-        </div>
-      </div>
-      <div class="blog-skeleton">
-        <div class="blog-skeleton-cover"></div>
-        <div class="blog-skeleton-body">
-          <div class="blog-skeleton-line short"></div>
-          <div class="blog-skeleton-line medium"></div>
-          <div class="blog-skeleton-line"></div>
-          <div class="blog-skeleton-line short"></div>
-        </div>
-      </div>
-      <div class="blog-skeleton">
-        <div class="blog-skeleton-cover"></div>
-        <div class="blog-skeleton-body">
-          <div class="blog-skeleton-line short"></div>
-          <div class="blog-skeleton-line medium"></div>
-          <div class="blog-skeleton-line"></div>
-          <div class="blog-skeleton-line short"></div>
-        </div>
-      </div>
-    </div>
-    <div class="blog-footer" id="blog-footer" style="display:none;">
-      <a href="blog/" class="btn-secondary">Read all posts →</a>
+    <div class="newsletter-form-wrap">
+      <style type="text/css">@import url("https://assets.mlcdn.com/fonts.css?version=1779867");</style>    <style type="text/css">    /* LOADER */    .ml-form-embedSubmitLoad {      display: inline-block;      width: 20px;      height: 20px;    }    .g-recaptcha {    transform: scale(1);    -webkit-transform: scale(1);    transform-origin: 0 0;    -webkit-transform-origin: 0 0;    height: ;    }    .sr-only {      position: absolute;      width: 1px;      height: 1px;      padding: 0;      margin: -1px;      overflow: hidden;      clip: rect(0,0,0,0);      border: 0;    }    .ml-form-embedSubmitLoad:after {      content: " ";      display: block;      width: 11px;      height: 11px;      margin: 1px;      border-radius: 50%;      border: 4px solid #fff;    border-color: #ffffff #ffffff #ffffff transparent;    animation: ml-form-embedSubmitLoad 1.2s linear infinite;    }    @keyframes ml-form-embedSubmitLoad {      0% {      transform: rotate(0deg);      }      100% {      transform: rotate(360deg);      }    }      #mlb2-16080324.ml-form-embedContainer {        box-sizing: border-box;        display: table;        margin: 0 auto;        position: static;        width: 100% !important;      }      #mlb2-16080324.ml-form-embedContainer h4,      #mlb2-16080324.ml-form-embedContainer p,      #mlb2-16080324.ml-form-embedContainer span,      #mlb2-16080324.ml-form-embedContainer button {        text-transform: none !important;        letter-spacing: normal !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper {        background-color: #f6f6f6;                border-width: 0px;        border-color: transparent;        border-radius: 4px;        border-style: solid;        box-sizing: border-box;        display: inline-block !important;        margin: 0;        padding: 0;        position: relative;              }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper.embedPopup,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper.embedDefault { width: 400px; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper.embedForm { max-width: 400px; width: 100%; }      #mlb2-16080324.ml-form-embedContainer .ml-form-align-left { text-align: left; }      #mlb2-16080324.ml-form-embedContainer .ml-form-align-center { text-align: center; }      #mlb2-16080324.ml-form-embedContainer .ml-form-align-default { display: table-cell !important; vertical-align: middle !important; text-align: center !important; }      #mlb2-16080324.ml-form-embedContainer .ml-form-align-right { text-align: right; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedHeader img {        border-top-left-radius: 4px;        border-top-right-radius: 4px;        height: auto;        margin: 0 auto !important;        max-width: 100%;        width: undefinedpx;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody {        padding: 20px 20px 0 20px;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody.ml-form-embedBodyHorizontal {        padding-bottom: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent {        text-align: left;        margin: 0 0 20px 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent h4,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent h4 {        color: #000000;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 30px;        font-weight: 400;        margin: 0 0 10px 0;        text-align: left;        word-break: break-word;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent p,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent p {        color: #000000;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px;        font-weight: 400;        line-height: 20px;        margin: 0 0 10px 0;        text-align: left;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent ul,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent ol,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent ul,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent ol {        color: #000000;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent ol ol,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent ol ol {        list-style-type: lower-alpha;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent ol ol ol,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent ol ol ol {        list-style-type: lower-roman;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent p a,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent p a {        color: #000000;        text-decoration: underline;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-block-form .ml-field-group {        text-align: left!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-block-form .ml-field-group label {        margin-bottom: 5px;        color: #333333;        font-size: 14px;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-weight: bold; font-style: normal; text-decoration: none;;        display: inline-block;        line-height: 20px;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedContent p:last-child,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-successBody .ml-form-successContent p:last-child {        margin: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody form {        margin: 0;        width: 100%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-formContent,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow {        margin: 0 0 20px 0;        width: 100%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow {        float: left;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-formContent.horozintalForm {        margin: 0;        padding: 0 0 20px 0;        width: 100%;        height: auto;        float: left;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow {        margin: 0 0 10px 0;        width: 100%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow.ml-last-item {        margin: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow.ml-formfieldHorizintal {        margin: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input {        background-color: #ffffff !important;        color: #333333 !important;        border-color: #cccccc;        border-radius: 4px !important;        border-style: solid !important;        border-width: 1px !important;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px !important;        height: auto;        line-height: 21px !important;        margin-bottom: 0;        margin-top: 0;        margin-left: 0;        margin-right: 0;        padding: 10px 10px !important;        width: 100% !important;        box-sizing: border-box !important;        max-width: 100% !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input::-webkit-input-placeholder,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow input::-webkit-input-placeholder { color: #333333; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input::-moz-placeholder,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow input::-moz-placeholder { color: #333333; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input:-ms-input-placeholder,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow input:-ms-input-placeholder { color: #333333; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input:-moz-placeholder,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow input:-moz-placeholder { color: #333333; }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow textarea, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow textarea {        background-color: #ffffff !important;        color: #333333 !important;        border-color: #cccccc;        border-radius: 4px !important;        border-style: solid !important;        border-width: 1px !important;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px !important;        height: auto;        line-height: 21px !important;        margin-bottom: 0;        margin-top: 0;        padding: 10px 10px !important;        width: 100% !important;        box-sizing: border-box !important;        max-width: 100% !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::before {          border-color: #cccccc!important;          background-color: #ffffff!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow input.custom-control-input[type="checkbox"]{        box-sizing: border-box;        padding: 0;        position: absolute;        z-index: -1;        opacity: 0;        margin-top: 5px;        margin-left: -1.5rem;        overflow: visible;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::before {        border-radius: 4px!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow input[type=checkbox]:checked~.label-description::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox input[type=checkbox]:checked~.label-description::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-input:checked~.custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-input:checked~.custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox input[type=checkbox]:checked~.label-description::after {        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-input:checked~.custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-input:checked~.custom-control-label::after {        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-input:checked~.custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-input:checked~.custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-input:checked~.custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-input:checked~.custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox input[type=checkbox]:checked~.label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox input[type=checkbox]:checked~.label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow input[type=checkbox]:checked~.label-description::before  {          border-color: #000000!important;          background-color: #000000!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-label::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-label::after {           top: 2px;           box-sizing: border-box;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::after {           top: 0px!important;           box-sizing: border-box!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::after {        top: 0px!important;           box-sizing: border-box!important;      }       #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::after {            top: 0px!important;            box-sizing: border-box!important;            position: absolute;            left: -1.5rem;            display: block;            width: 1rem;            height: 1rem;            content: "";       }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::before {        top: 0px!important;        box-sizing: border-box!important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .custom-control-label::before {          position: absolute;          top: 4px;          left: -1.5rem;          display: block;          width: 16px;          height: 16px;          pointer-events: none;          content: "";          background-color: #ffffff;          border: #adb5bd solid 1px;          border-radius: 50%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .custom-control-label::after {          position: absolute;          top: 2px!important;          left: -1.5rem;          display: block;          width: 1rem;          height: 1rem;          content: "";      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::before, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::before {          position: absolute;          top: 4px;          left: -1.5rem;          display: block;          width: 16px;          height: 16px;          pointer-events: none;          content: "";          background-color: #ffffff;          border: #adb5bd solid 1px;          border-radius: 50%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::after {          position: absolute;          top: 0px!important;          left: -1.5rem;          display: block;          width: 1rem;          height: 1rem;          content: "";      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::after {          position: absolute;          top: 0px!important;          left: -1.5rem;          display: block;          width: 1rem;          height: 1rem;          content: "";      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .custom-radio .custom-control-label::after {          background: no-repeat 50%/50% 50%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .custom-checkbox .custom-control-label::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedPermissions .ml-form-embedPermissionsOptionsCheckbox .label-description::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-interestGroupsRow .ml-form-interestGroupsRowCheckbox .label-description::after, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description::after {          background: no-repeat 50%/50% 50%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-control, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-control {        position: relative;        display: block;        min-height: 1.5rem;        padding-left: 1.5rem;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-input, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-input, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-input, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-input {          position: absolute;          z-index: -1;          opacity: 0;          box-sizing: border-box;          padding: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-radio .custom-control-label, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-radio .custom-control-label, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-checkbox .custom-control-label, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-checkbox .custom-control-label {          color: #000000;          font-size: 12px!important;          font-family: 'Open Sans', Arial, Helvetica, sans-serif;          line-height: 22px;          margin-bottom: 0;          position: relative;          vertical-align: top;          font-style: normal;          font-weight: 700;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-fieldRow .custom-select, #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow .custom-select {        background-color: #ffffff !important;        color: #333333 !important;        border-color: #cccccc;        border-radius: 4px !important;        border-style: solid !important;        border-width: 1px !important;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px !important;        line-height: 20px !important;        margin-bottom: 0;        margin-top: 0;        padding: 10px 28px 10px 12px !important;        width: 100% !important;        box-sizing: border-box !important;        max-width: 100% !important;        height: auto;        display: inline-block;        vertical-align: middle;        background: url('https://assets.mlcdn.com/ml/images/default/dropdown.svg') no-repeat right .75rem center/8px 10px;        -webkit-appearance: none;        -moz-appearance: none;        appearance: none;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow {        height: auto;        width: 100%;        float: left;      }      .ml-form-formContent.horozintalForm .ml-form-horizontalRow .ml-input-horizontal { width: 70%; float: left; }      .ml-form-formContent.horozintalForm .ml-form-horizontalRow .ml-button-horizontal { width: 30%; float: left; }      .ml-form-formContent.horozintalForm .ml-form-horizontalRow .ml-button-horizontal.labelsOn { padding-top: 25px;  }      .ml-form-formContent.horozintalForm .ml-form-horizontalRow .horizontal-fields { box-sizing: border-box; float: left; padding-right: 10px;  }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow input {        background-color: #ffffff;        color: #333333;        border-color: #cccccc;        border-radius: 4px;        border-style: solid;        border-width: 1px;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px;        line-height: 20px;        margin-bottom: 0;        margin-top: 0;        padding: 10px 10px;        width: 100%;        box-sizing: border-box;        overflow-y: initial;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow button {        background-color: #000000 !important;        border-color: #000000;        border-style: solid;        border-width: 1px;        border-radius: 4px;        box-shadow: none;        color: #ffffff !important;        cursor: pointer;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 14px !important;        font-weight: 700;        line-height: 20px;        margin: 0 !important;        padding: 10px !important;        width: 100%;        height: auto;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-horizontalRow button:hover {        background-color: #333333 !important;        border-color: #333333 !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow input[type="checkbox"] {        box-sizing: border-box;        padding: 0;        position: absolute;        z-index: -1;        opacity: 0;        margin-top: 5px;        margin-left: -1.5rem;        overflow: visible;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow .label-description {        color: #000000;        display: block;        font-family: 'Open Sans', Arial, Helvetica, sans-serif;        font-size: 12px;        text-align: left;        margin-bottom: 0;        position: relative;        vertical-align: top;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label {        font-weight: normal;        margin: 0;        padding: 0;        position: relative;        display: block;        min-height: 24px;        padding-left: 24px;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label a {        color: #000000;        text-decoration: underline;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label p {        color: #000000 !important;        font-family: 'Open Sans', Arial, Helvetica, sans-serif !important;        font-size: 12px !important;        font-weight: normal !important;        line-height: 18px !important;        padding: 0 !important;        margin: 0 5px 0 0 !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow label p:last-child {        margin: 0;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit {        margin: 0 0 20px 0;        float: left;        width: 100%;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button {        background-color: #000000 !important;        border: none !important;        border-radius: 4px !important;        box-shadow: none !important;        color: #ffffff !important;        cursor: pointer;        font-family: 'Open Sans', Arial, Helvetica, sans-serif !important;        font-size: 14px !important;        font-weight: 700 !important;        line-height: 21px !important;        height: auto;        padding: 10px !important;        width: 100% !important;        box-sizing: border-box !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button.loading {        display: none;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-embedSubmit button:hover {        background-color: #333333 !important;      }      .ml-subscribe-close {        width: 30px;        height: 30px;        background: url('https://assets.mlcdn.com/ml/images/default/modal_close.png') no-repeat;        background-size: 30px;        cursor: pointer;        margin-top: -10px;        margin-right: -10px;        position: absolute;        top: 0;        right: 0;      }      .ml-error input, .ml-error textarea, .ml-error select {        border-color: red!important;      }      .ml-error .custom-checkbox-radio-list {        border: 1px solid red !important;        border-radius: 4px;        padding: 10px;      }      .ml-error .label-description,      .ml-error .label-description p,      .ml-error .label-description p a,      .ml-error label:first-child {        color: #ff0000 !important;      }      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow.ml-error .label-description p,      #mlb2-16080324.ml-form-embedContainer .ml-form-embedWrapper .ml-form-embedBody .ml-form-checkboxRow.ml-error .label-description p:first-letter {        color: #ff0000 !important;      }            @media only screen and (max-width: 400px){        .ml-form-embedWrapper.embedDefault, .ml-form-embedWrapper.embedPopup { width: 100%!important; }        .ml-form-formContent.horozintalForm { float: left!important; }        .ml-form-formContent.horozintalForm .ml-form-horizontalRow { height: auto!important; width: 100%!important; float: left!important; }        .ml-form-formContent.horozintalForm .ml-form-horizontalRow .ml-input-horizontal { width: 100%!important; }        .ml-form-formContent.horozintalForm .ml-form-horizontalRow .ml-input-horizontal > div { padding-right: 0px!important; padding-bottom: 10px; }        .ml-form-formContent.horozintalForm .ml-button-horizontal { width: 100%!important; }        .ml-form-formContent.horozintalForm .ml-button-horizontal.labelsOn { padding-top: 0px!important; }      }    </style>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   <div id="mlb2-16080324" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-16080324">      <div class="ml-form-align-center ">        <div class="ml-form-embedWrapper embedForm">                              <div class="ml-form-embedBody ml-form-embedBodyDefault row-form">            <div class="ml-form-embedContent" style=" ">                              <h4>Autism Dads Social Club Newsletter</h4>                <p>Signup to receive announcements about upcoming events and to join our distribution list!</p>                          </div>            <form class="ml-block-form" action="https://assets.mailerlite.com/jsonp/885449/forms/125705962339173793/subscribe" data-code="" method="post" target="_blank">              <div class="ml-form-formContent">                                                    <div class="ml-form-fieldRow ml-last-item">                    <div class="ml-field-group ml-field-email ml-validate-email ml-validate-required">                                            <!-- input -->                      <input aria-label="email" aria-required="true" type="email" class="form-control" data-inputmask="" name="fields[email]" placeholder="Email" autocomplete="email">                      <!-- /input -->                      <!-- textarea -->                                            <!-- /textarea -->                      <!-- select -->                                            <!-- /select -->                      <!-- checkboxes -->                        <!-- /checkboxes -->                      <!-- radio -->                                            <!-- /radio -->                      <!-- countries -->                                            <!-- /countries -->                    </div>                  </div>                              </div>                            <!-- Privacy policy -->                            <!-- /Privacy policy -->                                                                      <input type="hidden" name="ml-submit" value="1">              <div class="ml-form-embedSubmit">                                  <button type="submit" class="primary">Subscribe</button>                                <button disabled="disabled" style="display: none;" type="button" class="loading">                  <div class="ml-form-embedSubmitLoad"></div>                  <span class="sr-only">Loading...</span>                </button>              </div>                            <input type="hidden" name="anticsrf" value="true">            </form>          </div>          <div class="ml-form-successBody row-success" style="display: none">            <div class="ml-form-successContent">                              <h4>Thank you!</h4>                                  <p>You have successfully joined our subscriber list.</p>                                          </div>          </div>        </div>      </div>    </div>        <script>    function ml_webform_success_16080324() {      var $ = ml_jQuery || jQuery;      $('.ml-subscribe-form-16080324 .row-success').show();      $('.ml-subscribe-form-16080324 .row-form').hide();    }      </script>          <script src="https://groot.mailerlite.com/js/w/webforms.min.js?vb397d78ebaa8a0f631d35384c46d781b" type="text/javascript"></script>        <script>            fetch("https://assets.mailerlite.com/jsonp/885449/forms/125705962339173793/takel")        </script>
     </div>
   </div>
 </section>
@@ -2544,72 +3047,77 @@
 <section class="membership" id="membership">
   <div class="container">
     <div class="strip-header">
-      <div class="strip-eyebrow" style="color: var(--gold-soft);">Three Ways to Belong</div>
-      <h2>Membership is how we <em>keep this going.</em></h2>
+      <div class="strip-eyebrow" style="color: var(--gold-soft);">Three Ways to Belong &amp; Support</div>
+      <h2>Membership is how we <em>keep ADSC going.</em></h2>
     </div>
-    <!-- v4: Schwartz — three-choices line moved ABOVE the sub to frame the entire decision -->
     <p class="membership-three-choices">You can keep doing what you're doing. You can show up to a meetup and not commit a dollar. Or you can back the work and pull the next dad in.</p>
-    <p class="membership-sub">Every event we run is free. Membership is what funds the next one. Pick the level that fits where you are.</p>
-    <!-- v3: member count line for non-conscious motivator (placeholders) -->
-    <p class="membership-counts">
-      <span class="count-num">[##]</span> Charter members ·
-      <span class="count-num">[##]</span> Circle members ·
-      Growing every month
-    </p>
+    <p class="membership-sub">Every dad's mixer and event we host is free. Membership, sponsorship, and donations fund our nonprofit programming. Your membership helps ensure ADSC can keep creating spaces where fathers connect, families thrive, and no dad has to navigate the autism journey alone.</p>
+    <p class="membership-counts"><span class="count-num">74</span> members · Growing every month</p>
 
     <div class="tiers-grid">
-      <!-- CIRCLE: anchored FIRST per Kahneman -->
+
+      <!-- CIRCLE: featured + anchored first per Kahneman -->
       <div class="tier featured">
         <div class="tier-name">Circle</div>
-        <div class="tier-tag">Drive the mission forward</div>
+        <div class="tier-tag">Sustaining Supporters</div>
         <div class="tier-price">$360<small>/year</small></div>
         <div class="tier-monthly">or $30/month</div>
+        <p class="tier-desc">Circle Members help sustain and expand ADSC's reach and impact. The infrastructure they fund is what enables us to keep hosting events for autism dads and families and run a thriving nonprofit organization.</p>
+        <div class="tier-list-label">Your support helps make possible:</div>
         <ul class="tier-list">
-          <li>Everything in Charter, plus</li>
-          <li>Founding-circle quarterly Zoom with the founders</li>
-          <li>Vote on next year's program priorities</li>
-          <li>Recognition at the annual dinner</li>
-          <li>Listed on the website as a Circle member (optional)</li>
-          <li>Knowing you funded a meetup for a dad who needed it</li>
+          <li>Annual state and federal filings</li>
+          <li>Accounting and bookkeeping</li>
+          <li>Insurance coverage</li>
+          <li>Email marketing platforms</li>
+          <li>Newsletter production and distribution</li>
+          <li>Social media management</li>
+          <li>Grant writing and grant management</li>
+          <li>Strategic planning and governance</li>
+          <li>Staff support (paid or volunteer)</li>
+          <li>Professional development and training</li>
         </ul>
-        <a href="#" class="tier-cta tier-cta-primary">Become a Circle member</a>
-        <div class="tier-guarantee">Try it for 30 days. Full refund if it's not for you. Cancel in two clicks. The choice is yours, always.</div>
+        <a href="#donate" class="tier-cta tier-cta-primary">Become a Circle member</a>
       </div>
 
       <div class="tier">
         <div class="tier-name">Charter</div>
-        <div class="tier-tag">Join the conversation</div>
+        <div class="tier-tag">Founding Supporters</div>
         <div class="tier-price">$40<small>/year</small></div>
-        <div class="tier-monthly">A little over $3/month</div>
+        <div class="tier-monthly">&nbsp;</div>
+        <p class="tier-desc">Charter Members help strengthen the foundation of the organization while enjoying opportunities for deeper connection and engagement. Charter Members help shape the future of ADSC.</p>
+        <div class="tier-list-label">Your support helps make possible:</div>
         <ul class="tier-list">
-          <li>Priority RSVP at every dads social</li>
-          <li>Member-only text thread (~30 active dads)</li>
-          <li>Monthly newsletter with member-only resources</li>
-          <li>10% off any future paid workshops</li>
-          <li>Annual member dinner invite</li>
-          <li>You become a charter member of record</li>
+          <li>Refreshments for Dads Mixers throughout the year</li>
+          <li>Food and refreshments for Family events and celebrations</li>
+          <li>Website hosting, design, and maintenance</li>
+          <li>Educational resources and community outreach</li>
+          <li>Newsletter production</li>
+          <li>Podcast platform</li>
         </ul>
-        <a href="#" class="tier-cta tier-cta-secondary">Become a Charter member</a>
-        <div class="tier-guarantee">Try it for 30 days. Full refund if it's not for you. Cancel in two clicks. You stay on the newsletter either way.</div>
+        <a href="#donate" class="tier-cta tier-cta-secondary">Become a Charter member</a>
       </div>
 
       <div class="tier">
-        <div class="tier-name">Subscriber</div>
-        <div class="tier-tag">Start here. No commitment.</div>
+        <div class="tier-name">Basic Subscriber</div>
+        <div class="tier-tag">Community Supporter</div>
         <div class="tier-price">Free</div>
-        <div class="tier-monthly">&nbsp;</div>
+        <div class="tier-monthly">Support with your time and presence</div>
+        <p class="tier-desc">You don't have to serve on a committee or make a large financial contribution to make a difference. One of the most valuable things a dad can do is simply show up. At ADSC, brotherhood is built one conversation at a time — your presence matters, your story matters, and your willingness to show up may be exactly what another father or family needs.</p>
+        <div class="tier-list-label">As a Basic Subscriber, you help by:</div>
         <ul class="tier-list">
-          <li>Monthly newsletter</li>
-          <li>Event invites for socials and family days</li>
-          <li>The Survival Guide PDF (free)</li>
-          <li>Access to the public podcast</li>
+          <li>Showing up to Dads Mixers and community events</li>
+          <li>Welcoming new fathers into the group</li>
+          <li>Sharing your experiences and listening when other dads need support</li>
+          <li>Attending family events and helping build community</li>
+          <li>Sharing ADSC events and resources with other dads and families</li>
+          <li>Volunteering occasionally when your schedule allows</li>
         </ul>
-        <a href="#leadmag" class="tier-cta tier-cta-secondary">Start with the newsletter</a>
-        <div class="tier-guarantee">Unsubscribe in one click. We don't share your email.</div>
+        <a href="#newsletter" class="tier-cta tier-cta-secondary">Start with the newsletter</a>
       </div>
+
     </div>
 
-    <p class="tax-note">All memberships and donations are tax-deductible. Autism Dads Social Club is a registered 501(c)(3) nonprofit. EIN: XX-XXXXXXX.</p>
+    <p class="tax-note">All memberships and donations are tax-deductible. Autism Dads Social Club is a registered 501(c)(3) nonprofit. EIN: 99-2055011.</p>
   </div>
 </section>
 
@@ -2624,33 +3132,40 @@
     <div class="donate-card">
       <div class="donate-eyebrow">One-Time Donation</div>
       <h2>Back the work. <em>One time. No recurring anything.</em></h2>
-      <p class="donate-body">Some dads aren't ready for membership. Some have already given five years of carrying it alone and aren't ready to commit to one more thing. We get that. Donations fund the meetups that wouldn't otherwise happen — the family event in the rented pavilion, the pool hall on a slow Saturday, the dad who couldn't afford the Uber to come.</p>
+      <p class="donate-body">Some dads aren't ready for membership. Some have already given five years of carrying it alone and aren't ready to commit to one more thing. We get that. One-time donations make a difference.</p>
 
       <div class="donate-impact-label">Here's what your donation actually does:</div>
       <div class="donate-amounts">
-        <a href="#" class="donate-amount">
+        <div class="donate-amount static">
           <span class="donate-amt">$25</span>
-          <span class="donate-impact">Buys an Uber for a dad who can't drive to a free meetup</span>
-        </a>
-        <a href="#" class="donate-amount">
+          <span class="donate-impact">Helps another dad and autism family find their village</span>
+        </div>
+        <div class="donate-amount static">
           <span class="donate-amt">$50</span>
-          <span class="donate-impact">Reserves the pool hall table for an evening</span>
-        </a>
-        <a href="#" class="donate-amount featured">
+          <span class="donate-impact">Sponsors appetizers at a Dads Mixer</span>
+        </div>
+        <div class="donate-amount featured static">
           <span class="donate-amt">$100</span>
-          <span class="donate-impact">Feeds ten kids at one family event</span>
-        </a>
-        <a href="#" class="donate-amount">
+          <span class="donate-impact">Creates meaningful experiences for autism families (Sensory Santa, Easter Bunny, face-painting)</span>
+        </div>
+        <div class="donate-amount static">
           <span class="donate-amt">$250</span>
-          <span class="donate-impact">Funds a scholarship to a paid workshop</span>
-        </a>
-        <a href="#" class="donate-amount custom">
+          <span class="donate-impact">Helps cover ADSC administrative costs</span>
+        </div>
+        <div class="donate-amount custom static">
           <span class="donate-amt">Other</span>
-          <span class="donate-impact">Pick your own amount</span>
-        </a>
+          <span class="donate-impact">Pick your own amount on PayPal</span>
+        </div>
       </div>
 
-      <p class="donate-tax">Tax-deductible. EIN: XX-XXXXXXX. Receipt arrives in a minute. We don't add you to anything you didn't ask for.</p>
+      <form class="donate-paypal" action="https://www.paypal.com/donate" method="post" target="_top">
+        <input type="hidden" name="hosted_button_id" value="WU8JY4P223ZXC">
+        <button type="submit" class="donate-paypal-btn">Donate via PayPal →</button>
+        <p class="donate-paypal-mini">Pick your amount on PayPal. Secure, instant, tax-deductible.</p>
+      </form>
+
+      <p class="donate-closing">Join us in building a stronger community. We appreciate your support.</p>
+      <p class="donate-tax">Tax-deductible. EIN: 99-2055011. Receipt arrives in a minute. We don't add you to anything you didn't ask for.</p>
     </div>
   </div>
 </section>
@@ -2670,28 +3185,20 @@
 
     <div class="sponsor-tier-label">2026 Sponsors</div>
     <div class="sponsor-grid">
-      <a href="https://www.fazlilaw.com" class="sponsor-card" target="_blank" rel="noopener">Fazli Law</a>
-      <a href="https://www.duqueroofing.com/" class="sponsor-card" target="_blank" rel="noopener">Duque Roofing</a>
-      <a href="https://www.texasabacenters.com/" class="sponsor-card" target="_blank" rel="noopener">Texas ABA Centers</a>
-      <a href="https://www.omconstructionhtx.com/stafford/" class="sponsor-card" target="_blank" rel="noopener">O&amp;M Construction Services</a>
-      <a href="https://txroofingandservices.com/sugar-land/" class="sponsor-card" target="_blank" rel="noopener">TX Roofing &amp; Services LLC</a>
-    </div>
-
-    <div class="sponsor-tier-label muted">2025 Sponsors</div>
-    <div class="sponsor-grid year-2025">
-      <a href="https://behavioral-innovations.com/" class="sponsor-card" target="_blank" rel="noopener">Behavioral Innovations</a>
-      <a href="https://listen2meaba.com/" class="sponsor-card" target="_blank" rel="noopener">Listen to Me ABA</a>
-      <a href="https://www.zenbusiness.com/" class="sponsor-card" target="_blank" rel="noopener">ZenBusiness</a>
-      <a href="https://www.adobe.com/acrobat/online/rotate-pdf.html" class="sponsor-card" target="_blank" rel="noopener">Adobe Acrobat</a>
-      <a href="https://www.werockthespectrumsugarland.com/" class="sponsor-card" target="_blank" rel="noopener">We Rock the Spectrum (Sugar Land)</a>
-      <a href="https://www.doubledaves.com/locations/tx/missouri-city/missouricity/" class="sponsor-card" target="_blank" rel="noopener">Double Dave's Pizzaworks (Missouri City)</a>
+      <a href="https://www.fazlilaw.com" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Fazli Law"><img src="assets/sponsors/fazli-law.jpg" alt="Fazli Law" loading="lazy"></a>
+      <a href="https://www.duqueroofing.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Duque Roofing"><img src="assets/sponsors/duque-roofing.png" alt="Duque Roofing" loading="lazy"></a>
+      <a href="https://www.texasabacenters.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Texas ABA Centers"><img src="assets/sponsors/texas-aba.png" alt="Texas ABA Centers" loading="lazy"></a>
+      <a href="https://www.omconstructionhtx.com/stafford/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="O&amp;M Construction Services"><img src="assets/sponsors/om-construction.png" alt="O&amp;M Construction Services" loading="lazy"></a>
+      <a href="https://www.hopeforthree.org/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Hope for Three"><img src="assets/sponsors/hope-for-three.jpg" alt="Hope for Three" loading="lazy"></a>
+      <a href="https://behavioral-innovations.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Behavioral Innovations"><img src="assets/sponsors/behavioral-innovations.webp" alt="Behavioral Innovations" loading="lazy"></a>
+      <a href="https://listen2meaba.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Listen to Me ABA"><img src="assets/sponsors/listen-to-me-aba.png" alt="Listen to Me ABA" loading="lazy"></a>
+      <a href="#" class="sponsor-card sponsor-card--logo" rel="noopener" aria-label="NAC" title="URL pending — update via CMS"><img src="assets/sponsors/nac.jpg" alt="NAC" loading="lazy"></a>
     </div>
 
     <div class="sponsor-lists">
       <div class="sponsor-list">
         <h4>Past Sponsors</h4>
         <ul>
-          <li><a href="https://behavioral-innovations.com/" target="_blank" rel="noopener">Behavioral Innovations</a></li>
           <li>Pursley McNamara &amp; Flint</li>
           <li>Joyful Journey ABA</li>
           <li>H-E-B (Missouri City)</li>
@@ -2704,6 +3211,10 @@
           <li>Houston Astros</li>
           <li>Lonestar Santas</li>
           <li>DJ Jakey Jake "Bubble DJ"</li>
+          <li><a href="https://www.zenbusiness.com/" target="_blank" rel="noopener">ZenBusiness</a></li>
+          <li>Adobe Acrobat</li>
+          <li><a href="https://www.werockthespectrumsugarland.com/" target="_blank" rel="noopener">We Rock the Spectrum (Sugar Land)</a></li>
+          <li><a href="https://www.doubledaves.com/" target="_blank" rel="noopener">Double Dave's Pizzaworks (Missouri City)</a></li>
         </ul>
       </div>
       <div class="sponsor-list">
@@ -2734,7 +3245,7 @@
       <h3>Want to put your business <em>on this page?</em></h3>
       <p>If your business serves the Houston autism community and you want to sponsor a meetup, a family event, or the year, we'd like to talk. Same goes for vendors who want a table at our signature family events.</p>
       <div class="sponsor-cta-buttons">
-        <a href="mailto:hello@autismdadssocialclub.org?subject=Sponsorship%20Inquiry" class="cta-primary">Become a Sponsor</a>
+        <a href="mailto:info@autismdadssocialclub.org?subject=Sponsorship%20Inquiry" class="cta-primary">Become a Sponsor</a>
         <a href="https://form.jotform.com/231637325042146" class="cta-secondary" target="_blank" rel="noopener">Register as a Vendor</a>
       </div>
     </div>
@@ -2795,6 +3306,24 @@
 </section>
 
 <!-- ============================ -->
+<!-- PHOTO STRIP (latest 6)       -->
+<!-- ============================ -->
+<!-- Renders photos.json (built by GH Action from _data/photos/*.md).     -->
+<!-- Section auto-hides if no photos. Tiles open in lightbox.            -->
+<section class="photo-strip-section" id="photo-strip" aria-label="From our gatherings">
+  <div class="container">
+    <div class="strip-header" style="text-align:center;">
+      <div class="strip-eyebrow">From our gatherings</div>
+      <h2>The <em>brotherhood</em> in pictures.</h2>
+    </div>
+    <div id="photo-strip-grid"></div>
+    <div class="photo-strip-foot">
+      <a href="photos/">See all photos →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ -->
 <!-- 13. FOOTER                   -->
 <!-- ============================ -->
 <footer>
@@ -2805,7 +3334,7 @@
         <p class="footer-tag">A Houston brotherhood for the dads in the background. Founded 2022.</p>
         <div class="footer-501">
           <strong>Registered 501(c)(3) Nonprofit</strong>
-          EIN: XX-XXXXXXX · All memberships and donations are tax-deductible.
+          EIN: 99-2055011 · All memberships and donations are tax-deductible.
         </div>
       </div>
       <div>
@@ -2820,22 +3349,26 @@
       <div>
         <h4>Get Involved</h4>
         <ul>
-          <li><a href="#rsvp">Upcoming Events</a></li>
+          <li><a href="#events">Upcoming Events</a></li>
           <li><a href="past-events/">Past Events</a></li>
-          <li><a href="#leadmag">Survival Guide</a></li>
+          <li><a href="blog/">Blog</a></li>
+          <li><a href="photos/">Photos</a></li>
           <li><a href="#sponsors">Sponsors &amp; Partners</a></li>
-          <li><a href="#sponsors">Sponsor an Event</a></li>
         </ul>
       </div>
       <div>
         <h4>Connect</h4>
         <ul>
-          <li><a href="mailto:hello@autismdadssocialclub.org">hello@autismdadssocialclub.org</a></li>
-          <li><a href="#">Facebook</a></li>
-          <li><a href="#">Instagram</a></li>
-          <li><a href="#">LinkedIn</a></li>
+          <li><a href="mailto:info@autismdadssocialclub.org">info@autismdadssocialclub.org</a></li>
+          <li><a href="https://www.facebook.com/AutismDadsSocialClub" target="_blank" rel="noopener">Facebook — AutismDadsSocialClub</a></li>
+          <li><a href="https://www.instagram.com/autismdadshtown/" target="_blank" rel="noopener">Instagram — autismdadshtown</a></li>
+          <li><a href="https://www.linkedin.com/company/autism-dads-social-club/" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="https://www.youtube.com/@AutismDSCVP/featured" target="_blank" rel="noopener">YouTube — @AutismDSCVP</a></li>
         </ul>
       </div>
+    </div>
+    <div class="footer-mailing">
+      <strong>Mailing Address:</strong> 10330 Highway 6 Suite D, #1065, Missouri City, TX 77459
     </div>
     <div class="footer-bottom">
       <div>© 2026 Autism Dads Social Club · Houston, TX</div>
@@ -2844,11 +3377,73 @@
   </div>
 </footer>
 
+<!-- Back to top -->
+<button class="back-to-top" type="button" aria-label="Back to top" id="back-to-top">↑</button>
+
 <script type="module">
   import { init as initEvents } from "./js/events.js";
   import { init as initBlogs } from "./js/blogs.js";
-  initBlogs();
+  import { init as initPhotos } from "./js/photos.js";
   initEvents();
+  initBlogs();
+  initPhotos();
+</script>
+
+<script>
+  // Hamburger drawer
+  (function () {
+    const toggle = document.querySelector('.nav-toggle');
+    const links = document.getElementById('primary-nav');
+    if (toggle && links) {
+      toggle.addEventListener('click', () => {
+        const open = links.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        document.body.classList.toggle('nav-open', open);
+      });
+      links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+        document.body.classList.remove('nav-open');
+      }));
+    }
+  })();
+
+  // Sticky nav shadow on scroll + back-to-top visibility
+  (function () {
+    const nav = document.getElementById('top');
+    const back = document.getElementById('back-to-top');
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (nav) nav.classList.toggle('scrolled', y > 8);
+      if (back) back.classList.toggle('visible', y > 600);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    if (back) back.addEventListener('click', () =>
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    );
+  })();
+
+  // Active section highlight in nav (IntersectionObserver)
+  (function () {
+    const navLinks = Array.from(document.querySelectorAll('#primary-nav a[href^="#"]'));
+    const sections = navLinks
+      .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+      .filter(Boolean);
+    if (!('IntersectionObserver' in window) || sections.length === 0) return;
+    const setActive = id => navLinks.forEach(a =>
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id)
+    );
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible) setActive(visible.target.id);
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] });
+    sections.forEach(s => observer.observe(s));
+  })();
 </script>
 
 </body>

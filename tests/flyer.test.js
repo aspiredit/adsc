@@ -26,7 +26,8 @@ const eventWithoutFlyer = {
 describe("renderFlyer (pure HTML string)", () => {
   it("returns an <img> with src and alt when flyer is set", () => {
     const html = renderFlyer(eventWithFlyer);
-    expect(html).toContain('src="/assets/events/with-flyer.png"');
+    // Absolute CMS paths are normalized to relative so they resolve on the subpath host.
+    expect(html).toContain('src="assets/events/with-flyer.png"');
     expect(html).toContain('alt="Slick Willie&#039;s"');
     expect(html).toContain('loading="lazy"');
   });
@@ -70,7 +71,7 @@ describe("renderFeatured includes the flyer slot", () => {
     renderFeatured(eventWithFlyer);
     const img = document.querySelector(".rsvp-featured img");
     expect(img).not.toBeNull();
-    expect(img.getAttribute("src")).toBe("/assets/events/with-flyer.png");
+    expect(img.getAttribute("src")).toBe("assets/events/with-flyer.png");
   });
 
   it("inserts typographic fallback when event has no flyer", () => {
