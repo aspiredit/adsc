@@ -1,0 +1,95 @@
+{
+  "$schema": "https://pagescms.org/schema/v1.json",
+  "collections": [
+    {
+      "name": "events",
+      "label": "Events",
+      "folder": "docs/_data",
+      "file": "events.json",
+      "format": "json",
+      "fields": [
+        {
+          "name": "events",
+          "label": "Events",
+          "widget": "list",
+          "fields": [
+            {
+              "name": "id",
+              "label": "Event ID",
+              "widget": "string",
+              "required": true,
+              "hint": "Unique identifier (e.g., 'event-001')"
+            },
+            {
+              "name": "title",
+              "label": "Event Title",
+              "widget": "string",
+              "required": true
+            },
+            {
+              "name": "type",
+              "label": "Event Type",
+              "widget": "select",
+              "options": ["meetup", "family_event", "fundraiser", "other"],
+              "default": "meetup"
+            },
+            {
+              "name": "starts_at",
+              "label": "Start Date & Time",
+              "widget": "datetime",
+              "required": true
+            },
+            {
+              "name": "location",
+              "label": "Location",
+              "widget": "string",
+              "required": true
+            },
+            {
+              "name": "description",
+              "label": "Description",
+              "widget": "text",
+              "required": true
+            },
+            {
+              "name": "flyer",
+              "label": "Event Flyer/Image",
+              "widget": "image",
+              "media_folder": "docs/assets/events",
+              "public_path": "/assets/events",
+              "required": false
+            },
+            {
+              "name": "rsvp_url",
+              "label": "RSVP Link",
+              "widget": "string",
+              "required": false,
+              "hint": "External RSVP URL (e.g., Eventbrite, Calendly)"
+            },
+            {
+              "name": "cta_label",
+              "label": "CTA Button Label",
+              "widget": "string",
+              "default": "RSVP",
+              "required": false
+            },
+            {
+              "name": "status",
+              "label": "Status",
+              "widget": "select",
+              "options": ["scheduled", "cancelled", "completed"],
+              "default": "scheduled"
+            },
+            {
+              "name": "draft",
+              "label": "Draft (Preview only)",
+              "widget": "boolean",
+              "default": false,
+              "hint": "Check this to hide from visitors until ready to publish"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
