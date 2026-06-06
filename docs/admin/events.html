@@ -4,175 +4,306 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Add an Event — ADSC Admin</title>
-
+<title>ADSC Admin — Events</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
   :root {
     --blue-deep: #1F5E96;
-    --blue-mid: #4FA0D8;
-    --gold: #B8843D;
-    --bg: #F8FAFC;
-    --bg-warm: #E8F0F8;
-    --card: #FFFFFF;
-    --ink: #1A2533;
-    --ink-soft: #38475A;
-    --ink-mute: #5A6B7C;
-    --line: #D8E4ED;
-    --ok: #2E7D52;
-    --err: #B23A3A;
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-body: 'Source Sans 3', system-ui, sans-serif;
+    --blue-mid:  #4FA0D8;
+    --blue-light:#E8F0F8;
+    --gold:      #B8843D;
+    --bg:        #F8FAFC;
+    --card:      #FFFFFF;
+    --ink:       #1A2533;
+    --ink-soft:  #38475A;
+    --ink-mute:  #5A6B7C;
+    --line:      #D8E4ED;
+    --line-faint:#EDF2F7;
+    --ok:        #2E7D52;
+    --err:       #B23A3A;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Source Sans 3', system-ui, sans-serif;
+    --hour-h: 64px;
+    --time-w: 58px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-body); background: var(--bg); color: var(--ink); line-height: 1.55; }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
-  h1 { font-family: var(--font-display); font-weight: 500; color: var(--blue-deep); font-size: 1.9rem; margin-bottom: 6px; }
-  .sub { color: var(--ink-mute); margin-bottom: 28px; }
-  a { color: var(--blue-deep); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: var(--font-body); color: var(--ink); background: var(--bg); overflow: hidden; }
 
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 24px; margin-bottom: 22px; }
-  .card h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 14px; }
+  .screen { display: flex; }
 
-  label { display: block; font-weight: 600; font-size: 0.85rem; margin: 14px 0 5px; color: var(--ink-soft); }
-  input[type=text], input[type=url], input[type=password], input[type=datetime-local], select, textarea {
-    width: 100%; font-family: inherit; font-size: 0.95rem; color: var(--ink);
-    padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; background: #fff;
+  /* ══ LOGIN ══ */
+  #s-login {
+    min-height: 100vh; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #162841 0%, #1F5E96 100%);
   }
-  textarea { min-height: 80px; resize: vertical; }
-  input[type=file] { font-size: 0.9rem; }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
-  .check input { width: auto; }
-  .check label { margin: 0; }
-  .hint { font-size: 0.8rem; color: var(--ink-mute); margin-top: 4px; }
+  .login-card {
+    background: #fff; border-radius: 16px; padding: 48px 44px;
+    width: 380px; max-width: 95vw; box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+  }
+  .login-brand { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; color: var(--blue-deep); }
+  .login-tagline { font-size: 0.78rem; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 32px; margin-top: 3px; }
+  .lf-label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; }
+  .lf-input {
+    width: 100%; padding: 13px 15px; border: 1.5px solid var(--line);
+    border-radius: 9px; font-family: inherit; font-size: 1rem; color: var(--ink);
+    background: #fff; outline: none; transition: border-color .15s;
+  }
+  .lf-input:focus { border-color: var(--blue-mid); }
+  .lf-btn {
+    display: block; width: 100%; margin-top: 18px; padding: 13px;
+    background: var(--blue-deep); color: #fff; border: none; border-radius: 9px;
+    font-family: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background .15s;
+  }
+  .lf-btn:hover { background: var(--blue-mid); }
+  .lf-err { margin-top: 10px; font-size: 0.85rem; color: var(--err); min-height: 18px; }
 
-  button { font-family: inherit; font-weight: 600; cursor: pointer; border: none; border-radius: 7px; padding: 11px 18px; font-size: 0.95rem; }
-  .btn-primary { background: var(--blue-deep); color: #fff; }
-  .btn-primary:hover { background: var(--blue-mid); }
-  .btn-ghost { background: transparent; color: var(--ink-mute); border: 1px solid var(--line); }
-  .actions { margin-top: 20px; display: flex; gap: 12px; align-items: center; }
+  /* ══ TOKEN SETUP ══ */
+  #s-token {
+    min-height: 100vh; align-items: center; justify-content: center; background: var(--bg);
+  }
+  .token-card {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 40px 44px; width: 520px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,0.07);
+  }
+  .token-card h2 { font-family: var(--font-display); color: var(--blue-deep); font-size: 1.4rem; font-weight: 500; margin-bottom: 10px; }
+  .token-card p { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.55; margin-bottom: 18px; }
+  .token-steps { background: var(--blue-light); border-radius: 9px; padding: 14px 18px; margin-bottom: 22px; font-size: 0.87rem; color: var(--ink-soft); }
+  .token-steps strong { color: var(--ink); }
+  .token-steps ol { margin: 8px 0 0 16px; }
+  .token-steps li { margin-bottom: 5px; }
+  .token-steps a { color: var(--blue-deep); }
+  .tk-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--line); border-radius: 8px; font-family: inherit; font-size: 0.95rem; color: var(--ink); outline: none; }
+  .tk-input:focus { border-color: var(--blue-mid); }
+  .tk-btn { margin-top: 14px; padding: 11px 24px; background: var(--blue-deep); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+  .tk-btn:hover { background: var(--blue-mid); }
+  .tk-err { margin-top: 8px; font-size: 0.85rem; color: var(--err); }
 
-  .msg { font-size: 0.9rem; font-weight: 600; }
-  .msg[data-kind="ok"] { color: var(--ok); }
-  .msg[data-kind="error"] { color: var(--err); }
+  /* ══ MAIN APP ══ */
+  #s-app { flex-direction: column; height: 100vh; overflow: hidden; }
 
-  .note { background: var(--bg-warm); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 0.85rem; color: var(--ink-soft); }
-  .note strong { color: var(--ink); }
-  ol.note-steps { margin: 8px 0 0 18px; }
-  ol.note-steps li { margin-bottom: 4px; }
+  /* Header */
+  #cal-header {
+    display: flex; align-items: center; gap: 8px; padding: 0 18px;
+    height: 54px; background: #fff; border-bottom: 1px solid var(--line);
+    flex-shrink: 0; z-index: 10;
+  }
+  .cal-brand { font-family: var(--font-display); font-weight: 600; color: var(--blue-deep); font-size: 1.05rem; margin-right: 6px; white-space: nowrap; }
+  .h-btn {
+    padding: 5px 11px; border: 1px solid var(--line); border-radius: 6px;
+    background: #fff; color: var(--ink); cursor: pointer; font-family: inherit;
+    font-size: 0.88rem; transition: background .12s, border-color .12s;
+  }
+  .h-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); }
+  #week-label { font-size: 0.97rem; font-weight: 600; color: var(--ink); min-width: 170px; }
+  .cal-hdr-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  #cal-status { font-size: 0.8rem; color: var(--ink-mute); }
+  #cal-status[data-kind="ok"]  { color: var(--ok); }
+  #cal-status[data-kind="err"] { color: var(--err); }
+  .logout-btn { padding: 5px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--ink-mute); cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .logout-btn:hover { border-color: var(--err); color: var(--err); }
 
-  .admin-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-  .admin-row:last-child { border-bottom: none; }
-  .admin-row-sub { font-size: 0.82rem; color: var(--ink-mute); margin-top: 2px; }
-  .admin-tag { display: inline-block; background: var(--gold); color: #fff; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 999px; }
-  .admin-tag--warn { background: var(--err); }
-  .admin-del { background: #fff; color: var(--err); border: 1px solid var(--line); padding: 6px 12px; font-size: 0.85rem; }
-  .admin-del:hover { border-color: var(--err); }
-  .admin-empty { color: var(--ink-mute); font-style: italic; }
+  /* Calendar body */
+  #cal-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* Day header row */
+  #day-hdr { display: flex; flex-shrink: 0; border-bottom: 1px solid var(--line); background: #fff; }
+  .dh-gap { width: var(--time-w); flex-shrink: 0; border-right: 1px solid var(--line); }
+  .dh-cell {
+    flex: 1; text-align: center; padding: 8px 4px 7px;
+    border-right: 1px solid var(--line); font-size: 0.75rem; font-weight: 600;
+    color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .dh-cell:last-child { border-right: none; }
+  .dh-num { display: block; font-size: 1.55rem; font-weight: 300; color: var(--ink); line-height: 1.15; letter-spacing: 0; text-transform: none; }
+  .dh-cell.today-col { color: var(--blue-deep); }
+  .dh-cell.today-col .dh-num {
+    background: var(--blue-deep); color: #fff; width: 38px; height: 38px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto; font-size: 1.25rem; font-weight: 700;
+  }
+
+  /* Scroll area */
+  #time-scroll { flex: 1; overflow-y: auto; display: flex; }
+
+  /* Time labels */
+  #time-col { width: var(--time-w); flex-shrink: 0; border-right: 1px solid var(--line); background: #fff; }
+  .t-label {
+    height: var(--hour-h); display: flex; align-items: flex-start;
+    justify-content: flex-end; padding-right: 8px; padding-top: 5px;
+    font-size: 0.68rem; color: var(--ink-mute);
+  }
+
+  /* Day columns grid */
+  #day-cols { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); }
+  .day-col { position: relative; border-right: 1px solid var(--line); }
+  .day-col:last-child { border-right: none; }
+  .day-col.today-col { background: rgba(31,94,150,0.025); }
+  .h-slot { height: var(--hour-h); border-bottom: 1px solid var(--line-faint); cursor: pointer; transition: background .1s; }
+  .h-slot:last-child { border-bottom: none; }
+  .h-slot:hover { background: var(--blue-light); }
+
+  /* Event blocks */
+  .ev-blk {
+    position: absolute; left: 3px; right: 3px; border-radius: 5px;
+    padding: 4px 7px; cursor: pointer; overflow: hidden;
+    border-left: 3px solid; transition: filter .12s; z-index: 2; min-height: 24px;
+  }
+  .ev-blk:hover { filter: brightness(.91); }
+  .ev-blk--blue { background: rgba(31,94,150,.12); border-color: #1F5E96; }
+  .ev-blk--gold { background: rgba(184,132,61,.12); border-color: #B8843D; }
+  .ev-blk-title { font-size: 0.76rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  .ev-blk-time  { font-size: 0.68rem; color: var(--ink-mute); }
+
+  /* ══ EVENT PANEL ══ */
+  #cal-panel {
+    position: fixed; top: 0; right: 0; height: 100%; width: 360px; max-width: 100vw;
+    background: #fff; box-shadow: -6px 0 32px rgba(0,0,0,0.13);
+    transform: translateX(100%); transition: transform .25s cubic-bezier(.4,0,.2,1);
+    z-index: 300; display: flex; flex-direction: column; overflow: hidden;
+  }
+  #cal-panel.open { transform: translateX(0); }
+
+  .pan-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .pan-head h2 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 500; color: var(--blue-deep); }
+  .pan-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--ink-mute); line-height: 1; padding: 2px 6px; border-radius: 4px; }
+  .pan-close:hover { background: var(--line-faint); }
+  .pan-date { font-size: 0.82rem; color: var(--ink-mute); padding: 8px 20px 10px; border-bottom: 1px solid var(--line-faint); flex-shrink: 0; }
+
+  .pan-body { flex: 1; overflow-y: auto; padding: 14px 20px 20px; }
+  .pf-lbl { display: block; font-size: 0.75rem; font-weight: 700; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.07em; margin: 13px 0 5px; }
+  .pf-lbl:first-child { margin-top: 0; }
+  .pf-in, .pf-sel, .pf-ta {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--line);
+    border-radius: 7px; font-family: inherit; font-size: 0.92rem; color: var(--ink);
+    background: #fff; outline: none; transition: border-color .15s;
+  }
+  .pf-in:focus, .pf-sel:focus, .pf-ta:focus { border-color: var(--blue-mid); }
+  .pf-ta { min-height: 72px; resize: vertical; }
+  .pf-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .pan-foot { padding: 12px 20px 16px; border-top: 1px solid var(--line); flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+  .pf-msg { font-size: 0.83rem; font-weight: 600; text-align: center; min-height: 16px; }
+  .pf-msg[data-kind="ok"]  { color: var(--ok); }
+  .pf-msg[data-kind="err"] { color: var(--err); }
+  .btn-save { width: 100%; padding: 11px; background: var(--blue-deep); color: #fff; border: none; border-radius: 8px; font-family: inherit; font-weight: 700; cursor: pointer; font-size: 0.95rem; }
+  .btn-save:hover { background: var(--blue-mid); }
+  .btn-cancel { width: 100%; padding: 9px; background: transparent; color: var(--ink-mute); border: 1px solid var(--line); border-radius: 8px; font-family: inherit; cursor: pointer; font-size: 0.9rem; }
+  .btn-cancel:hover { background: var(--line-faint); }
+  .btn-delete { width: 100%; padding: 9px; background: transparent; color: var(--err); border: 1px solid var(--line); border-radius: 8px; font-family: inherit; cursor: pointer; font-size: 0.9rem; }
+  .btn-delete:hover { border-color: var(--err); background: #fff5f5; }
+
+  /* Overlay */
+  #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.22); z-index: 299; cursor: pointer; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Add an Event</h1>
-  <p class="sub">Events you add here go straight to the website calendar — no Pages CMS needed.</p>
 
-  <!-- AUTH -->
-  <section class="card" id="admin-auth">
-    <h2>Connect</h2>
-    <div class="note">
-      <strong>First time?</strong> You need a GitHub access token (one-time setup):
-      <ol class="note-steps">
-        <li>Go to GitHub → Settings → Developer settings → <em>Fine-grained tokens</em> → Generate new token.</li>
-        <li>Repository access: <em>Only select repositories</em> → <strong>aspiredit/adsc</strong>.</li>
-        <li>Permissions → Repository → <strong>Contents: Read and write</strong>.</li>
-        <li>Generate, copy the token, and paste it below.</li>
+<!-- SCREEN 1: LOGIN -->
+<div id="s-login" class="screen">
+  <div class="login-card">
+    <div class="login-brand">Autism Dads Social Club</div>
+    <div class="login-tagline">Admin Portal &middot; Events</div>
+    <label class="lf-label" for="lp-pw">Password</label>
+    <input type="password" id="lp-pw" class="lf-input" placeholder="Enter admin password" autocomplete="current-password">
+    <button type="button" id="lp-btn" class="lf-btn">Log in</button>
+    <div class="lf-err" id="lp-err"></div>
+  </div>
+</div>
+
+<!-- SCREEN 2: ONE-TIME TOKEN SETUP -->
+<div id="s-token" class="screen" hidden>
+  <div class="token-card">
+    <h2>One-time device setup</h2>
+    <p>To publish events to the website, this device needs a GitHub access key. This is a one-time step — once saved it stays on this device and you won't see this screen again.</p>
+    <div class="token-steps">
+      <strong>How to get the access key:</strong>
+      <ol>
+        <li>Go to <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">GitHub &rarr; Settings &rarr; Fine-grained tokens</a></li>
+        <li>Click <strong>Generate new token</strong></li>
+        <li>Under <em>Repository access</em> select <strong>aspiredit/adsc</strong></li>
+        <li>Under <em>Permissions &rarr; Contents</em> choose <strong>Read and write</strong></li>
+        <li>Generate, copy the token, and paste it below</li>
       </ol>
     </div>
-    <label for="gh-token">GitHub access token</label>
-    <input type="password" id="gh-token" placeholder="github_pat_…" autocomplete="off">
-    <div class="check">
-      <input type="checkbox" id="save-token" checked>
-      <label for="save-token">Remember on this device (don't tick on shared computers)</label>
+    <input type="password" id="tk-pw" class="tk-input" placeholder="github_pat_…" autocomplete="off">
+    <br>
+    <button type="button" id="tk-btn" class="tk-btn">Save &amp; continue &rarr;</button>
+    <div class="tk-err" id="tk-err"></div>
+  </div>
+</div>
+
+<!-- SCREEN 3: MAIN CALENDAR -->
+<div id="s-app" class="screen" hidden>
+
+  <header id="cal-header">
+    <span class="cal-brand">ADSC Admin</span>
+    <button class="h-btn" id="btn-today">Today</button>
+    <button class="h-btn" id="btn-prev">&#8249;</button>
+    <button class="h-btn" id="btn-next">&#8250;</button>
+    <span id="week-label"></span>
+    <div class="cal-hdr-right">
+      <span id="cal-status"></span>
+      <button class="logout-btn" id="btn-logout">Log out</button>
     </div>
-    <div class="actions">
-      <button type="button" class="btn-primary" id="btn-connect">Connect</button>
-      <span class="msg" id="auth-status"></span>
+  </header>
+
+  <div id="cal-body">
+    <div id="day-hdr">
+      <div class="dh-gap"></div>
     </div>
-  </section>
-
-  <!-- APP -->
-  <section id="admin-app" hidden>
-    <div class="card">
-      <h2>New event</h2>
-      <form id="event-form">
-        <label for="f-title">Title *</label>
-        <input type="text" id="f-title" placeholder="June Dads Meetup">
-
-        <div class="row2">
-          <div>
-            <label for="f-type">Type *</label>
-            <select id="f-type"></select>
-          </div>
-          <div>
-            <label for="f-datetime">Date &amp; time (Central) *</label>
-            <input type="datetime-local" id="f-datetime">
-          </div>
-        </div>
-
-        <label for="f-location">Location *</label>
-        <input type="text" id="f-location" placeholder="Slick Willie's, Bellaire">
-
-        <label for="f-description">Description</label>
-        <textarea id="f-description" placeholder="What to expect, who it's for…"></textarea>
-
-        <div class="row2">
-          <div>
-            <label for="f-rsvp">RSVP link (optional)</label>
-            <input type="url" id="f-rsvp" placeholder="https://…">
-          </div>
-          <div>
-            <label for="f-cta">Button text (optional)</label>
-            <input type="text" id="f-cta" placeholder="RSVP free">
-          </div>
-        </div>
-
-        <div class="row2">
-          <div>
-            <label for="f-status">Status</label>
-            <select id="f-status"></select>
-          </div>
-          <div>
-            <label for="f-flyer">Flyer image (optional)</label>
-            <input type="file" id="f-flyer" accept="image/*">
-          </div>
-        </div>
-
-        <div class="check">
-          <input type="checkbox" id="f-draft">
-          <label for="f-draft">Save as draft (hidden from public until unchecked)</label>
-        </div>
-
-        <div class="actions">
-          <button type="submit" class="btn-primary" id="btn-add">Add event</button>
-          <span class="msg" id="form-msg"></span>
-        </div>
-      </form>
+    <div id="time-scroll">
+      <div id="time-col"></div>
+      <div id="day-cols"></div>
     </div>
+  </div>
 
-    <div class="card">
-      <h2>Current events</h2>
-      <div id="events-list"></div>
+  <!-- Slide-in panel -->
+  <div id="cal-panel">
+    <div class="pan-head">
+      <h2 id="pan-title">New Event</h2>
+      <button class="pan-close" id="pan-close" aria-label="Close">&#x2715;</button>
     </div>
+    <div class="pan-date" id="pan-date"></div>
+    <div class="pan-body">
+      <label class="pf-lbl" for="pf-title">Title *</label>
+      <input type="text" id="pf-title" class="pf-in" placeholder="June Dads Meetup">
 
-    <div class="actions">
-      <button type="button" class="btn-ghost" id="btn-logout">Forget token on this device</button>
-      <a href="../" style="margin-left:auto;">View the live site →</a>
+      <div class="pf-row2">
+        <div>
+          <label class="pf-lbl" for="pf-start">Start time *</label>
+          <select id="pf-start" class="pf-sel"></select>
+        </div>
+        <div>
+          <label class="pf-lbl" for="pf-end">End time</label>
+          <select id="pf-end" class="pf-sel"></select>
+        </div>
+      </div>
+
+      <label class="pf-lbl" for="pf-loc">Location *</label>
+      <input type="text" id="pf-loc" class="pf-in" placeholder="Slick Willie's, Bellaire">
+
+      <label class="pf-lbl" for="pf-desc">Description</label>
+      <textarea id="pf-desc" class="pf-ta" placeholder="What to expect, who it's for…"></textarea>
+
+      <label class="pf-lbl" for="pf-type">Event type</label>
+      <select id="pf-type" class="pf-sel">
+        <option value="meetup">Dads-only meetup</option>
+        <option value="family_event">Family event (bring kids)</option>
+        <option value="fundraiser">Fundraiser</option>
+        <option value="other">Other</option>
+      </select>
     </div>
-  </section>
+    <div class="pan-foot">
+      <div class="pf-msg" id="pf-msg"></div>
+      <button type="button" class="btn-save" id="pf-save">Save Event</button>
+      <button type="button" class="btn-cancel" id="pf-cancel">Cancel</button>
+      <button type="button" class="btn-delete" id="pf-delete" hidden>Delete Event</button>
+    </div>
+  </div>
+
+  <div id="overlay" hidden></div>
 </div>
 
 <script type="module">

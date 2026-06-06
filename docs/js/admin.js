@@ -1,144 +1,124 @@
 /**
- * On-site Events admin (docs/admin/events.html).
+ * admin.js — ADSC Events Admin
  *
- * A static-site "mini CMS" for events: it reads and writes docs/_data/events.json
- * directly through the GitHub Contents API using a fine-grained Personal Access
- * Token that the admin pastes in (stored only in this browser's localStorage —
- * never committed). After a save, the normal Pages deploy (~1 min) publishes it,
- * and the existing calendar picks it up automatically.
+ * Reads/writes docs/_data/events.json via the GitHub Contents API.
+ * Auth: password gate (SHA-256 hash) + GitHub fine-grained PAT stored in localStorage.
+ * UI: Outlook-style 7-day week calendar with slide-in event panel.
  *
- * Security model: the page is public HTML, but it can do nothing without a valid
- * token scoped to Contents:write on this one repo. Treat the token like a
- * password; use "Forget token" on shared computers; revoke it anytime in GitHub.
- *
- * Pure helpers (slug/id/timezone/event-building/list mutation) are exported and
- * unit-tested in tests/admin.test.js. DOM glue lives in init().
+ * Pure helpers (slugify, buildEventObject, etc.) are exported for unit tests.
  */
 
-const REPO_OWNER = "aspiredit";
-const REPO_NAME = "adsc";
-const BRANCH = "main";
+const REPO_OWNER  = "aspiredit";
+const REPO_NAME   = "adsc";
+const BRANCH      = "main";
 const EVENTS_PATH = "docs/_data/events.json";
-const FLYER_DIR = "docs/assets/events";
-const TOKEN_KEY = "adsc_gh_token";
-const API = "https://api.github.com";
+const FLYER_DIR   = "docs/assets/events";
+const TOKEN_KEY   = "adsc_gh_token";
+const API         = "https://api.github.com";
 
-const EVENT_TYPES = [
-  { value: "meetup", label: "Dads-only meetup" },
-  { value: "family_event", label: "Family event (bring kids)" },
-  { value: "fundraiser", label: "Fundraiser" },
-  { value: "other", label: "Other" },
-];
-const STATUSES = [
-  { value: "scheduled", label: "Scheduled" },
-  { value: "cancelled", label: "Cancelled (show banner)" },
-  { value: "postponed", label: "Postponed (show banner)" },
-];
+// SHA-256 of "adsc2026" — change password by updating this hash
+// To generate a new hash: run  node -e "require('crypto').createHash('sha256').update('newpass').digest('hex')" |clip
+const PASSWORD_HASH = "b8af2382672ab11b55664d35595e34ce4a1f2f59a32c81f71e9cf1904bb08a70";
 
-// ---------- pure helpers ----------
+const HOUR_START = 6;   // 6 AM — first visible hour
+const HOUR_END   = 22;  // 10 PM — last visible hour (exclusive)
+const HOUR_H     = 64;  // px per hour row
+
+const MONTH_NAMES = ["January","February","March","April","May","June",
+                     "July","August","September","October","November","December"];
+const DAY_NAMES   = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const GOLD_TYPES  = new Set(["family_event","fundraiser"]);
+
+// ─────────────────────────────────────────────────────────────
+//  Pure helpers  (exported — tested in tests/admin.test.js)
+// ─────────────────────────────────────────────────────────────
 
 export function slugify(text) {
   return String(text || "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^\w\s-]/g, "")
-    .trim()
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .toLowerCase().normalize("NFKD")
+    .replace(/[^\w\s-]/g,"").trim()
+    .replace(/[\s_]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
 }
 
 export function makeEventId(dateStr, title) {
-  // dateStr: "YYYY-MM-DD". Mirrors the CMS convention e.g. 2026-06-13-slick-willies.
   const slug = slugify(title) || "event";
   return dateStr ? `${dateStr}-${slug}` : slug;
 }
 
-// Minutes that America/Chicago is offset from UTC for a given wall-clock time.
-// Negative (e.g. -300 = CDT in summer, -360 = CST in winter). Works regardless
-// of the browser's own timezone via the toLocaleString-difference trick.
 export function chicagoOffsetMinutes(naiveLocal) {
-  const [datePart, timePart = "00:00"] = String(naiveLocal).split("T");
-  const [y, m, d] = datePart.split("-").map(Number);
-  const [hh, mm] = timePart.split(":").map(Number);
-  const guess = new Date(Date.UTC(y, (m || 1) - 1, d || 1, hh || 0, mm || 0));
-  const tzWall = new Date(guess.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-  const utcWall = new Date(guess.toLocaleString("en-US", { timeZone: "UTC" }));
+  const [datePart, timePart="00:00"] = String(naiveLocal).split("T");
+  const [y,m,d] = datePart.split("-").map(Number);
+  const [hh,mm] = timePart.split(":").map(Number);
+  const guess   = new Date(Date.UTC(y,(m||1)-1,d||1,hh||0,mm||0));
+  const tzWall  = new Date(guess.toLocaleString("en-US",{timeZone:"America/Chicago"}));
+  const utcWall = new Date(guess.toLocaleString("en-US",{timeZone:"UTC"}));
   return Math.round((tzWall - utcWall) / 60000);
 }
 
 export function formatOffset(minutes) {
   const sign = minutes < 0 ? "-" : "+";
-  const abs = Math.abs(minutes);
-  const hh = String(Math.floor(abs / 60)).padStart(2, "0");
-  const mm = String(abs % 60).padStart(2, "0");
-  return `${sign}${hh}:${mm}`;
+  const abs  = Math.abs(minutes);
+  return `${sign}${String(Math.floor(abs/60)).padStart(2,"0")}:${String(abs%60).padStart(2,"0")}`;
 }
 
-// "2026-06-06T18:30" -> "2026-06-06T18:30:00-05:00" (ISO 8601 with CT offset),
-// the exact format the renderer and Pages CMS use.
 export function toChicagoIso(naiveLocal) {
   if (!naiveLocal) return "";
-  const off = formatOffset(chicagoOffsetMinutes(naiveLocal));
-  return `${naiveLocal}:00${off}`;
+  return `${naiveLocal}:00${formatOffset(chicagoOffsetMinutes(naiveLocal))}`;
 }
 
-// Build an event record matching docs/_data/events.json's schema. Optional
-// fields are omitted when empty so the file stays clean.
 export function buildEventObject(form) {
   const datePart = (form.datetime || "").split("T")[0] || "";
   const event = {
-    id: form.id || makeEventId(datePart, form.title),
-    title: (form.title || "").trim(),
-    type: form.type || "meetup",
-    starts_at: toChicagoIso(form.datetime),
-    location: (form.location || "").trim(),
+    id:          form.id || makeEventId(datePart, form.title),
+    title:       (form.title       || "").trim(),
+    type:        form.type         || "meetup",
+    starts_at:   toChicagoIso(form.datetime),
+    location:    (form.location    || "").trim(),
     description: (form.description || "").trim(),
-    flyer: (form.flyer || "").trim(),
-    status: form.status || "scheduled",
-    draft: form.draft === true,
+    flyer:       (form.flyer       || "").trim(),
+    status:      form.status       || "scheduled",
+    draft:       form.draft === true,
   };
-  if (form.rsvp_url && form.rsvp_url.trim()) event.rsvp_url = form.rsvp_url.trim();
-  if (form.cta_label && form.cta_label.trim()) event.cta_label = form.cta_label.trim();
+  if (form.ends_at)   event.ends_at   = form.ends_at;
+  if (form.rsvp_url && form.rsvp_url.trim())   event.rsvp_url  = form.rsvp_url.trim();
+  if (form.cta_label && form.cta_label.trim())  event.cta_label = form.cta_label.trim();
   return event;
 }
 
-// Replace an event with the same id, otherwise append. Returns a new array.
 export function upsertEvent(events, event) {
   const list = Array.isArray(events) ? events.slice() : [];
-  const idx = list.findIndex((e) => e.id === event.id);
-  if (idx >= 0) list[idx] = event;
-  else list.push(event);
+  const idx  = list.findIndex(e => e.id === event.id);
+  if (idx >= 0) list[idx] = event; else list.push(event);
   return list;
 }
 
 export function deleteEventById(events, id) {
-  return (Array.isArray(events) ? events : []).filter((e) => e.id !== id);
+  return (Array.isArray(events) ? events : []).filter(e => e.id !== id);
 }
 
 export function sortByStartDesc(events) {
-  return (Array.isArray(events) ? events.slice() : []).sort((a, b) =>
-    String(b.starts_at || "").localeCompare(String(a.starts_at || ""))
-  );
+  return (Array.isArray(events) ? events.slice() : [])
+    .sort((a,b) => String(b.starts_at||"").localeCompare(String(a.starts_at||"")));
 }
 
 export function validateEventForm(form) {
   const errors = [];
-  if (!form.title || !form.title.trim()) errors.push("Title is required.");
-  if (!form.datetime) errors.push("Date & time is required.");
+  if (!form.title    || !form.title.trim())    errors.push("Title is required.");
+  if (!form.datetime)                          errors.push("Date & time is required.");
   if (!form.location || !form.location.trim()) errors.push("Location is required.");
   return errors;
 }
 
-// base64 <-> UTF-8 string (browser-safe).
 export function encodeBase64Utf8(str) {
   return btoa(unescape(encodeURIComponent(str)));
 }
 export function decodeBase64Utf8(b64) {
-  return decodeURIComponent(escape(atob(String(b64).replace(/\s/g, ""))));
+  return decodeURIComponent(escape(atob(String(b64).replace(/\s/g,""))));
 }
 
-// ---------- GitHub API ----------
+// ─────────────────────────────────────────────────────────────
+//  GitHub API
+// ─────────────────────────────────────────────────────────────
 
 function authHeaders(token) {
   return {
@@ -158,17 +138,13 @@ async function ghGetFile(token, path) {
 }
 
 async function ghPutFile(token, path, contentStr, sha, message) {
-  const url = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-  const body = {
-    message,
-    content: encodeBase64Utf8(contentStr),
-    branch: BRANCH,
-  };
+  const url  = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  const body = { message, content: encodeBase64Utf8(contentStr), branch: BRANCH };
   if (sha) body.sha = sha;
-  const res = await fetch(url, { method: "PUT", headers: authHeaders(token), body: JSON.stringify(body) });
+  const res  = await fetch(url, { method:"PUT", headers: authHeaders(token), body: JSON.stringify(body) });
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`GitHub write failed (${res.status}). ${detail.slice(0, 180)}`);
+    throw new Error(`GitHub write failed (${res.status}). ${detail.slice(0,180)}`);
   }
   return res.json();
 }
@@ -176,203 +152,495 @@ async function ghPutFile(token, path, contentStr, sha, message) {
 async function ghPutBinary(token, path, base64Content, message) {
   const url = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
   const res = await fetch(url, {
-    method: "PUT",
-    headers: authHeaders(token),
+    method: "PUT", headers: authHeaders(token),
     body: JSON.stringify({ message, content: base64Content, branch: BRANCH }),
   });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Flyer upload failed (${res.status}). ${detail.slice(0, 180)}`);
-  }
+  if (!res.ok) { const d = await res.text(); throw new Error(`Upload failed (${res.status}). ${d.slice(0,180)}`); }
   return res.json();
 }
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(",")[1]); // strip data: prefix
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    const r = new FileReader();
+    r.onload  = () => resolve(String(r.result).split(",")[1]);
+    r.onerror = reject;
+    r.readAsDataURL(file);
   });
 }
 
-// ---------- DOM glue ----------
+// ─────────────────────────────────────────────────────────────
+//  Password auth
+// ─────────────────────────────────────────────────────────────
 
-function el(id) {
-  return document.getElementById(id);
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
-function setMsg(node, text, kind = "") {
-  if (!node) return;
-  node.textContent = text || "";
-  node.dataset.kind = kind;
+async function checkPassword(input) {
+  const s = input.trim();
+  // crypto.subtle requires HTTPS or localhost — falls back to plain compare for local file:// testing
+  if (!crypto.subtle) return s === "adsc2026";
+  try {
+    return (await sha256hex(s)) === PASSWORD_HASH;
+  } catch {
+    return s === "adsc2026";
+  }
 }
 
-function optionsHtml(items, selected) {
-  return items
-    .map((o) => `<option value="${o.value}"${o.value === selected ? " selected" : ""}>${o.label}</option>`)
-    .join("");
+// ─────────────────────────────────────────────────────────────
+//  Week calendar helpers
+// ─────────────────────────────────────────────────────────────
+
+function getWeekSunday(date) {
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d;
 }
 
-function fmtWhen(starts_at) {
-  if (!starts_at) return "";
-  const d = new Date(starts_at);
-  if (Number.isNaN(d.getTime())) return starts_at;
-  return d.toLocaleString("en-US", {
-    timeZone: "America/Chicago",
-    weekday: "short", month: "short", day: "numeric", year: "numeric",
-    hour: "numeric", minute: "2-digit",
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function weekLabel(sunday) {
+  const sat = addDays(sunday, 6);
+  if (sunday.getMonth() === sat.getMonth()) {
+    return `${MONTH_NAMES[sunday.getMonth()]} ${sunday.getDate()}–${sat.getDate()}, ${sunday.getFullYear()}`;
+  }
+  return `${MONTH_NAMES[sunday.getMonth()].slice(0,3)} ${sunday.getDate()} – ${MONTH_NAMES[sat.getMonth()].slice(0,3)} ${sat.getDate()}, ${sunday.getFullYear()}`;
+}
+
+function localDateKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth()+1).padStart(2,"0");
+  const d = String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+function chicagoDateKey(isoStr) {
+  return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Chicago"}).format(new Date(isoStr));
+}
+
+function chicagoHourMin(isoStr) {
+  const parts = new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Chicago", hour:"numeric", minute:"2-digit", hour12:false,
+  }).formatToParts(new Date(isoStr));
+  return {
+    hour:   parseInt(parts.find(p=>p.type==="hour").value, 10),
+    minute: parseInt(parts.find(p=>p.type==="minute").value, 10),
+  };
+}
+
+function evTop(isoStr) {
+  const { hour, minute } = chicagoHourMin(isoStr);
+  return Math.max(0, (hour - HOUR_START + minute/60) * HOUR_H);
+}
+
+function evHeight(isoStr, endsAt) {
+  if (!endsAt) return HOUR_H;
+  const diff = (new Date(endsAt) - new Date(isoStr)) / 3600000;
+  return Math.max(26, Math.min(diff, 24) * HOUR_H);
+}
+
+function fmtTimeShort(isoStr) {
+  return new Date(isoStr).toLocaleTimeString("en-US",{
+    timeZone:"America/Chicago", hour:"numeric", minute:"2-digit",
   });
 }
 
-function renderList(container, events, onDelete) {
-  container.innerHTML = "";
-  const list = sortByStartDesc(events);
-  if (list.length === 0) {
-    container.innerHTML = `<p class="admin-empty">No events yet.</p>`;
-    return;
+// Build 30-min interval time option list
+function buildTimeOptions() {
+  const opts = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const label = new Date(2000,0,1,h,m).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
+      const val   = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+      opts.push({ label, val });
+    }
   }
-  for (const ev of list) {
-    const row = document.createElement("div");
-    row.className = "admin-row";
-    const draftTag = ev.draft ? ` <span class="admin-tag">draft</span>` : "";
-    const statusTag = ev.status && ev.status !== "scheduled" ? ` <span class="admin-tag admin-tag--warn">${ev.status}</span>` : "";
-    row.innerHTML = `
-      <div class="admin-row-main">
-        <strong>${ev.title || "(untitled)"}</strong>${draftTag}${statusTag}
-        <div class="admin-row-sub">${fmtWhen(ev.starts_at)} · ${ev.location || ""}</div>
-      </div>
-      <button type="button" class="admin-del" data-id="${ev.id}">Delete</button>
-    `;
-    row.querySelector(".admin-del").addEventListener("click", () => onDelete(ev.id));
-    container.appendChild(row);
+  return opts;
+}
+
+function populateTimeSelects(startSel, endSel, defaultStartHH, defaultEndHH) {
+  const opts    = buildTimeOptions();
+  const makeOpt = (o, selected) => `<option value="${o.val}"${o.val===selected?" selected":""}>${o.label}</option>`;
+  startSel.innerHTML = opts.map(o => makeOpt(o, defaultStartHH)).join("");
+  endSel.innerHTML   = opts.map(o => makeOpt(o, defaultEndHH)).join("");
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Calendar rendering
+// ─────────────────────────────────────────────────────────────
+
+function renderDayHeaders(dayHdr, weekDates, todayKey) {
+  // Remove old cells (keep the gap div)
+  const gap = dayHdr.querySelector(".dh-gap");
+  dayHdr.innerHTML = "";
+  dayHdr.appendChild(gap);
+
+  for (const d of weekDates) {
+    const cell  = document.createElement("div");
+    const key   = localDateKey(d);
+    const isToday = key === todayKey;
+    cell.className = "dh-cell" + (isToday ? " today-col" : "");
+    cell.innerHTML = `${DAY_NAMES[d.getDay()]}<span class="dh-num">${d.getDate()}</span>`;
+    dayHdr.appendChild(cell);
   }
 }
+
+function renderTimeCol(timeCol) {
+  timeCol.innerHTML = "";
+  for (let h = HOUR_START; h <= HOUR_END; h++) {
+    const lbl  = document.createElement("div");
+    lbl.className = "t-label";
+    if (h < HOUR_END) {
+      const ampm = h < 12 ? "AM" : "PM";
+      const disp = h === 0 ? 12 : h > 12 ? h-12 : h;
+      lbl.textContent = `${disp} ${ampm}`;
+    }
+    timeCol.appendChild(lbl);
+  }
+}
+
+function renderDayCols(dayColsEl, weekDates, events, todayKey, onSlotClick, onEventClick) {
+  // Build a map: dateKey -> events[]
+  const byDate = {};
+  for (const ev of events) {
+    if (!ev.starts_at) continue;
+    const key = chicagoDateKey(ev.starts_at);
+    (byDate[key] ??= []).push(ev);
+  }
+
+  dayColsEl.innerHTML = "";
+  const totalSlots = HOUR_END - HOUR_START;
+
+  for (const d of weekDates) {
+    const dateKey = localDateKey(d);
+    const isToday = dateKey === todayKey;
+    const col     = document.createElement("div");
+    col.className = "day-col" + (isToday ? " today-col" : "");
+
+    // Hour slots (clickable empty areas)
+    for (let h = HOUR_START; h < HOUR_END; h++) {
+      const slot = document.createElement("div");
+      slot.className = "h-slot";
+      slot.addEventListener("click", () => onSlotClick(d, h));
+      col.appendChild(slot);
+    }
+
+    // Event blocks (positioned absolutely)
+    const dayEvs = byDate[dateKey] || [];
+    for (const ev of dayEvs) {
+      const top    = evTop(ev.starts_at);
+      const height = evHeight(ev.starts_at, ev.ends_at);
+      const color  = GOLD_TYPES.has(ev.type) ? "gold" : "blue";
+      const blk    = document.createElement("div");
+      blk.className = `ev-blk ev-blk--${color}`;
+      blk.style.cssText = `top:${top}px;height:${height}px`;
+      blk.innerHTML = `
+        <div class="ev-blk-title">${ev.title || "(untitled)"}</div>
+        <div class="ev-blk-time">${fmtTimeShort(ev.starts_at)}${ev.ends_at ? " – "+fmtTimeShort(ev.ends_at) : ""}</div>
+      `;
+      blk.addEventListener("click", e => { e.stopPropagation(); onEventClick(ev); });
+      col.appendChild(blk);
+    }
+
+    dayColsEl.appendChild(col);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  init()  — DOM entry point
+// ─────────────────────────────────────────────────────────────
 
 export function init() {
-  const authPanel = el("admin-auth");
-  const appPanel = el("admin-app");
-  const form = el("event-form");
-  if (!authPanel || !appPanel || !form) return;
+  // ── element refs ──
+  const sLogin  = document.getElementById("s-login");
+  const sToken  = document.getElementById("s-token");
+  const sApp    = document.getElementById("s-app");
+  if (!sLogin || !sToken || !sApp) return;
 
-  // Populate selects
-  el("f-type").innerHTML = optionsHtml(EVENT_TYPES, "meetup");
-  el("f-status").innerHTML = optionsHtml(STATUSES, "scheduled");
+  const lpPw    = document.getElementById("lp-pw");
+  const lpBtn   = document.getElementById("lp-btn");
+  const lpErr   = document.getElementById("lp-err");
 
-  let token = "";
-  let sha = null;
-  let eventsObj = { events: [] };
+  const tkPw    = document.getElementById("tk-pw");
+  const tkBtn   = document.getElementById("tk-btn");
+  const tkErr   = document.getElementById("tk-err");
 
-  const authStatus = el("auth-status");
-  const formMsg = el("form-msg");
-  const listEl = el("events-list");
+  const btnToday  = document.getElementById("btn-today");
+  const btnPrev   = document.getElementById("btn-prev");
+  const btnNext   = document.getElementById("btn-next");
+  const weekLbl   = document.getElementById("week-label");
+  const calStatus = document.getElementById("cal-status");
+  const btnLogout = document.getElementById("btn-logout");
 
-  async function connect(candidate, remember) {
-    setMsg(authStatus, "Connecting…");
-    try {
-      const { sha: newSha, json } = await ghGetFile(candidate, EVENTS_PATH);
-      token = candidate;
-      sha = newSha;
-      eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-      if (remember) localStorage.setItem(TOKEN_KEY, token);
-      authPanel.hidden = true;
-      appPanel.hidden = false;
-      renderList(listEl, eventsObj.events, handleDelete);
-      setMsg(authStatus, "");
-    } catch (err) {
-      setMsg(authStatus, err.message, "error");
-    }
+  const dayHdr    = document.getElementById("day-hdr");
+  const timeCol   = document.getElementById("time-col");
+  const dayColsEl = document.getElementById("day-cols");
+
+  const calPanel  = document.getElementById("cal-panel");
+  const panTitle  = document.getElementById("pan-title");
+  const panDate   = document.getElementById("pan-date");
+  const panClose  = document.getElementById("pan-close");
+  const pfTitle   = document.getElementById("pf-title");
+  const pfStart   = document.getElementById("pf-start");
+  const pfEnd     = document.getElementById("pf-end");
+  const pfLoc     = document.getElementById("pf-loc");
+  const pfDesc    = document.getElementById("pf-desc");
+  const pfType    = document.getElementById("pf-type");
+  const pfMsg     = document.getElementById("pf-msg");
+  const pfSave    = document.getElementById("pf-save");
+  const pfCancel  = document.getElementById("pf-cancel");
+  const pfDelete  = document.getElementById("pf-delete");
+  const overlay   = document.getElementById("overlay");
+
+  // ── state ──
+  let token      = "";
+  let sha        = null;
+  let eventsObj  = { events: [] };
+  let weekSunday = getWeekSunday(new Date());
+  let editingId  = null;  // null = new event, string = editing existing
+
+  // ─── helpers ───
+  function showStatus(text, kind="") {
+    calStatus.textContent  = text;
+    calStatus.dataset.kind = kind;
+    if (text && kind === "ok") setTimeout(() => { calStatus.textContent = ""; }, 4000);
   }
 
+  function showPanelMsg(text, kind="") {
+    pfMsg.textContent  = text;
+    pfMsg.dataset.kind = kind;
+  }
+
+  // ─── calendar render ───
+  function redraw() {
+    const todayKey  = localDateKey(new Date());
+    const weekDates = Array.from({length:7}, (_, i) => addDays(weekSunday, i));
+    weekLbl.textContent = weekLabel(weekSunday);
+    renderDayHeaders(dayHdr, weekDates, todayKey);
+    renderTimeCol(timeCol);
+    renderDayCols(dayColsEl, weekDates, eventsObj.events, todayKey, openNewPanel, openEditPanel);
+  }
+
+  // ─── panel open/close ───
+  function openPanel() {
+    calPanel.classList.add("open");
+    overlay.hidden = false;
+  }
+
+  function closePanel() {
+    calPanel.classList.remove("open");
+    overlay.hidden = true;
+    editingId = null;
+    showPanelMsg("");
+  }
+
+  function openNewPanel(date, hour) {
+    editingId = null;
+    panTitle.textContent = "New Event";
+    const hh  = String(hour).padStart(2,"0");
+    const hh2 = String(hour + 1 < 24 ? hour + 1 : hour).padStart(2,"0");
+    populateTimeSelects(pfStart, pfEnd, `${hh}:00`, `${hh2}:00`);
+    pfTitle.value = "";
+    pfLoc.value   = "";
+    pfDesc.value  = "";
+    pfType.value  = "meetup";
+    pfDelete.hidden = true;
+    const day = date.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric", year:"numeric"});
+    panDate.textContent = day;
+    panDate._date = date;
+    showPanelMsg("");
+    openPanel();
+    pfTitle.focus();
+  }
+
+  function openEditPanel(ev) {
+    editingId = ev.id;
+    panTitle.textContent = "Edit Event";
+    const { hour, minute } = chicagoHourMin(ev.starts_at);
+    const hh  = String(hour).padStart(2,"0");
+    const mm  = minute < 30 ? "00" : "30";
+    let endVal = `${String(hour+1<24?hour+1:hour).padStart(2,"0")}:00`;
+    if (ev.ends_at) {
+      const e = chicagoHourMin(ev.ends_at);
+      const em = e.minute < 30 ? "00" : "30";
+      endVal = `${String(e.hour).padStart(2,"0")}:${em}`;
+    }
+    populateTimeSelects(pfStart, pfEnd, `${hh}:${mm}`, endVal);
+    pfTitle.value = ev.title || "";
+    pfLoc.value   = ev.location || "";
+    pfDesc.value  = ev.description || "";
+    pfType.value  = ev.type || "meetup";
+    pfDelete.hidden = false;
+    const d = new Date(ev.starts_at);
+    panDate.textContent = d.toLocaleDateString("en-US",{
+      timeZone:"America/Chicago", weekday:"long", month:"long", day:"numeric", year:"numeric",
+    });
+    panDate._date = d;
+    showPanelMsg("");
+    openPanel();
+    pfTitle.focus();
+  }
+
+  // ─── GitHub persist ───
   async function persist(message) {
-    const contentStr = JSON.stringify(eventsObj, null, 2) + "\n";
-    const result = await ghPutFile(token, EVENTS_PATH, contentStr, sha, message);
-    sha = result.content.sha; // keep the new sha for the next write
+    const str    = JSON.stringify(eventsObj, null, 2) + "\n";
+    const result = await ghPutFile(token, EVENTS_PATH, str, sha, message);
+    sha = result.content.sha;
   }
 
-  async function handleDelete(id) {
-    if (!window.confirm("Delete this event? It will be removed from the live site after the next deploy.")) return;
-    setMsg(formMsg, "Deleting…");
+  async function refreshFromGitHub() {
+    const { sha: newSha, json } = await ghGetFile(token, EVENTS_PATH);
+    sha = newSha;
+    eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
+  }
+
+  // ─── save event ───
+  pfSave.addEventListener("click", async () => {
+    const dateObj  = panDate._date || new Date();
+    const startVal = pfStart.value; // "HH:MM"
+    const endVal   = pfEnd.value;
+    const [sh, sm] = startVal.split(":").map(Number);
+    const [eh, em] = endVal.split(":").map(Number);
+
+    const dateStr  = localDateKey(dateObj instanceof Date ? dateObj : new Date(dateObj));
+    const datetime = `${dateStr}T${startVal}`;
+    const endsIso  = toChicagoIso(`${dateStr}T${endVal}`);
+
+    const formVals = {
+      id:          editingId || makeEventId(dateStr, pfTitle.value),
+      title:       pfTitle.value,
+      type:        pfType.value,
+      datetime,
+      location:    pfLoc.value,
+      description: pfDesc.value,
+      status:      "scheduled",
+      draft:       false,
+      flyer:       "",
+      ends_at:     endsIso,
+    };
+
+    const errors = validateEventForm(formVals);
+    if (errors.length) { showPanelMsg(errors.join(" "), "err"); return; }
+
+    showPanelMsg("Saving…");
+    pfSave.disabled = true;
     try {
-      eventsObj = { ...eventsObj, events: deleteEventById(eventsObj.events, id) };
-      await persist(`events: delete ${id} (via admin)`);
-      renderList(listEl, eventsObj.events, handleDelete);
-      setMsg(formMsg, "Deleted. Live in ~1 minute.", "ok");
+      const event   = buildEventObject(formVals);
+      eventsObj     = { ...eventsObj, events: upsertEvent(eventsObj.events, event) };
+      await persist(`events: ${editingId ? "update" : "add"} ${event.id} (via admin)`);
+      redraw();
+      closePanel();
+      showStatus("Saved! Live on site in ~1 minute.", "ok");
     } catch (err) {
-      setMsg(formMsg, err.message, "error");
-      // reload to recover the correct sha if we drifted
-      try { const r = await ghGetFile(token, EVENTS_PATH); sha = r.sha; eventsObj = r.json; renderList(listEl, eventsObj.events, handleDelete); } catch { /* ignore */ }
+      showPanelMsg(err.message, "err");
+      try { await refreshFromGitHub(); } catch { /* ignore */ }
+    } finally {
+      pfSave.disabled = false;
     }
-  }
-
-  el("btn-connect").addEventListener("click", () => {
-    const candidate = el("gh-token").value.trim();
-    if (!candidate) { setMsg(authStatus, "Paste a token first.", "error"); return; }
-    connect(candidate, el("save-token").checked);
   });
 
-  el("btn-logout").addEventListener("click", () => {
+  // ─── delete event ───
+  pfDelete.addEventListener("click", async () => {
+    if (!editingId) return;
+    if (!confirm("Delete this event? It will be removed from the live site after ~1 minute.")) return;
+    showPanelMsg("Deleting…");
+    pfDelete.disabled = true;
+    try {
+      eventsObj = { ...eventsObj, events: deleteEventById(eventsObj.events, editingId) };
+      await persist(`events: delete ${editingId} (via admin)`);
+      redraw();
+      closePanel();
+      showStatus("Deleted. Live in ~1 minute.", "ok");
+    } catch (err) {
+      showPanelMsg(err.message, "err");
+      try { await refreshFromGitHub(); } catch { /* ignore */ }
+    } finally {
+      pfDelete.disabled = false;
+    }
+  });
+
+  panClose.addEventListener("click", closePanel);
+  pfCancel.addEventListener("click", closePanel);
+  overlay.addEventListener("click", closePanel);
+
+  // ─── nav ───
+  btnToday.addEventListener("click", () => { weekSunday = getWeekSunday(new Date()); redraw(); });
+  btnPrev.addEventListener("click",  () => { weekSunday = addDays(weekSunday, -7); redraw(); });
+  btnNext.addEventListener("click",  () => { weekSunday = addDays(weekSunday,  7); redraw(); });
+
+  // ─── logout ───
+  btnLogout.addEventListener("click", () => {
     localStorage.removeItem(TOKEN_KEY);
     token = ""; sha = null; eventsObj = { events: [] };
-    el("gh-token").value = "";
-    appPanel.hidden = true;
-    authPanel.hidden = false;
-    setMsg(authStatus, "Token forgotten on this device.", "ok");
+    sApp.hidden   = true;
+    sLogin.hidden = false;
+    lpPw.value    = "";
+    lpErr.textContent = "";
   });
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const formValues = {
-      title: el("f-title").value,
-      type: el("f-type").value,
-      datetime: el("f-datetime").value,
-      location: el("f-location").value,
-      description: el("f-description").value,
-      rsvp_url: el("f-rsvp").value,
-      cta_label: el("f-cta").value,
-      status: el("f-status").value,
-      draft: el("f-draft").checked,
-      flyer: "",
-    };
-    const errors = validateEventForm(formValues);
-    if (errors.length) { setMsg(formMsg, errors.join(" "), "error"); return; }
+  // ─── token setup screen ───
+  async function connectWithToken(candidate) {
+    const { sha: newSha, json } = await ghGetFile(candidate, EVENTS_PATH);
+    token     = candidate;
+    sha       = newSha;
+    eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
+    localStorage.setItem(TOKEN_KEY, token);
+    sToken.hidden = true;
+    sApp.hidden   = false;
+    redraw();
+  }
 
-    setMsg(formMsg, "Saving…");
+  tkBtn.addEventListener("click", async () => {
+    const candidate = tkPw.value.trim();
+    if (!candidate) { tkErr.textContent = "Paste the access key first."; return; }
+    tkErr.textContent = "Connecting…";
     try {
-      const datePart = formValues.datetime.split("T")[0];
-      const baseId = makeEventId(datePart, formValues.title);
-
-      // Optional flyer upload
-      const fileInput = el("f-flyer");
-      if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
-        const flyerPath = `${FLYER_DIR}/${baseId}.${ext}`;
-        const b64 = await fileToBase64(file);
-        await ghPutBinary(token, flyerPath, b64, `events: flyer for ${baseId} (via admin)`);
-        formValues.flyer = `assets/events/${baseId}.${ext}`; // relative path the renderer expects
-      }
-
-      formValues.id = baseId;
-      const event = buildEventObject(formValues);
-      eventsObj = { ...eventsObj, events: upsertEvent(eventsObj.events, event) };
-      await persist(`events: add ${event.id} (via admin)`);
-      renderList(listEl, eventsObj.events, handleDelete);
-      form.reset();
-      el("f-type").value = "meetup";
-      el("f-status").value = "scheduled";
-      setMsg(formMsg, "Saved! It will appear on the calendar in ~1 minute (hard-refresh the site).", "ok");
+      await connectWithToken(candidate);
     } catch (err) {
-      setMsg(formMsg, err.message, "error");
-      try { const r = await ghGetFile(token, EVENTS_PATH); sha = r.sha; eventsObj = r.json; renderList(listEl, eventsObj.events, handleDelete); } catch { /* ignore */ }
+      tkErr.textContent = err.message;
     }
   });
 
-  // Auto-connect if a token was remembered on this device.
-  const saved = localStorage.getItem(TOKEN_KEY);
-  if (saved) {
-    el("gh-token").value = saved;
-    el("save-token").checked = true;
-    connect(saved, true);
+  // ─── login screen ───
+  async function doLogin() {
+    try {
+      const input = lpPw.value;
+      if (!input) { lpErr.textContent = "Enter the admin password."; return; }
+      lpErr.textContent = "Checking…";
+      const ok = await checkPassword(input);
+      if (!ok) { lpErr.textContent = "Incorrect password. Try again."; lpPw.value = ""; lpPw.focus(); return; }
+      lpErr.textContent = "";
+
+      const saved = localStorage.getItem(TOKEN_KEY);
+      if (saved) {
+        try {
+          const { sha: newSha, json } = await ghGetFile(saved, EVENTS_PATH);
+          token     = saved;
+          sha       = newSha;
+          eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
+          sLogin.hidden = true;
+          sApp.hidden   = false;
+          redraw();
+        } catch {
+          localStorage.removeItem(TOKEN_KEY);
+          sLogin.hidden = true;
+          sToken.hidden = false;
+        }
+      } else {
+        sLogin.hidden = true;
+        sToken.hidden = false;
+      }
+    } catch (err) {
+      lpErr.textContent = "Error: " + err.message;
+    }
   }
+
+  lpBtn.addEventListener("click", doLogin);
+  lpPw.addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
 }
