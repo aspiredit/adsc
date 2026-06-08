@@ -306,10 +306,11 @@ function renderTimeCol(timeCol) {
 }
 
 function renderDayCols(dayColsEl, weekDates, events, todayKey, onSlotClick, onEventClick) {
-  // Build a map: dateKey -> events[]
+  // Build a map: dateKey -> events[] (skip events with invalid dates)
   const byDate = {};
   for (const ev of events) {
     if (!ev.starts_at) continue;
+    if (isNaN(new Date(ev.starts_at).getTime())) continue;
     const key = chicagoDateKey(ev.starts_at);
     (byDate[key] ??= []).push(ev);
   }
