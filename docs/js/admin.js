@@ -502,6 +502,11 @@ export function init() {
 
   // ─── save event ───
   pfSave.addEventListener("click", async () => {
+    // If no token is set, prompt admin to set one up
+    if (!token) {
+      showPanelMsg("No GitHub token connected. Saving is disabled until a token is set up.", "err");
+      return;
+    }
     const dateObj  = panDate._date || new Date();
     const startVal = pfStart.value; // "HH:MM"
     const endVal   = pfEnd.value;
@@ -607,6 +612,16 @@ export function init() {
     }
   });
 
+  // ─── load events from local JSON (fallback when no GitHub token) ───
+  async function loadEventsLocally() {
+    try {
+      const res = await fetch("../_data/events.json", { cache: "no-store" });
+      if (!res.ok) return;
+      const json = await res.json();
+      eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
+    } catch { /* no events loaded, start empty */ }
+  }
+
   // ─── login screen ───
   async function doLogin() {
     try {
@@ -617,6 +632,7 @@ export function init() {
       if (!ok) { lpErr.textContent = "Incorrect password. Try again."; lpPw.value = ""; lpPw.focus(); return; }
       lpErr.textContent = "";
 
+      // Try saved token first — if it works, great. Otherwise load locally.
       const saved = localStorage.getItem(TOKEN_KEY);
       if (saved) {
         try {
@@ -624,18 +640,17 @@ export function init() {
           token     = saved;
           sha       = newSha;
           eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-          sLogin.hidden = true;
-          sApp.hidden   = false;
-          redraw();
         } catch {
           localStorage.removeItem(TOKEN_KEY);
-          sLogin.hidden = true;
-          sToken.hidden = false;
+          await loadEventsLocally();
         }
       } else {
-        sLogin.hidden = true;
-        sToken.hidden = false;
+        await loadEventsLocally();
       }
+
+      sLogin.hidden = true;
+      sApp.hidden   = false;
+      redraw();
     } catch (err) {
       lpErr.textContent = "Error: " + err.message;
     }
