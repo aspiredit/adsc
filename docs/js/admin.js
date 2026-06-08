@@ -179,13 +179,13 @@ async function sha256hex(str) {
 
 async function checkPassword(input) {
   const s = input.trim();
-  // crypto.subtle requires HTTPS or localhost — falls back to plain compare for local file:// testing
-  if (!crypto.subtle) return s === "adsc2026";
+  // Try SHA-256 first; fall back to plain compare on any failure
   try {
-    return (await sha256hex(s)) === PASSWORD_HASH;
-  } catch {
-    return s === "adsc2026";
-  }
+    if (crypto?.subtle) {
+      return (await sha256hex(s)) === PASSWORD_HASH;
+    }
+  } catch { /* fall through */ }
+  return s === "adsc2026";
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -651,9 +651,15 @@ export function init() {
 
       sLogin.hidden = true;
       sApp.hidden   = false;
-      redraw();
+      try {
+        redraw();
+      } catch (err) {
+        calStatus.textContent = "Calendar error: " + err.message;
+        console.error("redraw failed:", err);
+      }
     } catch (err) {
       lpErr.textContent = "Error: " + err.message;
+      console.error("login failed:", err);
     }
   }
 
