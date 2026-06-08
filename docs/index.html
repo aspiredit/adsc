@@ -1234,110 +1234,265 @@
     gap: 12px;
   }
 
-  /* ====== CALENDAR (issue 007) ====== */
+  /* ====== WEEK CALENDAR (Outlook-style) ====== */
   .calendar-section {
     background: var(--bg);
     padding: 80px 0;
     border-top: 1px solid var(--line);
   }
   #calendar {
-    max-width: 720px;
+    max-width: 960px;
     margin: 0 auto;
     background: #fff;
     border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: var(--font-body);
   }
-  .calendar-header {
+
+  /* Toolbar */
+  .wk-toolbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 22px;
+    gap: 10px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+    flex-wrap: wrap;
   }
-  .calendar-title {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: var(--blue-deep);
-    margin: 0;
-  }
-  .calendar-nav {
+  .wk-toolbar-left { display: flex; gap: 6px; align-items: center; }
+  .wk-nav-btn {
     background: transparent;
     border: 1px solid var(--line);
-    color: var(--blue-deep);
-    width: 36px;
-    height: 36px;
+    color: var(--ink);
+    height: 32px;
+    padding: 0 14px;
     border-radius: 4px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-  .calendar-nav:hover { background: var(--bg-warm); }
-  .calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 8px;
     font-family: var(--font-body);
-    font-size: 0.72rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .wk-nav-btn:hover { background: var(--line-faint); }
+  .wk-nav-arrow { padding: 0 10px; font-size: 1.2rem; }
+  .wk-week-label {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--blue-deep);
+    margin-left: 6px;
+  }
+
+  /* Scrollable grid wrapper */
+  .wk-grid-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Day header */
+  .wk-head {
+    display: grid;
+    grid-template-columns: 58px repeat(7, 1fr);
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-width: 560px;
+  }
+  .wk-head-gap { border-right: 1px solid var(--line); }
+  .wk-head-cell {
+    padding: 10px 4px 8px;
+    text-align: center;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--ink-mute);
-    text-align: center;
-  }
-  .calendar-weekdays > * { padding: 6px 0; }
-  .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-  .calendar-day {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
+    letter-spacing: 0.08em;
     color: var(--ink);
-    display: flex;
-    flex-direction: column;
+    border-right: 1px solid var(--line-faint);
+  }
+  .wk-head-cell.wk-today { color: var(--blue-deep); }
+  .wk-day-num {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin-top: 2px;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .wk-today-circle {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    cursor: default;
-    padding: 0;
-  }
-  .calendar-day.out-of-month { color: var(--ink-mute); opacity: 0.4; }
-  .calendar-day.is-today {
-    background: var(--bg-warm);
-    border-color: var(--blue-mid);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--blue-deep);
+    color: #fff;
+    font-size: 0.9rem;
     font-weight: 600;
+  }
+
+  /* Body: time column + day columns */
+  .wk-body {
+    display: grid;
+    grid-template-columns: 58px 1fr;
+    min-width: 560px;
+  }
+
+  /* Time column */
+  .wk-time-col {
+    border-right: 1px solid var(--line);
+    background: #fff;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+  }
+  .wk-time-label {
+    height: 56px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 4px 8px 0 0;
+    font-size: 0.72rem;
+    color: #6b7a8d;
+    letter-spacing: 0.02em;
+    box-sizing: border-box;
+  }
+
+  /* Day columns */
+  .wk-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+  .wk-day-col {
+    position: relative;
+    border-right: 1px solid var(--line-faint);
+  }
+  .wk-day-col.wk-today-col { background: #f0f6fd; }
+  .wk-slot {
+    height: 56px;
+    border-bottom: 1px solid var(--line-faint);
+    box-sizing: border-box;
+  }
+
+  /* Event blocks */
+  .wk-ev {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    border-radius: 4px;
+    padding: 3px 6px;
+    cursor: pointer;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: filter 0.1s;
+    z-index: 1;
+  }
+  .wk-ev:hover { filter: brightness(0.92); }
+  .wk-ev--blue {
+    background: rgba(31,94,150,0.15);
+    border-left: 3px solid var(--blue-deep);
     color: var(--blue-deep);
   }
-  .calendar-day.has-events { cursor: pointer; }
-  .calendar-day.has-events:hover { background: var(--bg-warm); }
-  .calendar-day-num { line-height: 1; }
-  .calendar-dots {
-    display: flex;
-    gap: 3px;
-    height: 6px;
-    align-items: center;
+  .wk-ev--gold {
+    background: rgba(184,132,61,0.15);
+    border-left: 3px solid var(--gold);
+    color: #8a5f1e;
   }
-  .calendar-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
+  .wk-ev-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .calendar-dot--blue { background: var(--blue-deep); }
-  .calendar-dot--gold { background: var(--gold-soft); }
+  .wk-ev-time {
+    font-size: 0.7rem;
+    opacity: 0.8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
 
-  @media (max-width: 540px) {
-    #calendar { padding: 16px; }
-    .calendar-day { font-size: 0.85rem; }
-    .calendar-title { font-size: 1.3rem; }
+  /* Event detail popup */
+  .wk-popup {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 20px;
+    width: 300px;
+    font-family: var(--font-body);
+  }
+  .wk-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #6b7a8d;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+  .wk-popup-type {
+    display: inline-block;
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .wk-popup-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .wk-popup-row {
+    font-size: 0.85rem;
+    color: var(--ink);
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+  .wk-popup-desc {
+    font-size: 0.82rem;
+    color: #4a5568;
+    margin-top: 8px;
+    line-height: 1.5;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+  .wk-popup-rsvp {
+    display: inline-block;
+    margin-top: 14px;
+    background: var(--blue-deep);
+    color: #fff;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background 0.15s;
+  }
+  .wk-popup-rsvp:hover { background: #174d80; }
+
+  @media (max-width: 700px) {
+    .wk-week-label { font-size: 0.95rem; }
+    .wk-ev-title { font-size: 0.72rem; }
   }
 
   /* RSVP form */
