@@ -12,10 +12,10 @@
       "draft": false
     },
     {
-      "id": "new item",
+      "id": "new-item",
       "title": "testing events",
       "type": "meetup",
-      "starts_at": "june 1st 2026",
+      "starts_at": "2026-06-01T10:00:00-05:00",
       "location": "remote",
       "description": "dads and child  meeting ",
       "status": "scheduled",
