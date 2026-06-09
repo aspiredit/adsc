@@ -613,53 +613,47 @@ export function init() {
     }
   });
 
-  // ─── load events from local JSON (fallback when no GitHub token) ───
+  // ─── load events from local JSON ───
   async function loadEventsLocally() {
     try {
       const res = await fetch("../_data/events.json", { cache: "no-store" });
       if (!res.ok) return;
       const json = await res.json();
-      eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-    } catch { /* no events loaded, start empty */ }
+      eventsObj = json && Array.isArray(json.events) ? json
+        : { events: Array.isArray(json) ? json : [] };
+    } catch (e) {
+      console.warn("Could not load events.json:", e);
+    }
   }
 
   // ─── login screen ───
   async function doLogin() {
-    try {
-      const input = lpPw.value;
-      if (!input) { lpErr.textContent = "Enter the admin password."; return; }
-      lpErr.textContent = "Checking…";
-      const ok = await checkPassword(input);
-      if (!ok) { lpErr.textContent = "Incorrect password. Try again."; lpPw.value = ""; lpPw.focus(); return; }
-      lpErr.textContent = "";
+    const input = lpPw.value;
+    if (!input) { lpErr.textContent = "Enter the admin password."; return; }
+    lpErr.textContent = "Checking…";
+    lpBtn.disabled = true;
 
-      // Try saved token first — if it works, great. Otherwise load locally.
-      const saved = localStorage.getItem(TOKEN_KEY);
-      if (saved) {
-        try {
-          const { sha: newSha, json } = await ghGetFile(saved, EVENTS_PATH);
-          token     = saved;
-          sha       = newSha;
-          eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-        } catch {
-          localStorage.removeItem(TOKEN_KEY);
-          await loadEventsLocally();
-        }
-      } else {
-        await loadEventsLocally();
+    try {
+      const ok = await checkPassword(input);
+      if (!ok) {
+        lpErr.textContent = "Incorrect password. Try again.";
+        lpPw.value = "";
+        lpPw.focus();
+        return;
       }
 
+      // Load events from local JSON — no GitHub token needed to view the calendar
+      await loadEventsLocally();
+
+      lpErr.textContent = "";
       sLogin.hidden = true;
       sApp.hidden   = false;
-      try {
-        redraw();
-      } catch (err) {
-        calStatus.textContent = "Calendar error: " + err.message;
-        console.error("redraw failed:", err);
-      }
+      redraw();
     } catch (err) {
       lpErr.textContent = "Error: " + err.message;
-      console.error("login failed:", err);
+      console.error("Login error:", err);
+    } finally {
+      lpBtn.disabled = false;
     }
   }
 
