@@ -307,8 +307,13 @@
 </div>
 
 <script type="module">
-  import { init } from "../js/admin.js";
-  init();
+  try {
+    const { init } = await import("../js/admin.js");
+    init();
+  } catch (err) {
+    document.getElementById("lp-err").textContent = "Load error: " + err.message;
+    console.error("admin.js failed to load:", err);
+  }
 </script>
 </body>
 </html>

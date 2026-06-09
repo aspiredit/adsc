@@ -179,13 +179,12 @@ async function sha256hex(str) {
 
 async function checkPassword(input) {
   const s = input.trim();
-  // Try SHA-256 first; fall back to plain compare on any failure
+  // Plain compare first for reliability; SHA-256 as bonus if available
+  if (s === "adsc2026") return true;
   try {
-    if (crypto?.subtle) {
-      return (await sha256hex(s)) === PASSWORD_HASH;
-    }
-  } catch { /* fall through */ }
-  return s === "adsc2026";
+    if (crypto?.subtle) return (await sha256hex(s)) === PASSWORD_HASH;
+  } catch { /* ignore */ }
+  return false;
 }
 
 // ─────────────────────────────────────────────────────────────
