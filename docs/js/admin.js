@@ -638,16 +638,17 @@ export function init() {
         lpErr.textContent = "Incorrect password. Try again.";
         lpPw.value = "";
         lpPw.focus();
+        lpBtn.disabled = false;
         return;
       }
 
-      // Load events from local JSON — no GitHub token needed to view the calendar
-      await loadEventsLocally();
-
+      // Password correct — show calendar immediately, load events in background
       lpErr.textContent = "";
       sLogin.hidden = true;
       sApp.hidden   = false;
       redraw();
+
+      loadEventsLocally().then(() => redraw()).catch(() => {});
     } catch (err) {
       lpErr.textContent = "Error: " + err.message;
       console.error("Login error:", err);
