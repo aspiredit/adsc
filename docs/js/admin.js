@@ -1,20 +1,20 @@
 /**
  * admin.js — ADSC Events Admin
  *
- * Reads/writes docs/_data/events.json via the GitHub Contents API.
- * Auth: password gate (SHA-256 hash) + GitHub fine-grained PAT stored in localStorage.
+ * Reads/writes events via Firebase Firestore.
+ * Auth: password gate (SHA-256 hash) + Firebase Anonymous Auth.
  * UI: Outlook-style 7-day week calendar with slide-in event panel.
  *
  * Pure helpers (slugify, buildEventObject, etc.) are exported for unit tests.
  */
 
-const REPO_OWNER  = "aspiredit";
-const REPO_NAME   = "adsc";
-const BRANCH      = "main";
-const EVENTS_PATH = "docs/_data/events.json";
-const FLYER_DIR   = "docs/assets/events";
-const TOKEN_KEY   = "adsc_gh_token";
-const API         = "https://api.github.com";
+import { db, auth } from "./firebase.js";
+import {
+  collection, doc, getDocs, setDoc, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const EVENTS_COLLECTION = "events";
 
 // SHA-256 of "adsc2026" — change password by updating this hash
 // To generate a new hash: run  node -e "require('crypto').createHash('sha256').update('newpass').digest('hex')" |clip
@@ -117,55 +117,20 @@ export function decodeBase64Utf8(b64) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  GitHub API
+//  Firestore helpers
 // ─────────────────────────────────────────────────────────────
 
-function authHeaders(token) {
-  return {
-    Authorization: `Bearer ${token}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
+async function fsLoadEvents() {
+  const snapshot = await getDocs(collection(db, EVENTS_COLLECTION));
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
-async function ghGetFile(token, path) {
-  const url = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`;
-  const res = await fetch(url, { headers: authHeaders(token), cache: "no-store" });
-  if (res.status === 404) return { sha: null, json: { events: [] } };
-  if (!res.ok) throw new Error(`GitHub read failed (${res.status}). Check the token and its permissions.`);
-  const data = await res.json();
-  return { sha: data.sha, json: JSON.parse(decodeBase64Utf8(data.content)) };
+async function fsSaveEvent(event) {
+  await setDoc(doc(db, EVENTS_COLLECTION, event.id), event);
 }
 
-async function ghPutFile(token, path, contentStr, sha, message) {
-  const url  = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-  const body = { message, content: encodeBase64Utf8(contentStr), branch: BRANCH };
-  if (sha) body.sha = sha;
-  const res  = await fetch(url, { method:"PUT", headers: authHeaders(token), body: JSON.stringify(body) });
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`GitHub write failed (${res.status}). ${detail.slice(0,180)}`);
-  }
-  return res.json();
-}
-
-async function ghPutBinary(token, path, base64Content, message) {
-  const url = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
-  const res = await fetch(url, {
-    method: "PUT", headers: authHeaders(token),
-    body: JSON.stringify({ message, content: base64Content, branch: BRANCH }),
-  });
-  if (!res.ok) { const d = await res.text(); throw new Error(`Upload failed (${res.status}). ${d.slice(0,180)}`); }
-  return res.json();
-}
-
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload  = () => resolve(String(r.result).split(",")[1]);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
+async function fsDeleteEvent(id) {
+  await deleteDoc(doc(db, EVENTS_COLLECTION, id));
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -399,8 +364,6 @@ export function init() {
   const overlay   = document.getElementById("overlay");
 
   // ── state ──
-  let token      = "";
-  let sha        = null;
   let eventsObj  = { events: [] };
   let weekSunday = getWeekSunday(new Date());
   let editingId  = null;  // null = new event, string = editing existing
@@ -487,26 +450,8 @@ export function init() {
     pfTitle.focus();
   }
 
-  // ─── GitHub persist ───
-  async function persist(message) {
-    const str    = JSON.stringify(eventsObj, null, 2) + "\n";
-    const result = await ghPutFile(token, EVENTS_PATH, str, sha, message);
-    sha = result.content.sha;
-  }
-
-  async function refreshFromGitHub() {
-    const { sha: newSha, json } = await ghGetFile(token, EVENTS_PATH);
-    sha = newSha;
-    eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-  }
-
   // ─── save event ───
   pfSave.addEventListener("click", async () => {
-    // If no token is set, prompt admin to set one up
-    if (!token) {
-      showPanelMsg("No GitHub token connected. Saving is disabled until a token is set up.", "err");
-      return;
-    }
     const dateObj  = panDate._date || new Date();
     const startVal = pfStart.value; // "HH:MM"
     const endVal   = pfEnd.value;
@@ -536,15 +481,14 @@ export function init() {
     showPanelMsg("Saving…");
     pfSave.disabled = true;
     try {
-      const event   = buildEventObject(formVals);
-      eventsObj     = { ...eventsObj, events: upsertEvent(eventsObj.events, event) };
-      await persist(`events: ${editingId ? "update" : "add"} ${event.id} (via admin)`);
+      const event = buildEventObject(formVals);
+      await fsSaveEvent(event);
+      eventsObj = { events: upsertEvent(eventsObj.events, event) };
       redraw();
       closePanel();
-      showStatus("Saved! Live on site in ~1 minute.", "ok");
+      showStatus("Event saved!", "ok");
     } catch (err) {
       showPanelMsg(err.message, "err");
-      try { await refreshFromGitHub(); } catch { /* ignore */ }
     } finally {
       pfSave.disabled = false;
     }
@@ -553,18 +497,17 @@ export function init() {
   // ─── delete event ───
   pfDelete.addEventListener("click", async () => {
     if (!editingId) return;
-    if (!confirm("Delete this event? It will be removed from the live site after ~1 minute.")) return;
+    if (!confirm("Delete this event?")) return;
     showPanelMsg("Deleting…");
     pfDelete.disabled = true;
     try {
-      eventsObj = { ...eventsObj, events: deleteEventById(eventsObj.events, editingId) };
-      await persist(`events: delete ${editingId} (via admin)`);
+      await fsDeleteEvent(editingId);
+      eventsObj = { events: deleteEventById(eventsObj.events, editingId) };
       redraw();
       closePanel();
-      showStatus("Deleted. Live in ~1 minute.", "ok");
+      showStatus("Event deleted.", "ok");
     } catch (err) {
       showPanelMsg(err.message, "err");
-      try { await refreshFromGitHub(); } catch { /* ignore */ }
     } finally {
       pfDelete.disabled = false;
     }
@@ -580,50 +523,14 @@ export function init() {
   btnNext.addEventListener("click",  () => { weekSunday = addDays(weekSunday,  7); redraw(); });
 
   // ─── logout ───
-  btnLogout.addEventListener("click", () => {
-    localStorage.removeItem(TOKEN_KEY);
-    token = ""; sha = null; eventsObj = { events: [] };
+  btnLogout.addEventListener("click", async () => {
+    await signOut(auth).catch(() => {});
+    eventsObj = { events: [] };
     sApp.hidden   = true;
     sLogin.hidden = false;
     lpPw.value    = "";
     lpErr.textContent = "";
   });
-
-  // ─── token setup screen ───
-  async function connectWithToken(candidate) {
-    const { sha: newSha, json } = await ghGetFile(candidate, EVENTS_PATH);
-    token     = candidate;
-    sha       = newSha;
-    eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
-    localStorage.setItem(TOKEN_KEY, token);
-    sToken.hidden = true;
-    sApp.hidden   = false;
-    redraw();
-  }
-
-  tkBtn.addEventListener("click", async () => {
-    const candidate = tkPw.value.trim();
-    if (!candidate) { tkErr.textContent = "Paste the access key first."; return; }
-    tkErr.textContent = "Connecting…";
-    try {
-      await connectWithToken(candidate);
-    } catch (err) {
-      tkErr.textContent = err.message;
-    }
-  });
-
-  // ─── load events from local JSON ───
-  async function loadEventsLocally() {
-    try {
-      const res = await fetch("../_data/events.json", { cache: "no-store" });
-      if (!res.ok) return;
-      const json = await res.json();
-      eventsObj = json && Array.isArray(json.events) ? json
-        : { events: Array.isArray(json) ? json : [] };
-    } catch (e) {
-      console.warn("Could not load events.json:", e);
-    }
-  }
 
   // ─── login screen ───
   async function doLogin() {
@@ -642,13 +549,17 @@ export function init() {
         return;
       }
 
-      // Password correct — show calendar immediately, load events in background
+      // Sign in anonymously with Firebase so Firestore rules allow writes
+      await signInAnonymously(auth);
+
+      // Load events from Firestore
+      const events = await fsLoadEvents();
+      eventsObj = { events };
+
       lpErr.textContent = "";
       sLogin.hidden = true;
       sApp.hidden   = false;
       redraw();
-
-      loadEventsLocally().then(() => redraw()).catch(() => {});
     } catch (err) {
       lpErr.textContent = "Error: " + err.message;
       console.error("Login error:", err);

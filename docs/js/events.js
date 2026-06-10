@@ -220,6 +220,8 @@ function escapeHtml(str) {
 
 import { renderCalendar } from "./calendar.js";
 import { downloadEventICS } from "./ics.js";
+import { db } from "./firebase.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 function attachIcsHandlers(events) {
   const byId = new Map(events.map((e) => [e.id, e]));
@@ -241,16 +243,10 @@ export async function init() {
   );
   if (previewMode) showPreviewBanner();
   try {
-    const res = await fetch(EVENTS_JSON_PATH);
-    if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
-    const all = extractEvents(await res.json());
-    const dated = all.filter(hasValidDate);
-    if (dated.length !== all.length) {
-      console.warn(
-        `Skipped ${all.length - dated.length} event(s) with an invalid start date.`
-      );
-    }
-    const events = filterDrafts(dated, previewMode);
+    const snapshot = await getDocs(collection(db, "events"));
+    const all      = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    const dated    = all.filter(hasValidDate);
+    const events   = filterDrafts(dated, previewMode);
     const featured = pickFeaturedEvent(events);
     const upcoming = pickUpcomingEvents(events, new Date(), featured?.id ?? null);
     renderFeatured(featured);
