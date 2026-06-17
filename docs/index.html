@@ -231,15 +231,24 @@
   .nav-links a:not(.nav-cta).active::after { transform: scaleX(1); }
   .nav-links a:hover { color: var(--blue-deep); text-decoration: none; }
   .nav-links a.active { color: var(--blue-deep); }
-  .nav-cta {
+  /* Scoped to .nav-links a so it out-specifies the base link padding (which
+     was flattening the button). Filled, rounded, slightly raised. */
+  .nav-links a.nav-cta {
     background: var(--blue-deep);
     color: #fff !important;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 9px 22px;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 0.92rem;
+    box-shadow: 0 4px 12px -3px rgba(31,94,150,0.45);
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .nav-cta:hover { background: var(--blue-mid); text-decoration: none; }
+  .nav-links a.nav-cta:hover {
+    background: var(--blue-mid);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px -4px rgba(31,94,150,0.5);
+  }
 
   /* Hamburger button */
   .nav-toggle {
@@ -289,11 +298,12 @@
       font-size: 1.08rem;
     }
     .nav-links a:not(.nav-cta)::after { display: none; }
-    .nav-cta {
+    .nav-links a.nav-cta {
       margin-top: 24px;
       text-align: center;
       padding: 14px 20px;
-      border-radius: 4px;
+      border-radius: 8px;
+      border-bottom: none;
     }
     body.nav-open { overflow: hidden; }
   }
@@ -806,26 +816,40 @@
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
-  .test-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin-top: 50px;
-  }
+  /* Slider: one quote at a time on a stable-height stage — tames the wildly
+     uneven testimonial lengths the old grid couldn't. */
+  .test-slider { position: relative; max-width: 760px; margin: 50px auto 0; }
+  .test-viewport { overflow: hidden; border-radius: 14px; }
+  .test-track { display: flex; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
   .test-card {
+    flex: 0 0 100%;
+    min-width: 100%;
     background: var(--bg-card);
-    padding: 32px;
-    border-radius: 6px;
+    padding: 48px 52px;
     border: 1px solid var(--line);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    box-shadow: 0 14px 36px -18px rgba(31,94,150,0.28);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   .test-quote {
     font-family: var(--font-display);
-    font-size: 1.12rem;
-    line-height: 1.5;
+    font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+    line-height: 1.6;
     color: var(--ink);
-    margin-bottom: 24px;
+    margin-bottom: 26px;
     font-style: italic;
+    position: relative;
+  }
+  .test-quote::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.5em; left: -0.55em;
+    font-size: 3.2rem;
+    line-height: 1;
+    color: var(--blue-soft);
+    opacity: 0.5;
+    font-family: var(--font-display);
   }
   .test-author {
     display: flex;
@@ -835,8 +859,8 @@
     padding-top: 18px;
   }
   .test-avatar {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--gold), #C99550);
     display: flex;
@@ -844,13 +868,13 @@
     justify-content: center;
     color: #fff;
     font-weight: 600;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
   }
   .test-name {
     font-weight: 600;
     color: var(--ink);
-    font-size: 0.96rem;
+    font-size: 0.98rem;
     line-height: 1.2;
   }
   .test-meta {
@@ -858,12 +882,38 @@
     color: var(--ink-mute);
     margin-top: 2px;
   }
-
-  @media (max-width: 1100px) {
-    .test-grid { grid-template-columns: repeat(2, 1fr); }
+  /* arrows */
+  .test-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--line); background: #fff; color: var(--blue-deep);
+    font-size: 1.6rem; line-height: 1; cursor: pointer; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px -6px rgba(31,94,150,0.3);
+    transition: background .15s ease, color .15s ease, transform .15s ease;
   }
-  @media (max-width: 600px) {
-    .test-grid { grid-template-columns: 1fr; gap: 20px; }
+  .test-arrow:hover { background: var(--blue-deep); color: #fff; }
+  .test-arrow--prev { left: -16px; }
+  .test-arrow--next { right: -16px; }
+  /* dots */
+  .test-dots { display: flex; justify-content: center; gap: 9px; margin-top: 26px; flex-wrap: wrap; }
+  .test-dot {
+    width: 9px; height: 9px; border-radius: 50%; border: none; padding: 0;
+    background: var(--line); cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+  }
+  .test-dot:hover { background: var(--blue-soft); }
+  .test-dot.is-active { background: var(--gold); transform: scale(1.35); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .test-track { transition: none; }
+  }
+  @media (max-width: 700px) {
+    .test-card { padding: 34px 26px; }
+    .test-arrow { width: 38px; height: 38px; font-size: 1.4rem; }
+    .test-arrow--prev { left: 2px; }
+    .test-arrow--next { right: 2px; }
+    .test-quote::before { display: none; }
   }
 
   /* ====== PROGRAMS ====== */
@@ -2866,7 +2916,10 @@
       <div class="strip-eyebrow">From the brothers</div>
       <h2>What it actually <em>feels like.</em></h2>
     </div>
-    <div class="test-grid">
+    <div class="test-slider" data-testimonial-slider role="region" aria-roledescription="carousel" aria-label="Member testimonials">
+      <button type="button" class="test-arrow test-arrow--prev" aria-label="Previous testimonial">‹</button>
+      <div class="test-viewport">
+        <div class="test-track">
       <div class="test-card">
         <p class="test-quote">First time I'd been around men who didn't try to fix it or tell me about their nephew. They just nodded. Two of them I now meet for coffee almost every week.</p>
         <div class="test-author">
@@ -2955,6 +3008,10 @@
           </div>
         </div>
       </div>
+        </div>
+      </div>
+      <button type="button" class="test-arrow test-arrow--next" aria-label="Next testimonial">›</button>
+      <div class="test-dots" aria-label="Choose a testimonial"></div>
     </div>
   </div>
 </section>
@@ -3456,9 +3513,11 @@
   import { init as initEvents } from "./js/events.js";
   import { init as initBlogs } from "./js/blogs.js";
   import { init as initPhotos } from "./js/photos.js";
+  import { init as initTestimonials } from "./js/testimonials.js";
   initEvents();
   initBlogs();
   initPhotos();
+  initTestimonials();
 </script>
 
 <script>
