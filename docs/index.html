@@ -818,19 +818,29 @@
   }
   /* Slider: one quote at a time on a stable-height stage — tames the wildly
      uneven testimonial lengths the old grid couldn't. */
-  .test-slider { position: relative; max-width: 760px; margin: 50px auto 0; }
-  .test-viewport { overflow: hidden; border-radius: 14px; }
-  .test-track { display: flex; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+  .test-slider { position: relative; max-width: 1000px; margin: 50px auto 0; padding: 0 8px; }
+  .test-viewport { overflow: hidden; padding: 12px 0 6px; }
+  .test-track { display: flex; gap: 28px; align-items: stretch; position: relative; transition: transform 0.6s cubic-bezier(.4,0,.2,1); }
   .test-card {
-    flex: 0 0 100%;
-    min-width: 100%;
+    flex: 0 0 72%;
+    min-width: 0;
     background: var(--bg-card);
-    padding: 48px 52px;
+    padding: 44px 48px;
     border: 1px solid var(--line);
+    border-radius: 14px;
     box-shadow: 0 14px 36px -18px rgba(31,94,150,0.28);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    /* side previews are dimmed + shrunk; the active one fades/scales up */
+    opacity: 0.4;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .test-card.is-active {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 20px 44px -18px rgba(31,94,150,0.38);
   }
   .test-quote {
     font-family: var(--font-display);
@@ -906,13 +916,15 @@
   .test-dot.is-active { background: var(--gold); transform: scale(1.35); }
 
   @media (prefers-reduced-motion: reduce) {
-    .test-track { transition: none; }
+    .test-track, .test-card { transition: none; }
   }
   @media (max-width: 700px) {
-    .test-card { padding: 34px 26px; }
+    .test-slider { max-width: 560px; }
+    .test-track { gap: 16px; }
+    .test-card { flex-basis: 86%; padding: 32px 24px; transform: scale(0.94); }
     .test-arrow { width: 38px; height: 38px; font-size: 1.4rem; }
-    .test-arrow--prev { left: 2px; }
-    .test-arrow--next { right: 2px; }
+    .test-arrow--prev { left: -2px; }
+    .test-arrow--next { right: -2px; }
     .test-quote::before { display: none; }
   }
 
