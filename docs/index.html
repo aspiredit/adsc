@@ -820,7 +820,7 @@
      uneven testimonial lengths the old grid couldn't. */
   .test-slider { position: relative; max-width: 1000px; margin: 50px auto 0; padding: 0 8px; }
   .test-viewport { overflow: hidden; padding: 12px 0 6px; }
-  .test-track { display: flex; gap: 28px; align-items: stretch; position: relative; transition: transform 0.6s cubic-bezier(.4,0,.2,1); }
+  .test-track { display: flex; gap: 28px; align-items: center; position: relative; transition: transform 0.6s cubic-bezier(.4,0,.2,1); }
   .test-card {
     flex: 0 0 72%;
     min-width: 0;
@@ -842,23 +842,27 @@
     transform: scale(1);
     box-shadow: 0 20px 44px -18px rgba(31,94,150,0.38);
   }
+  /* Readable long-form: roman (not italic), open leading, comfortable measure,
+     centered column so wide cards don't run text edge-to-edge. */
   .test-quote {
     font-family: var(--font-display);
-    font-size: clamp(1.05rem, 1.5vw, 1.22rem);
-    line-height: 1.6;
+    font-style: normal;
+    font-size: clamp(1rem, 1.25vw, 1.1rem);
+    line-height: 1.8;
     color: var(--ink);
-    margin-bottom: 26px;
-    font-style: italic;
+    max-width: 56ch;
+    margin: 0 auto 24px;
+    text-align: left;
     position: relative;
   }
   .test-quote::before {
     content: '\201C';
     position: absolute;
-    top: -0.5em; left: -0.55em;
-    font-size: 3.2rem;
+    top: -0.42em; left: -0.42em;
+    font-size: 2.8rem;
     line-height: 1;
     color: var(--blue-soft);
-    opacity: 0.5;
+    opacity: 0.45;
     font-family: var(--font-display);
   }
   .test-author {
