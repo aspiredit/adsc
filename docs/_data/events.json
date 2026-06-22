@@ -1,13 +1,12 @@
 {
   "events": [
     {
-      "id": "New Event",
-      "title": "Meet Up",
+      "id": "Fatherhood Huddle",
+      "title": "Virtual Event",
       "type": "meetup",
       "starts_at": "2026-05-30T17:00:00-05:00",
       "location": "Remote",
       "description": "This is a great way to do things",
-      "flyer": "/assets/events/ChatGPT Image May 26, 2026, 09_21_05 PM.png",
       "status": "scheduled",
       "draft": false
     }
