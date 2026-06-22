@@ -21,6 +21,15 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 | [011](issues/011-content-manifests.md) | Auto-generate blogs.json + photos.json manifests on push | AFK | Done | 002 |
 | [012](issues/012-blog-rendering.md) | Blog rendering: home section + list page + detail page | AFK | Done | 011 |
 | [013](issues/013-photo-gallery.md) | Photo gallery: home strip + gallery page + lightbox | AFK | Done | 011 |
+| [014](issues/014-mobile-app-ios-android.md) | Mobile app (iOS + Android) via PWA + Capacitor — build-ready, publish-gated | Epic | Backlog (parked) | — |
+| [015](issues/015-rag-chat-assistant.md) | Context-aware RAG chat assistant (Gen-AI, minimal cost) | Epic | Backlog (parked) | 011 |
+
+## Sideline initiatives (parked — beyond the event system)
+
+Larger "good-to-have" initiatives captured for later. Each is an **epic** with its tracer-bullet slices listed inside the issue; split into individual slice tickets when activated. Both are **additive** (no change to the current site):
+
+- **[014] Mobile app** — build/stage to TestFlight + Play internal is allowed; **production publish requires explicit approval**.
+- **[015] RAG chat** — minimal-cost, content-grounded; backend decoupled from the domain/DNS decision (runs on Cloudflare `workers.dev`).
 
 ## Suggested order
 
