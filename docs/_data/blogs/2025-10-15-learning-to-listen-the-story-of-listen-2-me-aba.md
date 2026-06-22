@@ -1,15 +1,16 @@
 ---
-title: "Learning to Listen - The Story of Listen-2-Me ABA"
+title: Learning to Listen - The Story of Listen-2-Me ABA
 date: 2025-10-15
 author: By Autism Dads Social Club
-cover_image: /assets/images/blog-learning-to-listen-the-story-of-listen-2-me-aba.png
-excerpt: |
-  Meet Albert, a BCBA and parent whose experience with his son inspired him to found an ABA organization prioritizing parent collaboration, functional communication, and respect for autistic children's voices.
+excerpt: >
+  Meet Albert, a BCBA and parent whose experience with his son inspired him to
+  found an ABA organization prioritizing parent collaboration, functional
+  communication, and respect for autistic children's voices.
 draft: false
 ---
 ### Meet Listen-2-Me ABA
 
-We're grateful to Listen to Me ABA for being a title sponsor for the 2025 Autism Family Costume Party. Partnerships like this help us connect families with real people and real services, and we're excited for the chance to bring caregivers and providers into the same room. _The Autism Dads Social Club does not endorse any particular company or service provider. Our aim is to introduce families to resources and welcome them to choose the service that best suits them._
+We're grateful to Listen to Me ABA for being a title sponsor for the 2025 Autism Family Costume Party. Partnerships like this help us connect families with real people and real services, and we're excited for the chance to bring caregivers and providers into the same room. *The Autism Dads Social Club does not endorse any particular company or service provider. Our aim is to introduce families to resources and welcome them to choose the service that best suits them.*
 
 As Listen to Me ABA's story shows, many ABA founders and professionals become acquainted with autism through parenting. Albert, a dad whose journey with his son led him to become a BCBA and CEO of an ABA company, is one of several parents in our local network who turned personal experience into service to the autism community. In the Q&A below, we ask questions that helps readers become acquainted with Listen-2-Me ABA.
 
