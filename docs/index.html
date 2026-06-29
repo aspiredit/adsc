@@ -327,7 +327,7 @@
   }
   .hero-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1fr;
     gap: 70px;
     align-items: center;
   }
@@ -1740,6 +1740,68 @@
     font-style: italic;
   }
 
+  /* ===== Billing period toggle (Monthly / Annual) ===== */
+  .billing-toggle {
+    display: flex;
+    width: fit-content;
+    margin: 0 auto 40px;
+    padding: 5px;
+    gap: 4px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 999px;
+  }
+  .billing-tab {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 9px 26px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .billing-tab:hover { color: #fff; }
+  .billing-tab.is-active {
+    background: var(--gold);
+    color: #fff;
+  }
+
+  /* ===== Collapsible tier benefit lists ===== */
+  .tier-details {
+    margin-bottom: 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    flex-grow: 1;
+  }
+  .tier-details > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .tier-details > summary::-webkit-details-marker { display: none; }
+  .tier-details > summary .tier-list-label { margin-bottom: 0; }
+  .tier-details > summary::after {
+    content: '+';
+    color: var(--gold-soft);
+    font-size: 1.2rem;
+    line-height: 1;
+    font-weight: 400;
+    transition: transform 0.2s;
+  }
+  .tier-details[open] > summary::after { content: '–'; }
+  .tier-details .tier-list { margin-bottom: 8px; }
+
+  /* Charter has no monthly plan: flag it under the Monthly tab */
+  .tier.is-annual-only .tier-monthly { color: var(--gold-soft); font-style: italic; }
+
   @media (max-width: 900px) {
     .tiers-grid { grid-template-columns: 1fr; gap: 32px; }
     .tier.featured { order: -1; margin-top: 12px; }
@@ -2744,13 +2806,6 @@
         </div>
         <div class="hero-trust">It's free to come. There's nothing to sign up for. Just show up.</div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-quote">
-          <div class="hero-quote-bg"></div>
-          <p class="hero-quote-text">First friend I've made since the diagnosis. Drove ninety minutes the first time and didn't regret a mile of it.</p>
-          <div class="hero-quote-author"><strong>Marcus</strong> · Pearland · Joined 2024</div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -2942,26 +2997,6 @@
           <div class="test-avatar">PL</div>
           <div>
             <div class="test-name">Paul LeBlanc</div>
-          </div>
-        </div>
-      </div>
-      <div class="test-card">
-        <p class="test-quote">My son comes to the family events and runs around with the other kids. No looks. No whispers. He gets to be a kid for three hours. I get to breathe.</p>
-        <div class="test-author">
-          <div class="test-avatar">KW</div>
-          <div>
-            <div class="test-name">Kevin W.</div>
-            <div class="test-meta">Bellaire · Joined 2024 · Dad to Eli, 7</div>
-          </div>
-        </div>
-      </div>
-      <div class="test-card">
-        <p class="test-quote">I joined as a Charter member after one meetup. Six months in I bumped to Circle. This is the first thing I've spent money on for myself in five years.</p>
-        <div class="test-author">
-          <div class="test-avatar">DT</div>
-          <div>
-            <div class="test-name">David T.</div>
-            <div class="test-meta">Sugar Land · Joined 2023 · Dad to Hannah, 11</div>
           </div>
         </div>
       </div>
@@ -3165,7 +3200,7 @@
 <!-- ============================ -->
 <!-- 10. MEMBERSHIP TABLE         -->
 <!-- ============================ -->
-<section class="membership" id="membership">
+<section class="membership" id="membership" data-membership>
   <div class="container">
     <div class="strip-header">
       <div class="strip-eyebrow" style="color: var(--gold-soft);">Three Ways to Belong &amp; Support</div>
@@ -3175,65 +3210,77 @@
     <p class="membership-sub">Every dad's mixer and event we host is free. Membership, sponsorship, and donations fund our nonprofit programming. Your membership helps ensure ADSC can keep creating spaces where fathers connect, families thrive, and no dad has to navigate the autism journey alone.</p>
     <p class="membership-counts"><span class="count-num">74</span> members · Growing every month</p>
 
+    <!-- Billing period toggle (Monthly / Annual) — drives prices + JoinIt links via membership.js -->
+    <div class="billing-toggle" role="tablist" aria-label="Billing period">
+      <button type="button" class="billing-tab is-active" role="tab" data-billing="annual" aria-selected="true">Annual</button>
+      <button type="button" class="billing-tab" role="tab" data-billing="monthly" aria-selected="false">Monthly</button>
+    </div>
+
     <div class="tiers-grid">
 
       <!-- CIRCLE: featured + anchored first per Kahneman -->
-      <div class="tier featured">
+      <div class="tier featured" data-tier="circle">
         <div class="tier-name">Circle Member</div>
         <div class="tier-tag">Sustaining Supporters</div>
         <div class="tier-price">$360<small>/year</small></div>
         <div class="tier-monthly">or $30/month</div>
         <p class="tier-desc">Circle Members help sustain and expand ADSC's reach and impact. The infrastructure they fund is what enables us to keep hosting events for autism dads and families and run a thriving nonprofit organization.</p>
-        <div class="tier-list-label">Your support helps make possible:</div>
-        <ul class="tier-list">
-          <li>Annual state and federal filings</li>
-          <li>Accounting and bookkeeping</li>
-          <li>Insurance coverage</li>
-          <li>Email marketing platforms</li>
-          <li>Newsletter production and distribution</li>
-          <li>Social media management</li>
-          <li>Grant writing and grant management</li>
-          <li>Strategic planning and governance</li>
-          <li>Staff support (paid or volunteer)</li>
-          <li>Professional development and training</li>
-        </ul>
-        <a href="https://app.joinit.com/o/autism-dads-social-club/" class="tier-cta tier-cta-primary" target="_blank" rel="noopener">Become a Circle member</a>
+        <details class="tier-details">
+          <summary><span class="tier-list-label">Your support helps make possible</span></summary>
+          <ul class="tier-list">
+            <li>Annual state and federal filings</li>
+            <li>Accounting and bookkeeping</li>
+            <li>Insurance coverage</li>
+            <li>Email marketing platforms</li>
+            <li>Newsletter production and distribution</li>
+            <li>Social media management</li>
+            <li>Grant writing and grant management</li>
+            <li>Strategic planning and governance</li>
+            <li>Staff support (paid or volunteer)</li>
+            <li>Professional development and training</li>
+          </ul>
+        </details>
+        <a href="https://app.joinit.com/o/autism-dads-social-club/cThqGAcFKynXb9n42" class="tier-cta tier-cta-primary" target="_blank" rel="noopener">Become a Circle member</a>
       </div>
 
-      <div class="tier">
+      <div class="tier" data-tier="charter">
         <div class="tier-name">Charter Member</div>
         <div class="tier-tag">Founding Supporters</div>
-        <div class="tier-price">$40<small>/year</small></div>
-        <div class="tier-monthly">&nbsp;</div>
+        <div class="tier-price">$50<small>/year</small></div>
+        <div class="tier-monthly">Save $10 vs. monthly · or $5/month</div>
         <p class="tier-desc">Charter Members help strengthen the foundation of the organization while enjoying opportunities for deeper connection and engagement. Charter Members help shape the future of ADSC.</p>
-        <div class="tier-list-label">Your support helps make possible:</div>
-        <ul class="tier-list">
-          <li>Refreshments for Dads Mixers throughout the year</li>
-          <li>Food and refreshments for Family events and celebrations</li>
-          <li>Website hosting, design, and maintenance</li>
-          <li>Educational resources and community outreach</li>
-          <li>Newsletter production</li>
-          <li>Podcast platform</li>
-        </ul>
-        <a href="https://app.joinit.com/o/autism-dads-social-club/" class="tier-cta tier-cta-secondary" target="_blank" rel="noopener">Become a Charter member</a>
+        <details class="tier-details">
+          <summary><span class="tier-list-label">Your support helps make possible</span></summary>
+          <ul class="tier-list">
+            <li>Refreshments for Dads Mixers throughout the year</li>
+            <li>Food and refreshments for Family events and celebrations</li>
+            <li>Website hosting, design, and maintenance</li>
+            <li>Educational resources and community outreach</li>
+            <li>Newsletter production</li>
+            <li>Podcast platform</li>
+          </ul>
+        </details>
+        <a href="https://app.joinit.com/o/autism-dads-social-club/kKccT8wdo2H8G59xf" class="tier-cta tier-cta-secondary" target="_blank" rel="noopener">Become a Charter member</a>
       </div>
 
-      <div class="tier">
+      <div class="tier" data-tier="free">
         <div class="tier-name">Basic Subscriber</div>
         <div class="tier-tag">Community Supporter</div>
         <div class="tier-price">Free</div>
         <div class="tier-monthly">Support with your time and presence</div>
         <p class="tier-desc">You don't have to serve on a committee or make a large financial contribution to make a difference. One of the most valuable things a dad can do is simply show up. At ADSC, brotherhood is built one conversation at a time — your presence matters, your story matters, and your willingness to show up may be exactly what another father or family needs.</p>
-        <div class="tier-list-label">As a Basic Subscriber, you help by:</div>
-        <ul class="tier-list">
-          <li>Showing up to Dads Mixers and community events</li>
-          <li>Welcoming new fathers into the group</li>
-          <li>Sharing your experiences and listening when other dads need support</li>
-          <li>Attending family events and helping build community</li>
-          <li>Sharing ADSC events and resources with other dads and families</li>
-          <li>Volunteering occasionally when your schedule allows</li>
-        </ul>
-        <a href="#newsletter" class="tier-cta tier-cta-secondary">Start with the newsletter</a>
+        <details class="tier-details">
+          <summary><span class="tier-list-label">As a Basic Subscriber, you help by</span></summary>
+          <ul class="tier-list">
+            <li>Showing up to Dads Mixers and community events</li>
+            <li>Welcoming new fathers into the group</li>
+            <li>Sharing your experiences and listening when other dads need support</li>
+            <li>Attending family events and helping build community</li>
+            <li>Sharing ADSC events and resources with other dads and families</li>
+            <li>Volunteering occasionally when your schedule allows</li>
+          </ul>
+        </details>
+        <a href="https://app.joinit.com/o/autism-dads-social-club/b9Ytm8dBnzAyNGBCN" class="tier-cta tier-cta-secondary" target="_blank" rel="noopener">Sign up free</a>
       </div>
 
     </div>
@@ -3529,10 +3576,12 @@
   import { init as initBlogs } from "./js/blogs.js";
   import { init as initPhotos } from "./js/photos.js";
   import { init as initTestimonials } from "./js/testimonials.js";
+  import { init as initMembership } from "./js/membership.js";
   initEvents();
   initBlogs();
   initPhotos();
   initTestimonials();
+  initMembership();
 </script>
 
 <script>
