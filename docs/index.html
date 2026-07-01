@@ -628,6 +628,40 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
+  /* Collapsible "Bio" toggle — shared by Executive Board + Advisory Board.
+     Keeps cards uniform/scannable; the narrative bio expands on demand while
+     name/role/credentials (and "Dad to ___" on the board) stay visible. */
+  .bio-toggle { margin: 6px 0 10px; }
+  .bio-toggle > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--blue-deep);
+    padding: 3px 0;
+  }
+  .bio-toggle > summary::-webkit-details-marker { display: none; }
+  .bio-toggle > summary::after {
+    content: '+';
+    font-size: 0.95rem;
+    line-height: 1;
+    font-weight: 400;
+    color: var(--gold);
+  }
+  .bio-toggle[open] > summary::after { content: '–'; }
+  /* Normalize the wrapped bio text now that it lives inside the toggle */
+  .bio-toggle .board-human,
+  .bio-toggle .advisor-bio {
+    border-top: none;
+    min-height: 0;
+    margin: 0;
+    padding-top: 6px;
+  }
   @media (max-width: 1000px) {
     .board-grid { gap: 40px 28px; max-width: 760px; }
     .board-card { width: 220px; }
@@ -2788,7 +2822,7 @@
         <div class="board-name">Emmanuel Arowolo, Esq.</div>
         <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
         <div class="board-cred">Senior Business Immigration Attorney at Foster LLP</div>
-        <div class="board-human">Helps transform good intentions into sustainable impact by ensuring ADSC operates with integrity, transparency, and compliance. Keeps us organized so we can stay focused on serving dads and families.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Helps transform good intentions into sustainable impact by ensuring ADSC operates with integrity, transparency, and compliance. Keeps us organized so we can stay focused on serving dads and families.</div></details>
         <div class="board-dad">Dad to Preye</div>
       </div>
 
@@ -2797,7 +2831,7 @@
         <div class="board-name">Jonathan Chism, PhD</div>
         <div class="board-role">CoFounder &amp; Inaugural President</div>
         <div class="board-cred">Associate Professor of History at University of Houston-Downtown · 15+ years grassroots organizing</div>
-        <div class="board-human">Frequently mistaken for the event coordinator, fundraiser, speaker recruiter, newsletter editor, and guy carrying the folding tables.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Frequently mistaken for the event coordinator, fundraiser, speaker recruiter, newsletter editor, and guy carrying the folding tables.</div></details>
         <div class="board-dad">Dad to Jonathan Jr.</div>
       </div>
 
@@ -2806,7 +2840,7 @@
         <div class="board-name">Jesse Esparza, PhD</div>
         <div class="board-role">CoFounder, Inaugural Treasurer &amp; Director of Family Engagement</div>
         <div class="board-cred">Associate Professor of History at Texas Southern University · Graduate Program Director</div>
-        <div class="board-human">Keeps the books balanced and the mission moving forward. Known for showing up with his entire family in tow — he believes supporting autism dads is a family affair, and his family leads by example.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Keeps the books balanced and the mission moving forward. Known for showing up with his entire family in tow — he believes supporting autism dads is a family affair, and his family leads by example.</div></details>
         <div class="board-dad">Dad to Mateo</div>
       </div>
 
@@ -2815,7 +2849,7 @@
         <div class="board-name">DeAndrae Hinton</div>
         <div class="board-role">Director of Education &amp; Autism Awareness</div>
         <div class="board-cred">Houston ISD Special Ed Dept. Chair · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
-        <div class="board-human">Turns years of special education experience into practical guidance for dads and families navigating the autism journey.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Turns years of special education experience into practical guidance for dads and families navigating the autism journey.</div></details>
         <div class="board-dad">Dad to Dillon</div>
       </div>
 
@@ -2824,7 +2858,7 @@
         <div class="board-name">John Notice, CMHC</div>
         <div class="board-role">Director of Emotional Well-Being</div>
         <div class="board-cred">Mental Health Counselor · PhD Candidate</div>
-        <div class="board-human">Encourages dads to prioritize self-care, mental wellness, and resilience — so they can show up as their best selves for their families.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Encourages dads to prioritize self-care, mental wellness, and resilience — so they can show up as their best selves for their families.</div></details>
         <div class="board-dad">Dad to Tyler &amp; Kyle</div>
       </div>
 
@@ -2848,14 +2882,14 @@
         <div class="advisor-photo-wrap"><img src="assets/people/morgan.jpg" alt="Wes Morgan" loading="lazy"></div>
         <div class="advisor-name">Wes Morgan</div>
         <div class="advisor-role">Healthcare Commercial Executive</div>
-        <div class="advisor-bio">Wes Morgan is a healthcare commercial executive with 20 years of experience leading growth, business development, patient access and go-to-market strategy for high-growth, multi-site organizations. He has built and led high-performing teams, scaled operations nationally and helped organizations navigate periods of rapid growth, operational transformation and expansion.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Wes Morgan is a healthcare commercial executive with 20 years of experience leading growth, business development, patient access and go-to-market strategy for high-growth, multi-site organizations. He has built and led high-performing teams, scaled operations nationally and helped organizations navigate periods of rapid growth, operational transformation and expansion.</div></details>
       </div>
 
       <div class="advisor-card">
         <div class="advisor-photo-wrap" data-pos="farmer"><img src="assets/people/farmer.jpg" alt="Darla Farmer" loading="lazy"></div>
         <div class="advisor-name">Darla Farmer</div>
         <div class="advisor-role">CEO, Hope for Three</div>
-        <div class="advisor-bio">As the visionary founder of the local nonprofit Hope For Three, now entering its 16th year, Mrs. Farmer has led the organization to become a trusted community cornerstone, expanding services to bridge gaps in access to essential therapies and supports for families living with autism.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">As the visionary founder of the local nonprofit Hope For Three, now entering its 16th year, Mrs. Farmer has led the organization to become a trusted community cornerstone, expanding services to bridge gaps in access to essential therapies and supports for families living with autism.</div></details>
       </div>
 
       <div class="advisor-card">
@@ -2880,7 +2914,7 @@
         <div class="advisor-photo-wrap" data-pos="dipasca"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
         <div class="advisor-name">Melody DiPasca</div>
         <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
-        <div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div></details>
       </div>
 
       <div class="advisor-card">
@@ -2893,7 +2927,7 @@
         <div class="advisor-photo-wrap"><div class="advisor-photo-initials">PL</div></div>
         <div class="advisor-name">Paul LeBlanc</div>
         <div class="advisor-role">Of Counsel, Womble Bond Dickinson</div>
-        <div class="advisor-bio">An attorney specializing in finance and commercial real estate matters throughout the United States. Paul is actively involved in volunteer work in the Houston community, including service on the Literacy Now Board of Directors since 2013, and as Board Chair from 2017 to 2023.</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">An attorney specializing in finance and commercial real estate matters throughout the United States. Paul is actively involved in volunteer work in the Houston community, including service on the Literacy Now Board of Directors since 2013, and as Board Chair from 2017 to 2023.</div></details>
       </div>
 
     </div>
