@@ -1,5 +1,5 @@
 ---
-title: ADSC Family Event at Houston Astros Game
+title: "ADSC Family Event at Houston Astros "
 image: /assets/images/family event at Houston Astros.jpg
-caption: ADSC Family Night at Houston Astros
+caption: Take Me Out to the Ball Park
 ---
