@@ -1315,6 +1315,36 @@
     padding: 80px 0;
     border-top: 1px solid var(--line);
   }
+  /* ====== EVENT FLIERS ====== */
+  .fliers {
+    background: var(--bg);
+    padding: 0 0 80px;
+  }
+  .fliers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 26px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .flier-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px -12px rgba(0,0,0,0.3);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .flier-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -14px rgba(0,0,0,0.4); }
+  .flier-card a { display: block; }
+  .flier-card img { width: 100%; height: auto; display: block; }
+  .flier-caption {
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--blue-deep);
+    text-align: center;
+  }
   #calendar {
     max-width: 720px;
     margin: 0 auto;
@@ -2771,6 +2801,31 @@
   }
   .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .back-to-top:hover { background: var(--blue-mid); }
+
+  /* Mobile-only floating Donate button — keeps Donate highly visible when the
+     nav is collapsed behind the hamburger. Hidden on desktop (nav CTA shows there). */
+  .mobile-donate-fab { display: none; }
+  @media (max-width: 820px) {
+    .mobile-donate-fab {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: fixed;
+      left: 18px;
+      bottom: 20px;
+      z-index: 95;
+      background: var(--gold);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.98rem;
+      padding: 12px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      box-shadow: 0 8px 22px -5px rgba(0,0,0,0.4);
+    }
+    .mobile-donate-fab:hover,
+    .mobile-donate-fab:focus-visible { background: var(--blue-deep); color: #fff; text-decoration: none; }
+  }
   .back-to-top:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 2px; }
 
   /* Accessible focus rings everywhere */
@@ -2855,7 +2910,7 @@
         <div class="board-photo-wrap"><img src="assets/people/arowolo.jpg" alt="Emmanuel Arowolo" loading="lazy"></div>
         <div class="board-name">Emmanuel Arowolo, Esq.</div>
         <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
-        <div class="board-cred">Senior Business Immigration Attorney at Foster LLP</div>
+        <div class="board-cred">Senior Business Immigration Attorney at Jackson Walker LLP</div>
         <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Helps transform good intentions into sustainable impact by ensuring ADSC operates with integrity, transparency, and compliance. Keeps us organized so we can stay focused on serving dads and families.</div></details>
         <div class="board-dad">Dad to Preye</div>
       </div>
@@ -2913,10 +2968,10 @@
     <div class="advisory-grid">
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><img src="assets/people/morgan.jpg" alt="Wes Morgan" loading="lazy"></div>
-        <div class="advisor-name">Wes Morgan</div>
-        <div class="advisor-role">Healthcare Commercial Executive</div>
-        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Wes Morgan is a healthcare commercial executive with 20 years of experience leading growth, business development, patient access and go-to-market strategy for high-growth, multi-site organizations. He has built and led high-performing teams, scaled operations nationally and helped organizations navigate periods of rapid growth, operational transformation and expansion.</div></details>
+        <div class="advisor-photo-wrap" data-pos="dipasca"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
+        <div class="advisor-name">Melody DiPasca</div>
+        <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">A full-time working mom of two amazing boys (her youngest on the spectrum), a devoted wife, and an active volunteer in the autism community. Melody's personal and professional experiences have fueled a deep passion for supporting autism families, advocating for inclusion, and helping others navigate their unique journeys. She is committed to building connections, sharing resources, and making a positive impact in the lives of families affected by autism.</div></details>
       </div>
 
       <div class="advisor-card">
@@ -2927,35 +2982,10 @@
       </div>
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">EL</div></div>
-        <div class="advisor-name">Edmond Lee</div>
-        <div class="advisor-role">Advisor</div>
-      </div>
-
-      <div class="advisor-card">
         <div class="advisor-photo-wrap"><div class="advisor-photo-initials">AJ</div></div>
         <div class="advisor-name">Amanda Jaloway</div>
-        <div class="advisor-role">Advisor</div>
-      </div>
-
-      <div class="advisor-card">
-        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">HM</div></div>
-        <div class="advisor-name">Hope Montgomery</div>
-        <div class="advisor-role">Advisor</div>
-      </div>
-
-      <div class="advisor-card">
-        <div class="advisor-photo-wrap" data-pos="dipasca"><img src="assets/people/dipasca.jpg" alt="Melody DiPasca" loading="lazy"></div>
-        <div class="advisor-name">Melody DiPasca</div>
-        <div class="advisor-role">Autism Advocate &amp; Community Volunteer</div>
-        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Full-time working mom of two amazing boys (youngest on the spectrum), devoted wife, and active volunteer in the autism community.</div></details>
-      </div>
-
-      <div class="advisor-card">
-        <div class="advisor-photo-wrap" data-pos="thomas"><img src="assets/people/thomas.jpg" alt="Derrick Thomas" loading="lazy"></div>
-        <div class="advisor-name">Derrick Thomas</div>
-        <div class="advisor-role">Certified Life Coach &amp; CEO</div>
-        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Derrick Thomas II is a certified life coach and CEO at Thomas-ConnectX Private Asset Management (P.A.M) Firm Administration.</div></details>
+        <div class="advisor-role">Owner, We Rock the Spectrum Sugar Land</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">As owner of We Rock the Spectrum Sugar Land, Amanda was inspired by both her children — one autistic, one not — to curate a space where all kids are free to play and grow together. This fuels her passion to fight every day for a world where everyone not only fits in, but feels truly valued and empowered, regardless of ability.</div></details>
       </div>
 
       <div class="advisor-card">
@@ -2963,6 +2993,34 @@
         <div class="advisor-name">Paul LeBlanc</div>
         <div class="advisor-role">Of Counsel, Womble Bond Dickinson</div>
         <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">An attorney specializing in finance and commercial real estate matters throughout the United States. Paul is actively involved in volunteer work in the Houston community, including service on the Literacy Now Board of Directors since 2013, and as Board Chair from 2017 to 2023.</div></details>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">EL</div></div>
+        <div class="advisor-name">Edmond Lee</div>
+        <div class="advisor-role">Property Manager / Realtor · HOA Manager, Tang City Plaza</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Ed is the father of a teenage daughter who was diagnosed with autism at the age of two. He has been a dedicated advocate for her throughout her life and remains committed to supporting her as she navigates adolescence. He hopes to connect with other fathers of teenagers on the autism spectrum to discuss the unique opportunities and challenges of this stage of life — including college, employment, driving, and the transition to adulthood.</div></details>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">HM</div></div>
+        <div class="advisor-name">Hope Collins Montgomery</div>
+        <div class="advisor-role">Communications Strategist &amp; Autism Advocate</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">As a successful communications strategist with a background in journalism, public relations, and marketing, Hope has helped shape powerful narratives that drive the success of organizations and their leadership. That expertise, which serves her in her current role as chief of staff, also fuels her personal passion for advocating for those with special needs while raising identical triplet daughters on the autism spectrum. She serves as the co-founder of Autism Caregivers Around the Bend and is the &ldquo;Hope&rdquo; of Hope for Three, a nonprofit supporting families of those living with autism.</div></details>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap"><img src="assets/people/morgan.jpg" alt="Wes Morgan" loading="lazy"></div>
+        <div class="advisor-name">Wes Morgan</div>
+        <div class="advisor-role">Healthcare Commercial Executive</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Wes Morgan is a healthcare commercial executive with 20 years of experience leading growth, business development, patient access and go-to-market strategy for high-growth, multi-site organizations. He has built and led high-performing teams, scaled operations nationally and helped organizations navigate periods of rapid growth, operational transformation and expansion.</div></details>
+      </div>
+
+      <div class="advisor-card">
+        <div class="advisor-photo-wrap" data-pos="thomas"><img src="assets/people/thomas.jpg" alt="Derrick Thomas" loading="lazy"></div>
+        <div class="advisor-name">Derrick Thomas</div>
+        <div class="advisor-role">Certified Life Coach &amp; CEO</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Derrick Thomas II is a certified life coach and CEO at Thomas-ConnectX Private Asset Management (P.A.M) Firm Administration.</div></details>
       </div>
 
     </div>
@@ -3209,6 +3267,59 @@
 </section>
 
 <!-- ============================ -->
+<!-- 8b. EVENT FLIERS             -->
+<!-- ============================ -->
+<!-- Drop a flier by adding a .flier-card below. Put the image in           -->
+<!-- docs/assets/events/ and point src at it. Cards whose image is missing  -->
+<!-- self-remove, and the whole section hides if no fliers are present, so  -->
+<!-- there are never broken images on the live page.                        -->
+<!-- Template:                                                              -->
+<!--   <div class="flier-card">                                            -->
+<!--     <a href="assets/events/YOUR-FLIER.jpg" target="_blank" rel="noopener"> -->
+<!--       <img src="assets/events/YOUR-FLIER.jpg" alt="Event name flier" loading="lazy" onerror="this.closest('.flier-card').remove()"> -->
+<!--     </a>                                                                -->
+<!--     <div class="flier-caption">Event name · Date</div>                 -->
+<!--   </div>                                                               -->
+<section class="fliers" id="event-fliers" aria-label="Upcoming event fliers">
+  <div class="container">
+    <div class="strip-header" style="text-align:center;margin-bottom:38px;">
+      <div class="strip-eyebrow">Save the date</div>
+      <h2>Upcoming <em>event fliers.</em></h2>
+    </div>
+    <div class="fliers-grid">
+
+      <div class="flier-card">
+        <a href="assets/events/july-mixer.jpg" target="_blank" rel="noopener">
+          <img src="assets/events/july-mixer.jpg" alt="July Mixer flier" loading="lazy" onerror="this.closest('.flier-card').remove()">
+        </a>
+        <div class="flier-caption">July Dads Mixer</div>
+      </div>
+
+      <div class="flier-card">
+        <a href="assets/events/july-back-to-school.jpg" target="_blank" rel="noopener">
+          <img src="assets/events/july-back-to-school.jpg" alt="July Back to School Event flier" loading="lazy" onerror="this.closest('.flier-card').remove()">
+        </a>
+        <div class="flier-caption">Back to School Resource Fair</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<script>
+  // Hide the fliers section entirely if no flier cards survived (missing images).
+  (function () {
+    var section = document.getElementById('event-fliers');
+    if (!section) return;
+    var check = function () {
+      if (!section.querySelector('.flier-card')) section.style.display = 'none';
+    };
+    // Run after images have had a chance to error out.
+    window.addEventListener('load', check);
+    setTimeout(check, 1500);
+  })();
+</script>
+
+<!-- ============================ -->
 <!-- 9. NEWSLETTER (v6 rewrite)   -->
 <!-- ============================ -->
 <!-- Replaces the old Survival Guide lead magnet. MailerLite embed loaded -->
@@ -3393,6 +3504,9 @@
       <a href="https://behavioral-innovations.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Behavioral Innovations"><img src="assets/sponsors/behavioral-innovations.webp" alt="Behavioral Innovations" loading="lazy"></a>
       <a href="https://listen2meaba.com/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="Listen to Me ABA"><img src="assets/sponsors/listen-to-me-aba.png" alt="Listen to Me ABA" loading="lazy"></a>
       <a href="#" class="sponsor-card sponsor-card--logo" rel="noopener" aria-label="Nevada Autism Center" title="URL pending — update via CMS"><img src="assets/sponsors/nac.jpg" alt="Nevada Autism Center" loading="lazy" style="max-height: 104px;"></a>
+      <!-- R&S Roofing & Construction — new 2026 sponsor. Swap this text card for a logo card once the logo file is added:
+           <a href="URL" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="R&S Roofing & Construction"><img src="assets/sponsors/rs-roofing.png" alt="R&S Roofing & Construction" loading="lazy"></a> -->
+      <div class="sponsor-card">R&amp;S Roofing &amp; Construction</div>
     </div>
 
     <div class="sponsor-lists">
@@ -3460,6 +3574,7 @@
           <li>We Rock the Spectrum (Sugar Land)</li>
           <li>Café Azul Tx Autismo</li>
           <li>River Pointe | West End Church iFit Special Needs Ministry</li>
+          <li>Puzzled Dads Podcast</li>
         </ul>
       </div>
     </div>
@@ -3469,7 +3584,7 @@
       <p>If your business serves the Houston autism community and you want to sponsor a meetup, a family event, or the year, we'd like to talk. Same goes for vendors who want a table at our signature family events.</p>
       <div class="sponsor-cta-buttons">
         <a href="mailto:info@autismdadssocialclub.org?subject=Sponsorship%20Inquiry" class="cta-primary">Become a Sponsor</a>
-        <a href="https://form.jotform.com/231637325042146" class="cta-secondary" target="_blank" rel="noopener">Register as a Vendor</a>
+        <a href="https://form.jotform.com/261826523088159" class="cta-secondary" target="_blank" rel="noopener">Register as a Vendor</a>
       </div>
     </div>
   </div>
@@ -3583,11 +3698,21 @@
         <h4>Connect</h4>
         <ul>
           <li><a href="mailto:info@autismdadssocialclub.org">info@autismdadssocialclub.org</a></li>
-          <li><a href="https://www.facebook.com/AutismDadsSocialClub" target="_blank" rel="noopener">Facebook — AutismDadsSocialClub</a></li>
-          <li><a href="https://www.instagram.com/autismdadshtown/" target="_blank" rel="noopener">Instagram — autismdadshtown</a></li>
-          <li><a href="https://www.linkedin.com/company/autism-dads-social-club/" target="_blank" rel="noopener">LinkedIn</a></li>
-          <li><a href="https://www.youtube.com/@AutismDSCVP/featured" target="_blank" rel="noopener">YouTube — @AutismDSCVP</a></li>
         </ul>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/AutismDadsSocialClub" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.9 3.78-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/autismdadshtown/" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zm0 1.62c-3.15 0-3.52.01-4.76.07-1.15.05-1.77.24-2.19.41-.55.21-.94.47-1.35.88-.41.41-.67.8-.88 1.35-.17.42-.36 1.04-.41 2.19-.06 1.24-.07 1.61-.07 4.76s.01 3.52.07 4.76c.05 1.15.24 1.77.41 2.19.21.55.47.94.88 1.35.41.41.8.67 1.35.88.42.17 1.04.36 2.19.41 1.24.06 1.61.07 4.76.07s3.52-.01 4.76-.07c1.15-.05 1.77-.24 2.19-.41.55-.21.94-.47 1.35-.88.41-.41.67-.8.88-1.35.17-.42.36-1.04.41-2.19.06-1.24.07-1.61.07-4.76s-.01-3.52-.07-4.76c-.05-1.15-.24-1.77-.41-2.19a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.42-.17-1.04-.36-2.19-.41-1.24-.06-1.61-.07-4.76-.07zm0 2.76a5.3 5.3 0 1 0 0 10.6 5.3 5.3 0 0 0 0-10.6zm0 8.74a3.44 3.44 0 1 1 0-6.88 3.44 3.44 0 0 1 0 6.88zm6.74-8.94a1.24 1.24 0 1 1-2.48 0 1.24 1.24 0 0 1 2.48 0z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/autism-dads-social-club/" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.73v20.54C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .78 23.2 0 22.22 0z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@AutismDSCVP/featured" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.6 15.6V8.4l6.25 3.6L9.6 15.6z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
     <div class="footer-mailing">
@@ -3599,6 +3724,9 @@
     </div>
   </div>
 </footer>
+
+<!-- Mobile-only floating Donate button (visible when nav is collapsed) -->
+<a class="mobile-donate-fab" href="#donate" aria-label="Donate">❤ Donate</a>
 
 <!-- Back to top -->
 <button class="back-to-top" type="button" aria-label="Back to top" id="back-to-top">↑</button>
