@@ -1,5 +1,5 @@
 ---
-title: ADSC's First Dads Event at Hermann Park Golf Course (2022)
+title: ADSC's First Dads Event
 image: /assets/images/First Dad Meetup Photo.jpeg
-caption: ADSC's First Dads Event at Hermann Park Golf Course (2022)
+caption: Hermann Park Golf Course (2022)
 ---
