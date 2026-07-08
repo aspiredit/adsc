@@ -581,6 +581,7 @@
   .board-photo-wrap[data-pos="notice"] img   { object-position: center 18%; }
   .advisor-photo-wrap[data-pos="farmer"] img  { object-position: center 16%; }
   .advisor-photo-wrap[data-pos="dipasca"] img { object-position: center 28%; }
+  .advisor-photo-wrap[data-pos="thomas"] img  { object-position: center 12%; }
   .board-photo-initials {
     color: #fff;
     font-family: var(--font-display);
@@ -1003,6 +1004,19 @@
   }
   .program-offerings li:first-child { border-top: 0; }
   .program-offerings strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 2px; }
+  .program-reg-btn {
+    display: inline-block;
+    margin-top: 12px;
+    background: var(--blue-deep);
+    color: #fff !important;
+    padding: 9px 18px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .program-reg-btn:hover { background: var(--blue-mid); text-decoration: none; transform: translateY(-1px); }
   .program-next {
     background: var(--bg-warm);
     border-left: 3px solid var(--gold);
@@ -2458,6 +2472,26 @@
     font-size: 0.92rem;
   }
   footer ul a:hover { color: #fff; text-decoration: none; }
+  /* Connect tab social logos */
+  .footer-social {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .footer-social a:hover { background: var(--gold); color: #fff; transform: translateY(-2px); text-decoration: none; }
+  .footer-social svg { width: 18px; height: 18px; fill: currentColor; display: block; }
   .footer-mailing {
     border-top: 1px solid rgba(255,255,255,0.1);
     padding: 22px 0 18px;
@@ -2918,13 +2952,14 @@
       </div>
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">DT</div></div>
+        <div class="advisor-photo-wrap" data-pos="thomas"><img src="assets/people/thomas.jpg" alt="Derrick Thomas" loading="lazy"></div>
         <div class="advisor-name">Derrick Thomas</div>
-        <div class="advisor-role">Advisor</div>
+        <div class="advisor-role">Certified Life Coach &amp; CEO</div>
+        <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">Derrick Thomas II is a certified life coach and CEO at Thomas-ConnectX Private Asset Management (P.A.M) Firm Administration.</div></details>
       </div>
 
       <div class="advisor-card">
-        <div class="advisor-photo-wrap"><div class="advisor-photo-initials">PL</div></div>
+        <div class="advisor-photo-wrap"><img src="assets/people/leblanc.jpg" alt="Paul LeBlanc" loading="lazy"></div>
         <div class="advisor-name">Paul LeBlanc</div>
         <div class="advisor-role">Of Counsel, Womble Bond Dickinson</div>
         <details class="bio-toggle"><summary>Bio</summary><div class="advisor-bio">An attorney specializing in finance and commercial real estate matters throughout the United States. Paul is actively involved in volunteer work in the Houston community, including service on the Literacy Now Board of Directors since 2013, and as Board Chair from 2017 to 2023.</div></details>
@@ -3107,9 +3142,10 @@
           <h3>Virtual Connections</h3>
           <p>Not every dad can attend in person, but no father should have to navigate this alone. ADSC's virtual programming lets dads and families learn, grow, and build community from anywhere.</p>
           <ul class="program-offerings">
-            <li><strong>Quarterly Fatherhood Huddles</strong>Conversations with autism dads, caregivers, self-advocates, and professionals sharing practical insights and lived experiences.</li>
-            <li><strong>Monthly Podcast Episodes</strong>Honest discussions and advice from fathers of autistic children, educators, therapists, and community leaders.</li>
-            <li><strong>Blog Articles &amp; Resources</strong>Parenting tips, personal reflections, and practical resources designed to support families raising autistic loved ones.</li>
+            <li><strong>Quarterly Fatherhood Huddles</strong>This virtual discussion series is designed to encourage, equip, and connect fathers raising special needs children. Through conversations with experienced dads and professionals, participants gain practical parenting insights, emotional support, and a welcoming brotherhood where no father has to navigate the autism journey alone.
+              <a class="program-reg-btn" href="https://form.jotform.com/252448589365169" target="_blank" rel="noopener">Register for the next Huddle →</a>
+            </li>
+            <li><strong>Members WhatsApp Group</strong>Connect with fellow Autism Dads Social Club members through our private WhatsApp community. Ask questions, exchange advice, receive referrals to trusted local providers and resources, and find encouragement from dads who understand the journey. It's a convenient way to stay connected and receive support between events.</li>
           </ul>
           <div class="program-next">
             <strong>Upcoming</strong>
