@@ -1,9 +1,170 @@
 [
   {
-    "slug": "parent-and-child",
-    "title": "Parent and child",
-    "image": "assets/images/Screenshot 2026-05-28 192846-1.png",
+    "slug": "adsc-dads-at-minute-maid-park",
+    "title": "ADSC Dads at Minute Maid Park",
+    "image": "assets/images/Celebrity Event Dad Photo.jpeg",
+    "caption": "Celebrity Softball Game",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "adsc-dads-mixer-at-the-lounge-at-six",
+    "title": "ADSC Dads Mixer 2023",
+    "image": "assets/images/Dad Photo Lounge at Six.jpeg",
+    "caption": "The Lounge at Six in Sugar Land",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "adsc-family-event-at-houston-astros-game",
+    "title": "ADSC Family Event at Houston Astros",
+    "image": "assets/images/family event at Houston Astros.jpg",
+    "caption": "Take Me Out to the Ball Park",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "adsc-family-picnic-2022",
+    "title": "ADSC Family Picnic 2022",
+    "image": "assets/images/Family Picnic 2.jpeg",
+    "caption": "ADSC Family Picnic at Local Park",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "adsc-family-picnic-2024",
+    "title": "ADSC Family Picnic 2023",
+    "image": "assets/images/Picnic 2. Image 9.jpeg",
+    "caption": "Family Picnic at Buffalo Run Park in Missouri City",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "adscs-first-dads-event-at-hermann-park-golf-course-2022",
+    "title": "ADSC's First Dads Event",
+    "image": "assets/images/First Dad Meetup Photo.jpeg",
+    "caption": "Hermann Park Golf Course (2022)",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "back-to-school-splash-2023-1",
+    "title": "Back to School Splash 2023",
+    "image": "assets/images/back to school splash event 2023.jpg",
     "caption": "",
-    "date": "2026-05-28"
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "back-to-school-splash-2023",
+    "title": "Back to School Splash 2023",
+    "image": "assets/images/back to school splash 2023 5.jpg",
+    "caption": "",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "back-to-school-splash-at-local-park",
+    "title": "Back to School Splash at Local Park",
+    "image": "assets/images/Back to school splash event 4 2023.jpg",
+    "caption": "ADSC Dads at Back to School Splash 2023",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "book-signing-event-featuring-deandrae-hintons-my-favorite-mistakes",
+    "title": "Book Signing Event Featuring DeAndrae Hinton's My Favorite Mistakes",
+    "image": "assets/images/DeAndrae Book Signing.jpg",
+    "caption": "DeAndrae Hinton's Book Signing",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "dads-bike-ride-mixer-in-houston-tx-2022",
+    "title": "Dads Bike Ride Mixer in Houston, TX (2022)",
+    "image": "assets/images/Bike Ride Photo.jpeg",
+    "caption": "",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "dads-mixer-at-herman-park-golf-range-2022",
+    "title": "Dads Mixer at Herman Park Golf Range 2022",
+    "image": "assets/images/Golf Range.jpeg",
+    "caption": "",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "easter-egg-hunt-at-local-park",
+    "title": "Easter Egg Hunt at Local Park",
+    "image": "assets/images/Easter Egg Hunt Photo.jpeg",
+    "caption": "",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "easter-fun-event-at-missouri-city-park",
+    "title": "Easter Fun Event at Missouri City Park",
+    "image": "assets/images/Easter Egg Photo 2.jpeg",
+    "caption": "City Park",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "tesla-trunk-or-treat-2023",
+    "title": "Tesla Trunk or Treat 2023",
+    "image": "assets/images/tesla trunk or treat jpg.jpg",
+    "caption": "Tang City Plaza in Sugar Land",
+    "date": "2026-07-07"
+  },
+  {
+    "slug": "christmas-party-2022-1",
+    "title": "Christmas Party 2022",
+    "image": "assets/images/Christmas Party 2022.jpg",
+    "caption": "ADSC Cofounders pictured with Music Therapist",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "christmas-party-2022",
+    "title": "Christmas Party 2022",
+    "image": "assets/images/Christmas 2022.jpg",
+    "caption": "Christmas Gathering at Riverside UMC",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "dads-mixer-in-downtown-houston-2022",
+    "title": "Halloween Tesla Trunk or Treat",
+    "image": "assets/images/halloween event 3.jpg",
+    "caption": "Tesla Trunk or Treat at Tang City Plaza",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "mixer-at-slick-willies-2022",
+    "title": "Mixer at Slick Willies 2022",
+    "image": "assets/images/First Slick Willies Event 2022.jpg",
+    "caption": "",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "our-first-event-2022",
+    "title": "Our First Event - 2022",
+    "image": "assets/images/Our First Event March 2022.jpg",
+    "caption": "Kickball at the Missouri City Park!",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "supporting-the-special-needs-community",
+    "title": "Supporting the Special Needs Community",
+    "image": "assets/images/Belong Kitchen Meetup.jpg",
+    "caption": "Dads Meetup at Belong Kitchen 2022",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "we-rock-the-spectrum-family-social-2022",
+    "title": "We Rock The Spectrum Family Social 2022",
+    "image": "assets/images/WRS First Event.jpg",
+    "caption": "Our first gathering at We Rock the Spectrum-Sugarland",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "we-rock-the-spectrum-sugar-land-2022-1",
+    "title": "We Rock the Spectrum Sugar Land 2022",
+    "image": "assets/images/WRS Event.jpg",
+    "caption": "Jonathan, Jesse, and Emmanuel - ADSC CoFounders",
+    "date": "2026-07-02"
+  },
+  {
+    "slug": "we-rock-the-spectrum-sugar-land-2022",
+    "title": "We Rock the Spectrum Sugar Land 2022",
+    "image": "assets/images/WRS First Event Image 3.jpg",
+    "caption": "Movie Matinee",
+    "date": "2026-07-02"
   }
 ]
