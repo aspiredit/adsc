@@ -12,6 +12,20 @@
       "rsvp_url": "https://form.jotform.com/252448589365169",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2926-07-26-missouri-city-community-center",
+      "title": "Back to School Autism Resource Fair",
+      "type": "meetup",
+      "date": "2026-07-26",
+      "start_time": "14:00",
+      "end_time": "16:00",
+      "location": "Missouri City Community Center",
+      "description": "Join Autism Caregivers Around the Bend and Autism Dads Social Club at the Missouri City Community Center for a morning filled with valuable resources and information for families rearing autistic loved ones. Connect with local organizations, therapists, educators, and specialists who can help support you and your loved ones as you navigate the school year. We will have vendors, a panel, and fun activities to engage kids on the spectrum and their siblings. Light food and refreshments will be provided.\n\n",
+      "flyer": "/assets/images/Back to School Resource Fair Flier-2.png",
+      "rsvp_url": "https://www.eventbrite.com/e/back-to-school-resource-fair-navigating-autism-and-education-tickets-1993365005391?aff=oddtdtcreator",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
