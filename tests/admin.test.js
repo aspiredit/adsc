@@ -2,9 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   slugify,
   makeEventId,
-  chicagoOffsetMinutes,
-  formatOffset,
-  toChicagoIso,
   buildEventObject,
   upsertEvent,
   deleteEventById,
@@ -35,37 +32,14 @@ describe("makeEventId", () => {
   });
 });
 
-describe("chicago timezone offset", () => {
-  it("is CDT (-300) in summer", () => {
-    expect(chicagoOffsetMinutes("2026-06-06T18:30")).toBe(-300);
-  });
-  it("is CST (-360) in winter", () => {
-    expect(chicagoOffsetMinutes("2026-01-15T18:30")).toBe(-360);
-  });
-  it("formats offsets", () => {
-    expect(formatOffset(-300)).toBe("-05:00");
-    expect(formatOffset(-360)).toBe("-06:00");
-  });
-});
-
-describe("toChicagoIso", () => {
-  it("produces ISO 8601 with the summer CT offset", () => {
-    expect(toChicagoIso("2026-06-06T18:30")).toBe("2026-06-06T18:30:00-05:00");
-  });
-  it("produces ISO 8601 with the winter CT offset", () => {
-    expect(toChicagoIso("2026-01-15T18:30")).toBe("2026-01-15T18:30:00-06:00");
-  });
-  it("returns empty for empty input", () => {
-    expect(toChicagoIso("")).toBe("");
-  });
-});
-
 describe("buildEventObject", () => {
-  it("builds a record matching the events schema", () => {
+  it("builds a record with separate date/start/end fields", () => {
     const ev = buildEventObject({
       title: "June Meetup",
       type: "meetup",
-      datetime: "2026-06-06T18:30",
+      date: "2026-06-06",
+      start_time: "18:30",
+      end_time: "19:30",
       location: "Slick Willie's",
       description: "Come hang.",
       status: "scheduled",
@@ -75,27 +49,34 @@ describe("buildEventObject", () => {
       id: "2026-06-06-june-meetup",
       title: "June Meetup",
       type: "meetup",
-      starts_at: "2026-06-06T18:30:00-05:00",
+      date: "2026-06-06",
+      start_time: "18:30",
+      end_time: "19:30",
       location: "Slick Willie's",
       status: "scheduled",
       draft: false,
     });
+    expect(ev).not.toHaveProperty("starts_at");
+  });
+  it("omits end_time when blank", () => {
+    const ev = buildEventObject({ title: "x", date: "2026-06-06", start_time: "10:00", location: "y" });
+    expect(ev).not.toHaveProperty("end_time");
   });
   it("omits optional rsvp/cta when blank", () => {
-    const ev = buildEventObject({ title: "x", datetime: "2026-06-06T10:00", location: "y" });
+    const ev = buildEventObject({ title: "x", date: "2026-06-06", start_time: "10:00", location: "y" });
     expect(ev).not.toHaveProperty("rsvp_url");
     expect(ev).not.toHaveProperty("cta_label");
   });
   it("includes optional rsvp/cta when present", () => {
     const ev = buildEventObject({
-      title: "x", datetime: "2026-06-06T10:00", location: "y",
+      title: "x", date: "2026-06-06", start_time: "10:00", location: "y",
       rsvp_url: "https://e.com", cta_label: "RSVP",
     });
     expect(ev.rsvp_url).toBe("https://e.com");
     expect(ev.cta_label).toBe("RSVP");
   });
   it("respects a pre-set id (edit case)", () => {
-    const ev = buildEventObject({ id: "fixed-id", title: "x", datetime: "2026-06-06T10:00", location: "y" });
+    const ev = buildEventObject({ id: "fixed-id", title: "x", date: "2026-06-06", start_time: "10:00", location: "y" });
     expect(ev.id).toBe("fixed-id");
   });
 });
@@ -127,11 +108,11 @@ describe("list mutations", () => {
 });
 
 describe("validateEventForm", () => {
-  it("requires title, datetime, location", () => {
-    expect(validateEventForm({})).toHaveLength(3);
+  it("requires title, date, start_time, location", () => {
+    expect(validateEventForm({})).toHaveLength(4);
   });
   it("passes when required fields are present", () => {
-    expect(validateEventForm({ title: "x", datetime: "2026-06-06T10:00", location: "y" })).toEqual([]);
+    expect(validateEventForm({ title: "x", date: "2026-06-06", start_time: "10:00", location: "y" })).toEqual([]);
   });
 });
 

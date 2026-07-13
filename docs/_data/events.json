@@ -1,11 +1,13 @@
 {
   "events": [
     {
-      "id": "The Fatherhood Huddle",
-      "title": "Virtual Event",
+      "id": "2026-07-16-fatherhood-huddle",
+      "title": "The Fatherhood Huddle",
       "type": "meetup",
-      "starts_at": "6:30 pm - 7:30 pm",
-      "location": "Remote",
+      "date": "2026-07-16",
+      "start_time": "18:30",
+      "end_time": "19:30",
+      "location": "Virtual (Zoom)",
       "description": "The Fatherhood Huddle is the Autism Dads Social Club's virtual discussion series designed to encourage, equip, and connect fathers raising autistic children. Through conversations with experienced dads and professionals, participants gain practical parenting insights, emotional support, and a welcoming brotherhood where no father has to navigate the autism journey alone.",
       "rsvp_url": "https://form.jotform.com/252448589365169",
       "status": "scheduled",

@@ -38,7 +38,7 @@
   .card h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; margin-bottom: 14px; }
 
   label { display: block; font-weight: 600; font-size: 0.85rem; margin: 14px 0 5px; color: var(--ink-soft); }
-  input[type=text], input[type=url], input[type=password], input[type=datetime-local], select, textarea {
+  input[type=text], input[type=url], input[type=password], input[type=datetime-local], input[type=date], input[type=time], select, textarea {
     width: 100%; font-family: inherit; font-size: 0.95rem; color: var(--ink);
     padding: 10px 12px; border: 1px solid var(--line); border-radius: 7px; background: #fff;
   }
@@ -118,8 +118,20 @@
             <select id="f-type"></select>
           </div>
           <div>
-            <label for="f-datetime">Date &amp; time (Central) *</label>
-            <input type="datetime-local" id="f-datetime">
+            <label for="f-date">Date (Central) *</label>
+            <input type="date" id="f-date">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div>
+            <label for="f-start">Start time (Central) *</label>
+            <input type="time" id="f-start">
+          </div>
+          <div>
+            <label for="f-end">End time (Central)</label>
+            <input type="time" id="f-end">
+            <div class="hint">Optional. Leave blank if unknown.</div>
           </div>
         </div>
 

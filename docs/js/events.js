@@ -1,8 +1,12 @@
+import { normalizeEvents, formatTimeRangeCT } from "./eventtime.js";
+
 const EVENTS_JSON_PATH = "_data/events.json";
 const RSVP_FEATURED_SELECTOR = ".rsvp-featured";
 const RSVP_UPCOMING_SECTION_SELECTOR = ".rsvp-upcoming";
 const RSVP_UPCOMING_GRID_SELECTOR = ".rsvp-upcoming-grid";
 const RSVP_SUBMIT_SELECTOR = "#rsvp-submit";
+const FLIERS_SECTION_SELECTOR = "#event-fliers";
+const FLIERS_GRID_SELECTOR = ".fliers-grid";
 const UPCOMING_MAX = 3;
 const GRACE_MS = 12 * 60 * 60 * 1000;
 
@@ -116,6 +120,19 @@ export function formatStartCompactCT(isoString) {
   return `${dayFmt.format(date)} · ${monthDayFmt.format(date)} · ${timeFmt.format(date)}`;
 }
 
+// Featured-card "when": full date + start–end range, ending in "(CT)".
+export function formatFeaturedWhenCT(event) {
+  const date = new Date(event.starts_at);
+  const dateFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago",
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+  const range = formatTimeRangeCT(event);
+  return range ? `${dateFmt.format(date)} · ${range} (CT)` : `${formatStartCT(event.starts_at)}`;
+}
+
 export function buildCtaLabel(event) {
   return event?.cta_label || "RSVP";
 }
@@ -158,7 +175,7 @@ function renderCard(card, event) {
     <div class="rsvp-featured-flyer">${renderFlyer(event)}</div>
     <div class="rsvp-featured-tag">${escapeHtml(tag)}</div>
     <h3>${escapeHtml(event.title)}</h3>
-    <div class="rsvp-featured-when">${escapeHtml(formatStartCT(event.starts_at))}</div>
+    <div class="rsvp-featured-when">${escapeHtml(formatFeaturedWhenCT(event))}</div>
     <div class="rsvp-featured-where">${escapeHtml(event.location ?? "")}</div>
     <button type="button" class="event-cal-add" data-ics-event>Add to my calendar</button>
   `;
@@ -209,6 +226,39 @@ export function renderUpcoming(events) {
   grid.innerHTML = events.map(buildUpcomingCardHtml).join("");
 }
 
+// "Save the date" fliers are tied to events: any upcoming event that has a
+// flyer image is shown here. No separate data source to maintain.
+export function pickFlierEvents(events, now = new Date()) {
+  return upcomingSorted(events, now).filter((e) => e.flyer);
+}
+
+function buildFlierCardHtml(event) {
+  const src = escapeHtml(resolveFlyer(event.flyer));
+  const alt = escapeHtml(`${event.title ?? "Event"} flier`);
+  const caption = escapeHtml(event.title ?? "");
+  return `
+    <div class="flier-card" data-event-id="${escapeHtml(event.id)}">
+      <a href="${src}" target="_blank" rel="noopener">
+        <img src="${src}" alt="${alt}" loading="lazy" onerror="this.closest('.flier-card').remove()">
+      </a>
+      <div class="flier-caption">${caption}</div>
+    </div>
+  `;
+}
+
+export function renderFliers(events) {
+  const section = document.querySelector(FLIERS_SECTION_SELECTOR);
+  const grid = document.querySelector(FLIERS_GRID_SELECTOR);
+  if (!section || !grid) return;
+  if (!Array.isArray(events) || events.length === 0) {
+    grid.innerHTML = "";
+    section.style.display = "none";
+    return;
+  }
+  grid.innerHTML = events.map(buildFlierCardHtml).join("");
+  section.style.display = "";
+}
+
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -243,7 +293,9 @@ export async function init() {
   try {
     const res = await fetch(EVENTS_JSON_PATH);
     if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
-    const all = extractEvents(await res.json());
+    // Normalize first: fill starts_at/ends_at from the separate date/time
+    // fields so every downstream consumer speaks ISO uniformly.
+    const all = normalizeEvents(extractEvents(await res.json()));
     const dated = all.filter(hasValidDate);
     if (dated.length !== all.length) {
       console.warn(
@@ -256,11 +308,13 @@ export async function init() {
     renderFeatured(featured);
     renderUpcoming(upcoming);
     renderCalendar(events);
+    renderFliers(pickFlierEvents(events));
     attachIcsHandlers([featured, ...upcoming].filter(Boolean));
   } catch (err) {
     console.error("Could not load events:", err);
     renderFeatured(null);
     renderUpcoming([]);
     renderCalendar([]);
+    renderFliers([]);
   }
 }

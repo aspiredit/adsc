@@ -15,6 +15,8 @@
  * unit-tested in tests/admin.test.js. DOM glue lives in init().
  */
 
+import { eventStartIso, eventEndIso } from "./eventtime.js";
+
 const REPO_OWNER = "aspiredit";
 const REPO_NAME = "adsc";
 const BRANCH = "main";
@@ -54,50 +56,24 @@ export function makeEventId(dateStr, title) {
   return dateStr ? `${dateStr}-${slug}` : slug;
 }
 
-// Minutes that America/Chicago is offset from UTC for a given wall-clock time.
-// Negative (e.g. -300 = CDT in summer, -360 = CST in winter). Works regardless
-// of the browser's own timezone via the toLocaleString-difference trick.
-export function chicagoOffsetMinutes(naiveLocal) {
-  const [datePart, timePart = "00:00"] = String(naiveLocal).split("T");
-  const [y, m, d] = datePart.split("-").map(Number);
-  const [hh, mm] = timePart.split(":").map(Number);
-  const guess = new Date(Date.UTC(y, (m || 1) - 1, d || 1, hh || 0, mm || 0));
-  const tzWall = new Date(guess.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-  const utcWall = new Date(guess.toLocaleString("en-US", { timeZone: "UTC" }));
-  return Math.round((tzWall - utcWall) / 60000);
-}
-
-export function formatOffset(minutes) {
-  const sign = minutes < 0 ? "-" : "+";
-  const abs = Math.abs(minutes);
-  const hh = String(Math.floor(abs / 60)).padStart(2, "0");
-  const mm = String(abs % 60).padStart(2, "0");
-  return `${sign}${hh}:${mm}`;
-}
-
-// "2026-06-06T18:30" -> "2026-06-06T18:30:00-05:00" (ISO 8601 with CT offset),
-// the exact format the renderer and Pages CMS use.
-export function toChicagoIso(naiveLocal) {
-  if (!naiveLocal) return "";
-  const off = formatOffset(chicagoOffsetMinutes(naiveLocal));
-  return `${naiveLocal}:00${off}`;
-}
-
-// Build an event record matching docs/_data/events.json's schema. Optional
-// fields are omitted when empty so the file stays clean.
+// Build an event record matching docs/_data/events.json's schema. Date and time
+// are stored as SEPARATE fields (date / start_time / end_time); the site derives
+// ISO starts_at/ends_at from them at load. Optional fields are omitted when empty.
 export function buildEventObject(form) {
-  const datePart = (form.datetime || "").split("T")[0] || "";
   const event = {
-    id: form.id || makeEventId(datePart, form.title),
+    id: form.id || makeEventId(form.date, form.title),
     title: (form.title || "").trim(),
     type: form.type || "meetup",
-    starts_at: toChicagoIso(form.datetime),
+    date: form.date || "",
+    start_time: form.start_time || "",
+    end_time: form.end_time || "",
     location: (form.location || "").trim(),
     description: (form.description || "").trim(),
     flyer: (form.flyer || "").trim(),
     status: form.status || "scheduled",
     draft: form.draft === true,
   };
+  if (!event.end_time) delete event.end_time;
   if (form.rsvp_url && form.rsvp_url.trim()) event.rsvp_url = form.rsvp_url.trim();
   if (form.cta_label && form.cta_label.trim()) event.cta_label = form.cta_label.trim();
   return event;
@@ -118,14 +94,15 @@ export function deleteEventById(events, id) {
 
 export function sortByStartDesc(events) {
   return (Array.isArray(events) ? events.slice() : []).sort((a, b) =>
-    String(b.starts_at || "").localeCompare(String(a.starts_at || ""))
+    String(eventStartIso(b) || "").localeCompare(String(eventStartIso(a) || ""))
   );
 }
 
 export function validateEventForm(form) {
   const errors = [];
   if (!form.title || !form.title.trim()) errors.push("Title is required.");
-  if (!form.datetime) errors.push("Date & time is required.");
+  if (!form.date) errors.push("Date is required.");
+  if (!form.start_time) errors.push("Start time is required.");
   if (!form.location || !form.location.trim()) errors.push("Location is required.");
   return errors;
 }
@@ -214,15 +191,25 @@ function optionsHtml(items, selected) {
     .join("");
 }
 
-function fmtWhen(starts_at) {
-  if (!starts_at) return "";
-  const d = new Date(starts_at);
-  if (Number.isNaN(d.getTime())) return starts_at;
-  return d.toLocaleString("en-US", {
+function fmtWhen(event) {
+  const iso = eventStartIso(event);
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const start = d.toLocaleString("en-US", {
     timeZone: "America/Chicago",
     weekday: "short", month: "short", day: "numeric", year: "numeric",
     hour: "numeric", minute: "2-digit",
   });
+  const endIso = eventEndIso(event);
+  if (endIso) {
+    const e = new Date(endIso);
+    if (!Number.isNaN(e.getTime())) {
+      const endTime = e.toLocaleString("en-US", { timeZone: "America/Chicago", hour: "numeric", minute: "2-digit" });
+      return `${start} – ${endTime}`;
+    }
+  }
+  return start;
 }
 
 function renderList(container, events, onDelete) {
@@ -240,7 +227,7 @@ function renderList(container, events, onDelete) {
     row.innerHTML = `
       <div class="admin-row-main">
         <strong>${ev.title || "(untitled)"}</strong>${draftTag}${statusTag}
-        <div class="admin-row-sub">${fmtWhen(ev.starts_at)} · ${ev.location || ""}</div>
+        <div class="admin-row-sub">${fmtWhen(ev)} · ${ev.location || ""}</div>
       </div>
       <button type="button" class="admin-del" data-id="${ev.id}">Delete</button>
     `;
@@ -325,7 +312,9 @@ export function init() {
     const formValues = {
       title: el("f-title").value,
       type: el("f-type").value,
-      datetime: el("f-datetime").value,
+      date: el("f-date").value,
+      start_time: el("f-start").value,
+      end_time: el("f-end").value,
       location: el("f-location").value,
       description: el("f-description").value,
       rsvp_url: el("f-rsvp").value,
@@ -339,8 +328,7 @@ export function init() {
 
     setMsg(formMsg, "Saving…");
     try {
-      const datePart = formValues.datetime.split("T")[0];
-      const baseId = makeEventId(datePart, formValues.title);
+      const baseId = makeEventId(formValues.date, formValues.title);
 
       // Optional flyer upload
       const fileInput = el("f-flyer");

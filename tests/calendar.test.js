@@ -158,3 +158,66 @@ describe("renderCalendar (DOM)", () => {
     expect(document.querySelectorAll(".calendar-dot")).toHaveLength(0);
   });
 });
+
+describe("renderCalendar view toggle (DOM)", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `<section id="calendar"></section>`;
+  });
+
+  const events = [
+    {
+      id: "2026-06-13-slick",
+      title: "Dads at Slick Willie's",
+      type: "meetup",
+      starts_at: "2026-06-13T19:00:00-05:00",
+      ends_at: "2026-06-13T21:00:00-05:00",
+      location: "Slick Willie's",
+      description: "Pool and conversation.",
+    },
+  ];
+  const today = new Date("2026-06-15T12:00:00-05:00");
+
+  it("renders a Month/Week/Day toggle with Month active by default", () => {
+    renderCalendar(events, { year: 2026, monthIndex: 5, today });
+    const btns = document.querySelectorAll("[data-cal-view]");
+    expect(btns).toHaveLength(3);
+    const active = document.querySelector(".cal-view-btn.is-active");
+    expect(active.getAttribute("data-cal-view")).toBe("month");
+  });
+
+  it("week view renders 7 day columns", () => {
+    renderCalendar(events, { view: "week", cursor: new Date(2026, 5, 13, 12), today });
+    expect(document.querySelectorAll(".cal-week-col")).toHaveLength(7);
+  });
+
+  it("week view shows an event chip on the event's day", () => {
+    renderCalendar(events, { view: "week", cursor: new Date(2026, 5, 13, 12), today });
+    const chip = document.querySelector(".cal-chip");
+    expect(chip).not.toBeNull();
+    expect(chip.textContent).toContain("Slick Willie");
+  });
+
+  it("day view shows full event details including the time range", () => {
+    renderCalendar(events, { view: "day", cursor: new Date(2026, 5, 13, 12), today });
+    const card = document.querySelector(".cal-event");
+    expect(card).not.toBeNull();
+    expect(card.querySelector(".cal-event-title").textContent).toContain("Dads at Slick Willie's");
+    expect(card.querySelector(".cal-event-where").textContent).toContain("Slick Willie's");
+    expect(card.querySelector(".cal-event-time").textContent).toMatch(/7:00/);
+    expect(card.querySelector(".cal-event-time").textContent).toMatch(/9:00/);
+  });
+
+  it("day view shows an empty message when no events fall on the day", () => {
+    renderCalendar(events, { view: "day", cursor: new Date(2026, 5, 20, 12), today });
+    expect(document.querySelector(".cal-day-empty")).not.toBeNull();
+    expect(document.querySelector(".cal-event")).toBeNull();
+  });
+
+  it("clicking a month day with events drills into Day view", () => {
+    renderCalendar(events, { year: 2026, monthIndex: 5, today });
+    document.querySelector('.calendar-day[data-date="2026-06-13"]').click();
+    expect(document.querySelector(".cal-event")).not.toBeNull();
+    const active = document.querySelector(".cal-view-btn.is-active");
+    expect(active.getAttribute("data-cal-view")).toBe("day");
+  });
+});

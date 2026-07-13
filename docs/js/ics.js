@@ -28,7 +28,12 @@ function formatUTC(date) {
 
 export function eventToICS(event, now = new Date()) {
   const start = new Date(event.starts_at);
-  const end = new Date(start.getTime() + DEFAULT_DURATION_MS);
+  // Use the event's real end time when present; otherwise assume a 2-hour block.
+  const parsedEnd = event.ends_at ? new Date(event.ends_at) : null;
+  const end =
+    parsedEnd && !Number.isNaN(parsedEnd.getTime()) && parsedEnd > start
+      ? parsedEnd
+      : new Date(start.getTime() + DEFAULT_DURATION_MS);
   const uid = `${event.id}@aspiredit.github.io`;
   const lines = [
     "BEGIN:VCALENDAR",

@@ -1488,10 +1488,177 @@
   .calendar-dot--blue { background: var(--blue-deep); }
   .calendar-dot--gold { background: var(--gold-soft); }
 
+  /* ---- Calendar view toolbar (Month / Week / Day) ---- */
+  .calendar-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .calendar-views {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-warm);
+  }
+  .cal-view-btn {
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .cal-view-btn + .cal-view-btn { border-left: 1px solid var(--line); }
+  .cal-view-btn.is-active { background: var(--blue-deep); color: #fff; }
+  .cal-view-btn:not(.is-active):hover { background: #fff; color: var(--blue-deep); }
+  .cal-today-btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--blue-deep);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .cal-today-btn:hover { background: var(--bg-warm); }
+  .calendar-hint {
+    text-align: center;
+    color: var(--ink-mute);
+    font-size: 0.78rem;
+    margin-top: 14px;
+  }
+
+  /* ---- Calendar week view ---- */
+  .cal-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .cal-week-col {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 5px 8px;
+    min-height: 118px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cal-week-col.is-today { border-color: var(--blue-mid); background: var(--bg-warm); }
+  .cal-week-daynum {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 2px 0 5px;
+    border-bottom: 1px solid var(--line);
+  }
+  .cal-week-dow { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); font-weight: 700; }
+  .cal-week-date { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); line-height: 1; }
+  .cal-week-events { display: flex; flex-direction: column; gap: 4px; }
+  .cal-week-empty { color: var(--line); text-align: center; font-size: 0.9rem; }
+  .cal-chip {
+    border: none;
+    border-left: 3px solid var(--blue-deep);
+    background: var(--bg-warm);
+    border-radius: 4px;
+    padding: 4px 6px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    transition: background 0.15s ease;
+  }
+  .cal-chip:hover { background: #fff; }
+  .cal-chip--gold { border-left-color: var(--gold); }
+  .cal-chip-time { font-size: 0.62rem; font-weight: 700; color: var(--ink-mute); }
+  .cal-chip-title { font-size: 0.72rem; color: var(--ink); line-height: 1.2; }
+
+  /* ---- Calendar day view (event details) ---- */
+  .cal-day-list { display: flex; flex-direction: column; gap: 18px; }
+  .cal-day-empty { text-align: center; color: var(--ink-mute); padding: 30px 0; }
+  .cal-event {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px;
+    background: #fff;
+    text-align: left;
+  }
+  .cal-event-time {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--blue-deep);
+    border-right: 1px solid var(--line);
+    padding-right: 16px;
+  }
+  .cal-event-type {
+    display: inline-block;
+    font-size: 0.64rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--blue-deep);
+    margin-bottom: 8px;
+  }
+  .cal-event-type--gold { background: var(--gold); }
+  .cal-event-title { font-family: var(--font-display); font-size: 1.2rem; font-weight: 500; color: var(--ink); margin: 0 0 4px; }
+  .cal-event-where { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 8px; }
+  .cal-event-desc { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; }
+  .cal-event-flyer { max-width: 220px; width: 100%; border-radius: 8px; border: 1px solid var(--line); margin-bottom: 12px; display: block; }
+  .cal-event-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .cal-event-rsvp {
+    background: var(--blue-deep);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 7px;
+  }
+  .cal-event-rsvp:hover { background: var(--blue-mid); text-decoration: none; }
+  .cal-event-status {
+    display: inline-block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    background: #B23A3A;
+    color: #fff;
+  }
+
   @media (max-width: 540px) {
     #calendar { padding: 16px; }
     .calendar-day { font-size: 0.85rem; }
     .calendar-title { font-size: 1.3rem; }
+    .calendar-toolbar { justify-content: center; }
+    .cal-week { gap: 3px; }
+    .cal-week-col { padding: 4px 3px 6px; min-height: 96px; }
+    .cal-week-date { font-size: 0.9rem; }
+    .cal-chip { padding: 3px 4px; }
+    .cal-chip-title { font-size: 0.66rem; }
+    .cal-event { grid-template-columns: 1fr; gap: 8px; }
+    .cal-event-time { border-right: none; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 8px; }
   }
 
   /* RSVP form */
@@ -3338,55 +3505,21 @@
 <!-- ============================ -->
 <!-- 8b. EVENT FLIERS             -->
 <!-- ============================ -->
-<!-- Drop a flier by adding a .flier-card below. Put the image in           -->
-<!-- docs/assets/events/ and point src at it. Cards whose image is missing  -->
-<!-- self-remove, and the whole section hides if no fliers are present, so  -->
-<!-- there are never broken images on the live page.                        -->
-<!-- Template:                                                              -->
-<!--   <div class="flier-card">                                            -->
-<!--     <a href="assets/events/YOUR-FLIER.jpg" target="_blank" rel="noopener"> -->
-<!--       <img src="assets/events/YOUR-FLIER.jpg" alt="Event name flier" loading="lazy" onerror="this.closest('.flier-card').remove()"> -->
-<!--     </a>                                                                -->
-<!--     <div class="flier-caption">Event name · Date</div>                 -->
-<!--   </div>                                                               -->
+<!-- Fliers are now DATA-DRIVEN, tied to events (docs/js/events.js →           -->
+<!-- renderFliers). Any upcoming event that has a flyer image — set it in the  -->
+<!-- Pages CMS or the admin page (docs/admin/events.html) — appears here        -->
+<!-- automatically. The whole section hides when no upcoming event has a flier, -->
+<!-- so there are never broken images. No manual HTML to edit.                  -->
 <section class="fliers" id="event-fliers" aria-label="Upcoming event fliers">
   <div class="container">
     <div class="strip-header" style="text-align:center;margin-bottom:38px;">
       <div class="strip-eyebrow">Save the date</div>
       <h2>Upcoming <em>event fliers.</em></h2>
     </div>
-    <div class="fliers-grid">
-
-      <div class="flier-card">
-        <a href="assets/events/july-mixer.jpg" target="_blank" rel="noopener">
-          <img src="assets/events/july-mixer.jpg" alt="July Mixer flier" loading="lazy" onerror="this.closest('.flier-card').remove()">
-        </a>
-        <div class="flier-caption">July Dads Mixer</div>
-      </div>
-
-      <div class="flier-card">
-        <a href="assets/events/july-back-to-school.jpg" target="_blank" rel="noopener">
-          <img src="assets/events/july-back-to-school.jpg" alt="July Back to School Event flier" loading="lazy" onerror="this.closest('.flier-card').remove()">
-        </a>
-        <div class="flier-caption">Back to School Resource Fair</div>
-      </div>
-
-    </div>
+    <div class="fliers-grid"><!-- populated by renderFliers() --></div>
   </div>
 </section>
 <script>
-  // Hide the fliers section entirely if no flier cards survived (missing images).
-  (function () {
-    var section = document.getElementById('event-fliers');
-    if (!section) return;
-    var check = function () {
-      if (!section.querySelector('.flier-card')) section.style.display = 'none';
-    };
-    // Run after images have had a chance to error out.
-    window.addEventListener('load', check);
-    setTimeout(check, 1500);
-  })();
-
   // Board photos: on touch devices (no hover) tap toggles the headshot <-> family photo.
   (function () {
     if (!window.matchMedia || !window.matchMedia('(hover: none)').matches) return;
