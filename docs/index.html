@@ -566,7 +566,9 @@
     border-radius: 18px;
     margin: 0 auto 18px;
     overflow: hidden;
-    background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
+    /* Soft matte so a landscape "with kids" photo can letterbox cleanly
+       (headshots are portrait and cover the frame entirely). */
+    background: var(--bg-warm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -583,10 +585,14 @@
     display: block;
     transition: opacity 0.55s ease;
   }
-  /* The candid family photo sits on top, hidden until hover/tap */
+  /* The candid family photo sits on top, hidden until hover/tap.
+     Uses `contain` so the whole picture stays visible regardless of its
+     shape — several family shots are square/landscape and would lose
+     faces to a cover-crop in this portrait frame. */
   .board-photo-wrap .photo-kids {
     opacity: 0;
-    object-position: center 28%;
+    object-fit: contain;
+    object-position: center;
   }
   .board-photo-wrap:hover .photo-head,
   .board-photo-wrap.is-flipped .photo-head { opacity: 0; }
