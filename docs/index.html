@@ -556,8 +556,11 @@
     text-align: center;
     width: 240px;
   }
-  /* Executive Board photo wrap — rounded-rectangle portrait (supports real image OR initials fallback) */
+  /* Executive Board photo wrap — rounded-rectangle portrait.
+     Holds TWO stacked photos: a professional headshot (default) that
+     crossfades to a candid "dad with kids" shot on hover / tap. */
   .board-photo-wrap {
+    position: relative;
     width: 100%;
     aspect-ratio: 5 / 6;
     border-radius: 18px;
@@ -568,17 +571,57 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 16px 34px -12px rgba(31,94,150,0.38);
+    cursor: pointer;
   }
   .board-photo-wrap img {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 20%;
     display: block;
+    transition: opacity 0.55s ease;
   }
-  /* Per-person object-position overrides — applied by data attribute on the wrap */
-  .board-photo-wrap[data-pos="chism"] img    { object-position: center 14%; }
-  .board-photo-wrap[data-pos="notice"] img   { object-position: center 18%; }
+  /* The candid family photo sits on top, hidden until hover/tap */
+  .board-photo-wrap .photo-kids {
+    opacity: 0;
+    object-position: center 28%;
+  }
+  .board-photo-wrap:hover .photo-head,
+  .board-photo-wrap.is-flipped .photo-head { opacity: 0; }
+  .board-photo-wrap:hover .photo-kids,
+  .board-photo-wrap.is-flipped .photo-kids { opacity: 1; }
+
+  /* "Meet the family" affordance pill */
+  .photo-hint {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 2;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: rgba(18,40,68,0.58);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .board-photo-wrap:hover .photo-hint,
+  .board-photo-wrap.is-flipped .photo-hint { opacity: 0; }
+
+  /* Per-person object-position overrides — headshot only */
+  .board-photo-wrap[data-pos="chism"] .photo-head    { object-position: center 14%; }
+  .board-photo-wrap[data-pos="notice"] .photo-head   { object-position: center 18%; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .board-photo-wrap img,
+    .photo-hint { transition: none; }
+  }
   .advisor-photo-wrap[data-pos="farmer"] img  { object-position: center 16%; }
   .advisor-photo-wrap[data-pos="dipasca"] img { object-position: center 28%; }
   .advisor-photo-wrap[data-pos="thomas"] img  { object-position: center 12%; }
@@ -2907,7 +2950,11 @@
     <div class="board-grid">
 
       <div class="board-card">
-        <div class="board-photo-wrap"><img src="assets/people/arowolo.jpg" alt="Emmanuel Arowolo" loading="lazy"></div>
+        <div class="board-photo-wrap">
+          <img class="photo-head" src="assets/members/headshots/arowolo.png" alt="Emmanuel Arowolo" loading="lazy">
+          <img class="photo-kids" src="assets/members/with_kids/arowolo.png" alt="Emmanuel Arowolo with his kids" loading="lazy">
+          <span class="photo-hint" aria-hidden="true">Meet the family</span>
+        </div>
         <div class="board-name">Emmanuel Arowolo, Esq.</div>
         <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
         <div class="board-cred">Senior Business Immigration Attorney at Jackson Walker LLP</div>
@@ -2916,7 +2963,11 @@
       </div>
 
       <div class="board-card">
-        <div class="board-photo-wrap" data-pos="chism"><img src="assets/people/chism.jpg" alt="Jonathan Chism" loading="lazy"></div>
+        <div class="board-photo-wrap" data-pos="chism">
+          <img class="photo-head" src="assets/members/headshots/chism.jpg" alt="Jonathan Chism" loading="lazy">
+          <img class="photo-kids" src="assets/members/with_kids/chism.jpg" alt="Jonathan Chism with his son" loading="lazy">
+          <span class="photo-hint" aria-hidden="true">Meet the family</span>
+        </div>
         <div class="board-name">Jonathan Chism, PhD</div>
         <div class="board-role">CoFounder &amp; Inaugural President</div>
         <div class="board-cred">Associate Professor of History at University of Houston-Downtown · 15+ years grassroots organizing</div>
@@ -2925,7 +2976,11 @@
       </div>
 
       <div class="board-card">
-        <div class="board-photo-wrap"><img src="assets/people/esparza.jpg" alt="Jesse Esparza" loading="lazy"></div>
+        <div class="board-photo-wrap">
+          <img class="photo-head" src="assets/members/headshots/esparza.jpg" alt="Jesse Esparza" loading="lazy">
+          <img class="photo-kids" src="assets/members/with_kids/esparza.png" alt="Jesse Esparza with his son Mateo" loading="lazy">
+          <span class="photo-hint" aria-hidden="true">Meet the family</span>
+        </div>
         <div class="board-name">Jesse Esparza, PhD</div>
         <div class="board-role">CoFounder, Inaugural Treasurer &amp; Director of Family Engagement</div>
         <div class="board-cred">Associate Professor of History at Texas Southern University · Graduate Program Director</div>
@@ -2934,7 +2989,11 @@
       </div>
 
       <div class="board-card">
-        <div class="board-photo-wrap"><img src="assets/people/hinton.jpg" alt="DeAndrae Hinton" loading="lazy"></div>
+        <div class="board-photo-wrap">
+          <img class="photo-head" src="assets/members/headshots/hinton.jpg" alt="DeAndrae Hinton" loading="lazy">
+          <img class="photo-kids" src="assets/members/with_kids/hinton.png" alt="DeAndrae Hinton with his son" loading="lazy">
+          <span class="photo-hint" aria-hidden="true">Meet the family</span>
+        </div>
         <div class="board-name">DeAndrae Hinton</div>
         <div class="board-role">Director of Education &amp; Autism Awareness</div>
         <div class="board-cred">Houston ISD Special Ed Dept. Chair · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
@@ -2943,7 +3002,11 @@
       </div>
 
       <div class="board-card">
-        <div class="board-photo-wrap" data-pos="notice"><img src="assets/people/notice.jpg" alt="John Notice" loading="lazy"></div>
+        <div class="board-photo-wrap" data-pos="notice">
+          <img class="photo-head" src="assets/members/headshots/notice.jpg" alt="John Notice" loading="lazy">
+          <img class="photo-kids" src="assets/members/with_kids/notice.png" alt="John Notice with his kids" loading="lazy">
+          <span class="photo-hint" aria-hidden="true">Meet the family</span>
+        </div>
         <div class="board-name">John Notice, CMHC</div>
         <div class="board-role">Director of Emotional Well-Being</div>
         <div class="board-cred">Mental Health Counselor · PhD Candidate</div>
@@ -3316,6 +3379,16 @@
     // Run after images have had a chance to error out.
     window.addEventListener('load', check);
     setTimeout(check, 1500);
+  })();
+
+  // Board photos: on touch devices (no hover) tap toggles the headshot <-> family photo.
+  (function () {
+    if (!window.matchMedia || !window.matchMedia('(hover: none)').matches) return;
+    document.querySelectorAll('.board-photo-wrap').forEach(function (wrap) {
+      wrap.addEventListener('click', function () {
+        wrap.classList.toggle('is-flipped');
+      });
+    });
   })();
 </script>
 
