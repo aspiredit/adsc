@@ -7,6 +7,9 @@ import {
   deleteEventById,
   sortByStartDesc,
   validateEventForm,
+  makeFlierId,
+  buildFlierObject,
+  validateFlierForm,
   encodeBase64Utf8,
   decodeBase64Utf8,
 } from "../docs/js/admin.js";
@@ -113,6 +116,28 @@ describe("validateEventForm", () => {
   });
   it("passes when required fields are present", () => {
     expect(validateEventForm({ title: "x", date: "2026-06-06", start_time: "10:00", location: "y" })).toEqual([]);
+  });
+});
+
+describe("fliers", () => {
+  it("makeFlierId combines date and caption slug", () => {
+    expect(makeFlierId("July Dads Mixer", "2026-07-20")).toBe("2026-07-20-july-dads-mixer");
+  });
+  it("makeFlierId works without a date", () => {
+    expect(makeFlierId("Save the Date", "")).toBe("save-the-date");
+  });
+  it("buildFlierObject keeps required fields and omits empty optionals", () => {
+    const fl = buildFlierObject({ caption: "Mixer", image: "assets/events/flier-x.png", date: "2026-07-20" });
+    expect(fl).toMatchObject({ id: "2026-07-20-mixer", image: "assets/events/flier-x.png", caption: "Mixer", date: "2026-07-20" });
+    expect(fl).not.toHaveProperty("link");
+  });
+  it("buildFlierObject includes an optional link", () => {
+    const fl = buildFlierObject({ caption: "Mixer", image: "x.png", link: "https://e.com" });
+    expect(fl.link).toBe("https://e.com");
+  });
+  it("validateFlierForm requires caption and image", () => {
+    expect(validateFlierForm({})).toHaveLength(2);
+    expect(validateFlierForm({ caption: "x", image: "y.png" })).toEqual([]);
   });
 });
 

@@ -180,6 +180,36 @@
       <div id="events-list"></div>
     </div>
 
+    <div class="card">
+      <h2>Save-the-date fliers</h2>
+      <p class="sub" style="margin-bottom:16px;">Post a flier image to the "Save the date" section — no full event needed. Event flyers show there too, automatically.</p>
+      <form id="flier-form">
+        <label for="fl-image">Flier image *</label>
+        <input type="file" id="fl-image" accept="image/*">
+
+        <label for="fl-caption">Caption (event name) *</label>
+        <input type="text" id="fl-caption" placeholder="July Dads Mixer">
+
+        <div class="row2">
+          <div>
+            <label for="fl-date">Event date (optional)</label>
+            <input type="date" id="fl-date">
+            <div class="hint">Flier auto-hides after this date.</div>
+          </div>
+          <div>
+            <label for="fl-link">Link (optional)</label>
+            <input type="url" id="fl-link" placeholder="https://… RSVP or details">
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btn-add-flier">Add flier</button>
+          <span class="msg" id="flier-msg"></span>
+        </div>
+      </form>
+      <div id="fliers-list" style="margin-top:8px;"></div>
+    </div>
+
     <div class="actions">
       <button type="button" class="btn-ghost" id="btn-logout">Forget token on this device</button>
       <a href="../" style="margin-left:auto;">View the live site →</a>

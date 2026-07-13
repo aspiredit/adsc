@@ -1,6 +1,7 @@
 import { normalizeEvents, formatTimeRangeCT } from "./eventtime.js";
 
 const EVENTS_JSON_PATH = "_data/events.json";
+const FLIERS_JSON_PATH = "_data/fliers.json";
 const RSVP_FEATURED_SELECTOR = ".rsvp-featured";
 const RSVP_UPCOMING_SECTION_SELECTOR = ".rsvp-upcoming";
 const RSVP_UPCOMING_GRID_SELECTOR = ".rsvp-upcoming-grid";
@@ -226,37 +227,88 @@ export function renderUpcoming(events) {
   grid.innerHTML = events.map(buildUpcomingCardHtml).join("");
 }
 
-// "Save the date" fliers are tied to events: any upcoming event that has a
-// flyer image is shown here. No separate data source to maintain.
+// "Save the date" fliers come from TWO sources, both feeding one grid:
+//   1. Upcoming events that have a flyer image (tied to events)
+//   2. Standalone fliers from _data/fliers.json (posted before an event has
+//      full details — the classic "save the date")
+// The section always renders; when empty it shows a friendly placeholder.
+
 export function pickFlierEvents(events, now = new Date()) {
   return upcomingSorted(events, now).filter((e) => e.flyer);
 }
 
-function buildFlierCardHtml(event) {
-  const src = escapeHtml(resolveFlyer(event.flyer));
-  const alt = escapeHtml(`${event.title ?? "Event"} flier`);
-  const caption = escapeHtml(event.title ?? "");
+// Today's date key (YYYY-MM-DD) in Central Time, for dropping past fliers.
+function todayKeyCT(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Chicago",
+    year: "numeric",
+    month: "2-digit",
+    day: "numeric",
+  }).format(now);
+}
+
+// Merge event flyers + standalone fliers into one sorted list of display items:
+// { image, caption, link, sortKey }.
+export function buildFlierList(standaloneFliers, eventFliers, now = new Date()) {
+  const today = todayKeyCT(now);
+  const fromEvents = (Array.isArray(eventFliers) ? eventFliers : [])
+    .filter((e) => e.flyer)
+    .map((e) => ({
+      image: resolveFlyer(e.flyer),
+      caption: e.title ?? "",
+      link: resolveFlyer(e.flyer),
+      sortKey: e.date || (e.starts_at ? String(e.starts_at).slice(0, 10) : "9999"),
+    }));
+  const fromStandalone = (Array.isArray(standaloneFliers) ? standaloneFliers : [])
+    .filter((f) => f.image && (!f.date || f.date >= today))
+    .map((f) => ({
+      image: resolveFlyer(f.image),
+      caption: f.caption ?? "",
+      link: f.link ? f.link : resolveFlyer(f.image),
+      sortKey: f.date || "9999",
+    }));
+  return [...fromStandalone, ...fromEvents].sort((a, b) =>
+    String(a.sortKey).localeCompare(String(b.sortKey))
+  );
+}
+
+function buildFlierCardHtml(item) {
+  const img = escapeHtml(item.image);
+  const link = escapeHtml(item.link || item.image);
+  const alt = escapeHtml(`${item.caption || "Event"} flier`);
+  const caption = escapeHtml(item.caption || "");
   return `
-    <div class="flier-card" data-event-id="${escapeHtml(event.id)}">
-      <a href="${src}" target="_blank" rel="noopener">
-        <img src="${src}" alt="${alt}" loading="lazy" onerror="this.closest('.flier-card').remove()">
+    <div class="flier-card">
+      <a href="${link}" target="_blank" rel="noopener">
+        <img src="${img}" alt="${alt}" loading="lazy" onerror="this.closest('.flier-card').remove()">
       </a>
-      <div class="flier-caption">${caption}</div>
+      ${caption ? `<div class="flier-caption">${caption}</div>` : ""}
     </div>
   `;
 }
 
-export function renderFliers(events) {
+export function renderFliers(list) {
   const section = document.querySelector(FLIERS_SECTION_SELECTOR);
   const grid = document.querySelector(FLIERS_GRID_SELECTOR);
   if (!section || !grid) return;
-  if (!Array.isArray(events) || events.length === 0) {
-    grid.innerHTML = "";
-    section.style.display = "none";
+  section.style.display = "";
+  if (!Array.isArray(list) || list.length === 0) {
+    grid.innerHTML = `<p class="fliers-empty">More fliers coming soon — check back for upcoming event announcements.</p>`;
     return;
   }
-  grid.innerHTML = events.map(buildFlierCardHtml).join("");
-  section.style.display = "";
+  grid.innerHTML = list.map(buildFlierCardHtml).join("");
+}
+
+async function fetchStandaloneFliers() {
+  try {
+    const res = await fetch(FLIERS_JSON_PATH);
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    return Array.isArray(data?.fliers) ? data.fliers : [];
+  } catch {
+    return [];
+  }
 }
 
 function escapeHtml(str) {
@@ -305,16 +357,19 @@ export async function init() {
     const events = filterDrafts(dated, previewMode);
     const featured = pickFeaturedEvent(events);
     const upcoming = pickUpcomingEvents(events, new Date(), featured?.id ?? null);
+    const standaloneFliers = await fetchStandaloneFliers();
     renderFeatured(featured);
     renderUpcoming(upcoming);
     renderCalendar(events);
-    renderFliers(pickFlierEvents(events));
+    renderFliers(buildFlierList(standaloneFliers, pickFlierEvents(events)));
     attachIcsHandlers([featured, ...upcoming].filter(Boolean));
   } catch (err) {
     console.error("Could not load events:", err);
     renderFeatured(null);
     renderUpcoming([]);
     renderCalendar([]);
-    renderFliers([]);
+    // Still try to show standalone fliers even if events failed to load.
+    const standaloneFliers = await fetchStandaloneFliers();
+    renderFliers(buildFlierList(standaloneFliers, []));
   }
 }

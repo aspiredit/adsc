@@ -21,6 +21,7 @@ const REPO_OWNER = "aspiredit";
 const REPO_NAME = "adsc";
 const BRANCH = "main";
 const EVENTS_PATH = "docs/_data/events.json";
+const FLIERS_PATH = "docs/_data/fliers.json";
 const FLYER_DIR = "docs/assets/events";
 const TOKEN_KEY = "adsc_gh_token";
 const API = "https://api.github.com";
@@ -107,6 +108,31 @@ export function validateEventForm(form) {
   return errors;
 }
 
+// ---------- fliers (standalone "save the date" images) ----------
+
+export function makeFlierId(caption, dateStr) {
+  const slug = slugify(caption) || "flier";
+  return dateStr ? `${dateStr}-${slug}` : slug;
+}
+
+export function buildFlierObject(form) {
+  const flier = {
+    id: form.id || makeFlierId(form.caption, form.date),
+    image: (form.image || "").trim(),
+    caption: (form.caption || "").trim(),
+  };
+  if (form.date) flier.date = form.date;
+  if (form.link && form.link.trim()) flier.link = form.link.trim();
+  return flier;
+}
+
+export function validateFlierForm(form) {
+  const errors = [];
+  if (!form.caption || !form.caption.trim()) errors.push("Caption is required.");
+  if (!form.image) errors.push("A flier image is required.");
+  return errors;
+}
+
 // base64 <-> UTF-8 string (browser-safe).
 export function encodeBase64Utf8(str) {
   return btoa(unescape(encodeURIComponent(str)));
@@ -125,10 +151,10 @@ function authHeaders(token) {
   };
 }
 
-async function ghGetFile(token, path) {
+async function ghGetFile(token, path, emptyJson = { events: [] }) {
   const url = `${API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${BRANCH}`;
   const res = await fetch(url, { headers: authHeaders(token), cache: "no-store" });
-  if (res.status === 404) return { sha: null, json: { events: [] } };
+  if (res.status === 404) return { sha: null, json: emptyJson };
   if (!res.ok) throw new Error(`GitHub read failed (${res.status}). Check the token and its permissions.`);
   const data = await res.json();
   return { sha: data.sha, json: JSON.parse(decodeBase64Utf8(data.content)) };
@@ -236,6 +262,29 @@ function renderList(container, events, onDelete) {
   }
 }
 
+function renderFliersList(container, fliers, onDelete) {
+  container.innerHTML = "";
+  const list = Array.isArray(fliers) ? fliers : [];
+  if (list.length === 0) {
+    container.innerHTML = `<p class="admin-empty">No standalone fliers yet.</p>`;
+    return;
+  }
+  for (const fl of list) {
+    const row = document.createElement("div");
+    row.className = "admin-row";
+    const when = fl.date ? ` · ${fl.date}` : "";
+    row.innerHTML = `
+      <div class="admin-row-main">
+        <strong>${fl.caption || "(no caption)"}</strong>
+        <div class="admin-row-sub">${(fl.image || "").replace(/^.*\//, "")}${when}</div>
+      </div>
+      <button type="button" class="admin-del" data-id="${fl.id}">Delete</button>
+    `;
+    row.querySelector(".admin-del").addEventListener("click", () => onDelete(fl.id));
+    container.appendChild(row);
+  }
+}
+
 export function init() {
   const authPanel = el("admin-auth");
   const appPanel = el("admin-app");
@@ -249,10 +298,15 @@ export function init() {
   let token = "";
   let sha = null;
   let eventsObj = { events: [] };
+  let fliersSha = null;
+  let fliersObj = { fliers: [] };
 
   const authStatus = el("auth-status");
   const formMsg = el("form-msg");
   const listEl = el("events-list");
+  const flierForm = el("flier-form");
+  const flierMsg = el("flier-msg");
+  const fliersListEl = el("fliers-list");
 
   async function connect(candidate, remember) {
     setMsg(authStatus, "Connecting…");
@@ -261,10 +315,17 @@ export function init() {
       token = candidate;
       sha = newSha;
       eventsObj = json && Array.isArray(json.events) ? json : { events: Array.isArray(json) ? json : [] };
+      // Fliers live in a second file; tolerate it not existing yet.
+      try {
+        const fr = await ghGetFile(candidate, FLIERS_PATH, { fliers: [] });
+        fliersSha = fr.sha;
+        fliersObj = fr.json && Array.isArray(fr.json.fliers) ? fr.json : { fliers: [] };
+      } catch { fliersSha = null; fliersObj = { fliers: [] }; }
       if (remember) localStorage.setItem(TOKEN_KEY, token);
       authPanel.hidden = true;
       appPanel.hidden = false;
       renderList(listEl, eventsObj.events, handleDelete);
+      if (fliersListEl) renderFliersList(fliersListEl, fliersObj.fliers, handleDeleteFlier);
       setMsg(authStatus, "");
     } catch (err) {
       setMsg(authStatus, err.message, "error");
@@ -292,6 +353,35 @@ export function init() {
     }
   }
 
+  async function persistFliers(message) {
+    const contentStr = JSON.stringify(fliersObj, null, 2) + "\n";
+    const result = await ghPutFile(token, FLIERS_PATH, contentStr, fliersSha, message);
+    fliersSha = result.content.sha;
+  }
+
+  async function reloadFliers() {
+    try {
+      const r = await ghGetFile(token, FLIERS_PATH, { fliers: [] });
+      fliersSha = r.sha;
+      fliersObj = r.json && Array.isArray(r.json.fliers) ? r.json : { fliers: [] };
+      renderFliersList(fliersListEl, fliersObj.fliers, handleDeleteFlier);
+    } catch { /* ignore */ }
+  }
+
+  async function handleDeleteFlier(id) {
+    if (!window.confirm("Delete this flier? It will be removed from the live site after the next deploy.")) return;
+    setMsg(flierMsg, "Deleting…");
+    try {
+      fliersObj = { ...fliersObj, fliers: deleteEventById(fliersObj.fliers, id) };
+      await persistFliers(`fliers: delete ${id} (via admin)`);
+      renderFliersList(fliersListEl, fliersObj.fliers, handleDeleteFlier);
+      setMsg(flierMsg, "Deleted. Live in ~1 minute.", "ok");
+    } catch (err) {
+      setMsg(flierMsg, err.message, "error");
+      await reloadFliers();
+    }
+  }
+
   el("btn-connect").addEventListener("click", () => {
     const candidate = el("gh-token").value.trim();
     if (!candidate) { setMsg(authStatus, "Paste a token first.", "error"); return; }
@@ -301,11 +391,48 @@ export function init() {
   el("btn-logout").addEventListener("click", () => {
     localStorage.removeItem(TOKEN_KEY);
     token = ""; sha = null; eventsObj = { events: [] };
+    fliersSha = null; fliersObj = { fliers: [] };
     el("gh-token").value = "";
     appPanel.hidden = true;
     authPanel.hidden = false;
     setMsg(authStatus, "Token forgotten on this device.", "ok");
   });
+
+  if (flierForm) {
+    flierForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fileInput = el("fl-image");
+      const hasFile = !!(fileInput.files && fileInput.files[0]);
+      const values = {
+        caption: el("fl-caption").value,
+        date: el("fl-date").value,
+        link: el("fl-link").value,
+        image: hasFile ? fileInput.files[0].name : "",
+      };
+      const errors = validateFlierForm(values);
+      if (errors.length) { setMsg(flierMsg, errors.join(" "), "error"); return; }
+
+      setMsg(flierMsg, "Saving…");
+      try {
+        const baseId = makeFlierId(values.caption, values.date);
+        const file = fileInput.files[0];
+        const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const imgPath = `${FLYER_DIR}/flier-${baseId}.${ext}`;
+        const b64 = await fileToBase64(file);
+        await ghPutBinary(token, imgPath, b64, `fliers: image for ${baseId} (via admin)`);
+
+        const flier = buildFlierObject({ ...values, id: baseId, image: `assets/events/flier-${baseId}.${ext}` });
+        fliersObj = { ...fliersObj, fliers: upsertEvent(fliersObj.fliers, flier) };
+        await persistFliers(`fliers: add ${flier.id} (via admin)`);
+        renderFliersList(fliersListEl, fliersObj.fliers, handleDeleteFlier);
+        flierForm.reset();
+        setMsg(flierMsg, "Saved! It appears in “Save the date” in ~1 minute (hard-refresh the site).", "ok");
+      } catch (err) {
+        setMsg(flierMsg, err.message, "error");
+        await reloadFliers();
+      }
+    });
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();

@@ -151,6 +151,36 @@ content:
             type: boolean
             default: false
 
+  # ── SAVE-THE-DATE FLIERS ────────────────────────────
+  # Standalone fliers (post a flier before an event has full details). Event
+  # flyers ALSO appear in the same "Save the date" section automatically.
+  - name: fliers
+    label: Save-the-Date Fliers
+    path: docs/_data/fliers.json
+    type: file
+    format: json
+    fields:
+      - name: fliers
+        label: Fliers
+        type: object
+        list: true
+        fields:
+          - name: image
+            label: Flier image
+            type: image
+            required: true
+          - name: caption
+            label: Caption (event name)
+            type: string
+          - name: date
+            label: Event date (optional — hides the flier once it passes)
+            type: date
+            options:
+              format: yyyy-MM-dd
+          - name: link
+            label: Link (optional — RSVP or details URL)
+            type: string
+
   # ── BLOG POSTS ──────────────────────────────────────
   - name: blogs
     label: Blog Posts
