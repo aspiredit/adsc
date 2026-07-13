@@ -1,22 +1,10 @@
 {
   "fliers": [
     {
-      "image": "/assets/images/Back to School Resource Fair Flier-1.png",
-      "caption": "Back to School Autism Resource Fair",
-      "date": "2026-07-26",
-      "link": "https://www.eventbrite.com/e/back-to-school-resource-fair-navigating-autism-and-education-tickets-1993365005391?aff=oddtdtcreator"
-    },
-    {
       "image": "/assets/images/Back to School Resource Fair Panel Flier-1.png",
       "caption": "Back to School Autism Resource Fair Panel",
       "date": "2026-07-26",
       "link": "https://www.eventbrite.com/e/back-to-school-resource-fair-navigating-autism-and-education-tickets-1993365005391?aff=oddtdtcreator"
-    },
-    {
-      "image": "/assets/images/Dads fliers (10).png",
-      "caption": "Dads Mixer at Peace Love Autism",
-      "date": "2026-07-18",
-      "link": "https://form.jotform.com/261314725100039"
     }
   ]
 }
