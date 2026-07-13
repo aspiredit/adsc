@@ -26,6 +26,20 @@
       "rsvp_url": "https://www.eventbrite.com/e/back-to-school-resource-fair-navigating-autism-and-education-tickets-1993365005391?aff=oddtdtcreator",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2026-07-18-tomball",
+      "title": "ADSC Dads Mixer ",
+      "type": "meetup",
+      "date": "2026-07-18",
+      "start_time": "15:00",
+      "end_time": "17:00",
+      "location": "Peace Love Autism - 502 Mason StTomball, TX 77375",
+      "description": "Join us for our next ADSC Dads Mixer at Peace Love Autism in Tomball, TX.",
+      "flyer": "/assets/images/Dads fliers (10)-1.png",
+      "rsvp_url": "https://form.jotform.com/261314725100039",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
