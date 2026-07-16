@@ -250,14 +250,14 @@
     box-shadow: 0 7px 18px -4px rgba(31,94,150,0.5);
   }
 
-  /* Tier 1: utility strip — secondary links, right-aligned, small + muted */
-  .nav-utility { border-bottom: 1px solid var(--line-soft); }
+  /* Secondary strip — sits BELOW the main bar, right-aligned, small + muted */
+  .nav-utility { border-top: 1px solid var(--line-soft); }
   .nav-utility .container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 24px;
-    padding: 7px 0;
+    padding: 8px 0;
   }
   .nav-utility a {
     color: var(--ink-mute);
@@ -3086,21 +3086,9 @@
 </head>
 <body>
 
-<!-- NAV (two-tier: utility strip of secondary links + main bar) -->
+<!-- NAV (two-tier: main bar on top + secondary strip below) -->
 <div class="nav-wrap" id="top">
-  <!-- Tier 1: utility strip — secondary links, desktop only. On mobile these
-       are hidden here and appear instead in the hamburger drawer below
-       (the .nav-secondary copies), so there's one menu to scroll on phones. -->
-  <div class="nav-utility">
-    <div class="container">
-      <a href="blog/">Blog</a>
-      <a href="photos/">Photos</a>
-      <a href="#sponsors">Sponsors</a>
-      <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
-      <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
-    </div>
-  </div>
-  <!-- Tier 2: main bar — logo + primary links + Donate -->
+  <!-- Tier 1: main bar — logo + primary links + Donate -->
   <div class="container">
     <nav class="nav">
       <a class="logo" href="#top" aria-label="Autism Dads Social Club — home">
@@ -3118,8 +3106,8 @@
         <a href="#programs">Programs</a>
         <a href="#events">Events</a>
         <a href="#membership">Join</a>
-        <!-- Secondary links: hidden on desktop (shown in the utility strip
-             above); revealed inside the drawer on mobile. -->
+        <!-- Secondary links: hidden on desktop (shown in the strip below);
+             revealed inside the drawer on mobile. -->
         <a href="blog/" class="nav-secondary">Blog</a>
         <a href="photos/" class="nav-secondary">Photos</a>
         <a href="#sponsors" class="nav-secondary">Sponsors</a>
@@ -3127,6 +3115,18 @@
         <a href="#donate" class="nav-cta">Donate</a>
       </div>
     </nav>
+  </div>
+  <!-- Tier 2: secondary strip — sits BELOW the main bar (desktop only). On
+       mobile it's hidden; those links appear in the hamburger drawer above
+       (the .nav-secondary copies), so phones have a single menu. -->
+  <div class="nav-utility">
+    <div class="container">
+      <a href="blog/">Blog</a>
+      <a href="photos/">Photos</a>
+      <a href="#sponsors">Sponsors</a>
+      <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
+      <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
+    </div>
   </div>
 </div>
 
