@@ -196,7 +196,7 @@
   }
   a.logo:hover { text-decoration: none; }
   .logo-img {
-    width: 96px; height: 96px;
+    width: 60px; height: 60px;
     object-fit: contain;
     flex-shrink: 0;
     /* Transparent PNG — no wrapper. Subtle drop-shadow gives it some lift. */
@@ -205,7 +205,7 @@
   .logo-text { display: flex; flex-direction: column; line-height: 1.15; }
   .logo small { display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 500; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px; }
   @media (max-width: 540px) {
-    .logo-img { width: 68px; height: 68px; }
+    .logo-img { width: 52px; height: 52px; }
     .logo, a.logo { font-size: 1.05rem; gap: 10px; }
     .logo small { font-size: 0.62rem; letter-spacing: 0.1em; }
   }
@@ -249,6 +249,68 @@
     transform: translateY(-1px);
     box-shadow: 0 7px 18px -4px rgba(31,94,150,0.5);
   }
+
+  /* "More" dropdown — holds the secondary links (Blog, Photos, Sponsors, Merch) */
+  .nav-more { position: relative; display: flex; align-items: center; }
+  .nav-more-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-size: 0.96rem;
+    font-weight: 500;
+    padding: 6px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .nav-more-btn:hover,
+  .nav-more-btn[aria-expanded="true"] { color: var(--blue-deep); }
+  .nav-more-btn .chev { font-size: 0.72em; transition: transform 0.2s ease; }
+  .nav-more-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .nav-more-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 188px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 14px 32px -12px rgba(31,94,150,0.30);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    z-index: 101;
+  }
+  /* Transparent bridge so the menu stays open while the cursor crosses the gap */
+  .nav-more-menu::before {
+    content: "";
+    position: absolute;
+    top: -8px; left: 0; right: 0;
+    height: 8px;
+  }
+  .nav-more:hover .nav-more-menu,
+  .nav-more:focus-within .nav-more-menu,
+  .nav-more.open .nav-more-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .nav-more-menu a {
+    display: block;
+    padding: 9px 12px;
+    border-radius: 6px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  .nav-more-menu a::after { display: none !important; }
+  .nav-more-menu a:hover { background: var(--bg-warm); color: var(--blue-deep); text-decoration: none; }
 
   /* Hamburger button */
   .nav-toggle {
@@ -304,6 +366,29 @@
       padding: 14px 20px;
       border-radius: 8px;
       border-bottom: none;
+    }
+    /* Flatten the "More" dropdown into the drawer — every link visible inline. */
+    .nav-more { display: contents; }
+    .nav-more-btn { display: none; }
+    .nav-more-menu {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      display: block;
+      min-width: 0;
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+    .nav-more-menu::before { display: none; }
+    .nav-more-menu a {
+      padding: 18px 4px;
+      border-radius: 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 1.08rem;
     }
     body.nav-open { overflow: hidden; }
   }
@@ -3079,12 +3164,17 @@
         <a href="#origin">Our Story</a>
         <a href="#programs">Programs</a>
         <a href="#events">Events</a>
-        <a href="blog/">Blog</a>
-        <a href="photos/">Photos</a>
         <a href="#membership">Join</a>
-        <a href="#sponsors">Sponsors</a>
-        <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
-        <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
+        <div class="nav-more">
+          <button type="button" class="nav-more-btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-more-menu">More <span class="chev" aria-hidden="true">▾</span></button>
+          <div class="nav-more-menu" id="nav-more-menu">
+            <a href="blog/">Blog</a>
+            <a href="photos/">Photos</a>
+            <a href="#sponsors">Sponsors</a>
+            <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
+            <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
+          </div>
+        </div>
         <a href="#donate" class="nav-cta">Donate</a>
       </div>
     </nav>
@@ -3982,6 +4072,23 @@
         document.body.classList.remove('nav-open');
       }));
     }
+  })();
+
+  // "More" dropdown — click to pin open (hover handled in CSS), close on
+  // outside-click / Escape / choosing a link.
+  (function () {
+    const more = document.querySelector('.nav-more');
+    const btn = more && more.querySelector('.nav-more-btn');
+    if (!more || !btn) return;
+    const close = () => { more.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = more.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => { if (!more.contains(e.target)) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    more.querySelectorAll('.nav-more-menu a').forEach(a => a.addEventListener('click', close));
   })();
 
   // Sticky nav shadow on scroll + back-to-top visibility
