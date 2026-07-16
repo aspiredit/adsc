@@ -250,67 +250,26 @@
     box-shadow: 0 7px 18px -4px rgba(31,94,150,0.5);
   }
 
-  /* "More" dropdown — holds the secondary links (Blog, Photos, Sponsors, Merch) */
-  .nav-more { position: relative; display: flex; align-items: center; }
-  .nav-more-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--ink-soft);
-    font-family: var(--font-body);
-    font-size: 0.96rem;
-    font-weight: 500;
-    padding: 6px 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .nav-more-btn:hover,
-  .nav-more-btn[aria-expanded="true"] { color: var(--blue-deep); }
-  .nav-more-btn .chev { font-size: 0.72em; transition: transform 0.2s ease; }
-  .nav-more-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
-  .nav-more-menu {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    min-width: 188px;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    box-shadow: 0 14px 32px -12px rgba(31,94,150,0.30);
-    padding: 8px;
+  /* Tier 1: utility strip — secondary links, right-aligned, small + muted */
+  .nav-utility { border-bottom: 1px solid var(--line-soft); }
+  .nav-utility .container {
     display: flex;
-    flex-direction: column;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-6px);
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
-    z-index: 101;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
+    padding: 7px 0;
   }
-  /* Transparent bridge so the menu stays open while the cursor crosses the gap */
-  .nav-more-menu::before {
-    content: "";
-    position: absolute;
-    top: -8px; left: 0; right: 0;
-    height: 8px;
-  }
-  .nav-more:hover .nav-more-menu,
-  .nav-more:focus-within .nav-more-menu,
-  .nav-more.open .nav-more-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-  .nav-more-menu a {
-    display: block;
-    padding: 9px 12px;
-    border-radius: 6px;
-    color: var(--ink-soft);
-    font-size: 0.92rem;
+  .nav-utility a {
+    color: var(--ink-mute);
+    font-size: 0.82rem;
     font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease;
   }
-  .nav-more-menu a::after { display: none !important; }
-  .nav-more-menu a:hover { background: var(--bg-warm); color: var(--blue-deep); text-decoration: none; }
+  .nav-utility a:hover { color: var(--blue-deep); text-decoration: none; }
+  /* Secondary links live in the utility strip on desktop; their in-drawer
+     copies (for mobile) are hidden here. */
+  .nav-secondary { display: none; }
 
   /* Hamburger button */
   .nav-toggle {
@@ -367,29 +326,10 @@
       border-radius: 8px;
       border-bottom: none;
     }
-    /* Flatten the "More" dropdown into the drawer — every link visible inline. */
-    .nav-more { display: contents; }
-    .nav-more-btn { display: none; }
-    .nav-more-menu {
-      position: static;
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      display: block;
-      min-width: 0;
-      padding: 0;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      background: transparent;
-    }
-    .nav-more-menu::before { display: none; }
-    .nav-more-menu a {
-      padding: 18px 4px;
-      border-radius: 0;
-      border-bottom: 1px solid var(--line);
-      font-size: 1.08rem;
-    }
+    /* Two-tier collapses to one drawer: hide the utility strip, reveal the
+       secondary links inside the hamburger menu (they inherit .nav-links a). */
+    .nav-utility { display: none; }
+    .nav-secondary { display: block; }
     body.nav-open { overflow: hidden; }
   }
 
@@ -3146,8 +3086,21 @@
 </head>
 <body>
 
-<!-- NAV -->
+<!-- NAV (two-tier: utility strip of secondary links + main bar) -->
 <div class="nav-wrap" id="top">
+  <!-- Tier 1: utility strip — secondary links, desktop only. On mobile these
+       are hidden here and appear instead in the hamburger drawer below
+       (the .nav-secondary copies), so there's one menu to scroll on phones. -->
+  <div class="nav-utility">
+    <div class="container">
+      <a href="blog/">Blog</a>
+      <a href="photos/">Photos</a>
+      <a href="#sponsors">Sponsors</a>
+      <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
+      <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
+    </div>
+  </div>
+  <!-- Tier 2: main bar — logo + primary links + Donate -->
   <div class="container">
     <nav class="nav">
       <a class="logo" href="#top" aria-label="Autism Dads Social Club — home">
@@ -3165,16 +3118,12 @@
         <a href="#programs">Programs</a>
         <a href="#events">Events</a>
         <a href="#membership">Join</a>
-        <div class="nav-more">
-          <button type="button" class="nav-more-btn" aria-expanded="false" aria-haspopup="true" aria-controls="nav-more-menu">More <span class="chev" aria-hidden="true">▾</span></button>
-          <div class="nav-more-menu" id="nav-more-menu">
-            <a href="blog/">Blog</a>
-            <a href="photos/">Photos</a>
-            <a href="#sponsors">Sponsors</a>
-            <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
-            <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
-          </div>
-        </div>
+        <!-- Secondary links: hidden on desktop (shown in the utility strip
+             above); revealed inside the drawer on mobile. -->
+        <a href="blog/" class="nav-secondary">Blog</a>
+        <a href="photos/" class="nav-secondary">Photos</a>
+        <a href="#sponsors" class="nav-secondary">Sponsors</a>
+        <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener" class="nav-secondary">Merchandise</a>
         <a href="#donate" class="nav-cta">Donate</a>
       </div>
     </nav>
@@ -4072,23 +4021,6 @@
         document.body.classList.remove('nav-open');
       }));
     }
-  })();
-
-  // "More" dropdown — click to pin open (hover handled in CSS), close on
-  // outside-click / Escape / choosing a link.
-  (function () {
-    const more = document.querySelector('.nav-more');
-    const btn = more && more.querySelector('.nav-more-btn');
-    if (!more || !btn) return;
-    const close = () => { more.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const open = more.classList.toggle('open');
-      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
-    document.addEventListener('click', (e) => { if (!more.contains(e.target)) close(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    more.querySelectorAll('.nav-more-menu a').forEach(a => a.addEventListener('click', close));
   })();
 
   // Sticky nav shadow on scroll + back-to-top visibility
