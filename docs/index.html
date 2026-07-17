@@ -2585,6 +2585,42 @@
     border-bottom-color: var(--blue-mid);
     text-decoration: none;
   }
+  /* Collapsible wrapper for the long Past/Vendors/Partners lists */
+  .sponsor-lists-toggle {
+    max-width: 1040px;
+    margin: 0 auto 60px;
+  }
+  .sponsor-lists-toggle > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    background: var(--bg-warm);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--blue-deep);
+    text-align: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .sponsor-lists-toggle > summary::-webkit-details-marker { display: none; }
+  .sponsor-lists-toggle > summary:hover { background: #fff; border-color: var(--blue-mid); }
+  .sponsor-lists-toggle > summary::after {
+    content: "+";
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--blue-mid);
+  }
+  .sponsor-lists-toggle[open] > summary::after { content: "–"; }
+  /* When open, the lists sit just below the toggle (details carries the margin) */
+  .sponsor-lists-toggle > .sponsor-lists { margin: 22px auto 0; }
   .sponsor-ctas {
     max-width: 760px;
     margin: 0 auto;
@@ -3121,7 +3157,7 @@
         <a href="blog/" class="nav-secondary">Blog</a>
         <a href="photos/" class="nav-secondary">Photos</a>
         <a href="#sponsors" class="nav-secondary">Sponsors</a>
-        <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener" class="nav-secondary">Merchandise</a>
+        <a href="https://autism-dads-social-club.printify.me/product/29768689" target="_blank" rel="noopener" class="nav-secondary">Merchandise</a>
         <a href="#donate" class="nav-cta">Donate</a>
       </div>
     </nav>
@@ -3135,7 +3171,7 @@
       <a href="photos/">Photos</a>
       <a href="#sponsors">Sponsors</a>
       <!-- Merchandise: points to the main site for now; swap href for the store URL when it's live. -->
-      <a href="https://adsc.autismdadssocialclub.org/" target="_blank" rel="noopener">Merchandise</a>
+      <a href="https://autism-dads-social-club.printify.me/product/29768689" target="_blank" rel="noopener">Merchandise</a>
     </div>
   </div>
 </div>
@@ -3184,7 +3220,7 @@
         <div class="board-photo-wrap">
           <img class="photo-head" src="assets/members/headshots/arowolo.jpg" alt="Emmanuel Arowolo" loading="lazy">
           <img class="photo-kids" src="assets/members/with_kids/arowolo.jpg" alt="Emmanuel Arowolo with his kids" loading="lazy">
-          <span class="photo-hint" aria-hidden="true">My Inspiration</span>
+          <span class="photo-hint" aria-hidden="true">Meet My Inspiration</span>
         </div>
         <div class="board-name">Emmanuel Arowolo, Esq.</div>
         <div class="board-role">CoFounder, Inaugural Secretary &amp; Director of Partnerships</div>
@@ -3197,7 +3233,7 @@
         <div class="board-photo-wrap" data-pos="chism">
           <img class="photo-head" src="assets/members/headshots/chism.jpg" alt="Jonathan Chism" loading="lazy">
           <img class="photo-kids" src="assets/members/with_kids/chism.jpg" alt="Jonathan Chism with his son" loading="lazy">
-          <span class="photo-hint" aria-hidden="true">My Inspiration</span>
+          <span class="photo-hint" aria-hidden="true">Meet My Inspiration</span>
         </div>
         <div class="board-name">Jonathan Chism, PhD</div>
         <div class="board-role">CoFounder &amp; Inaugural President</div>
@@ -3210,7 +3246,7 @@
         <div class="board-photo-wrap">
           <img class="photo-head" src="assets/members/headshots/esparza.jpg" alt="Jesse Esparza" loading="lazy">
           <img class="photo-kids" src="assets/members/with_kids/esparza.jpg" alt="Jesse Esparza with his son Mateo" loading="lazy">
-          <span class="photo-hint" aria-hidden="true">My Inspiration</span>
+          <span class="photo-hint" aria-hidden="true">Meet My Inspiration</span>
         </div>
         <div class="board-name">Jesse Esparza, PhD</div>
         <div class="board-role">CoFounder, Inaugural Treasurer &amp; Director of Family Engagement</div>
@@ -3223,11 +3259,11 @@
         <div class="board-photo-wrap">
           <img class="photo-head" src="assets/members/headshots/hinton.jpg" alt="DeAndrae Hinton" loading="lazy">
           <img class="photo-kids" src="assets/members/with_kids/hinton.jpg" alt="DeAndrae Hinton with his son" loading="lazy">
-          <span class="photo-hint" aria-hidden="true">My Inspiration</span>
+          <span class="photo-hint" aria-hidden="true">Meet My Inspiration</span>
         </div>
         <div class="board-name">DeAndrae Hinton</div>
         <div class="board-role">Director of Education &amp; Autism Awareness</div>
-        <div class="board-cred">Houston ISD Special Ed Dept. Chair · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
+        <div class="board-cred">Houston ISD Special Ed. Teacher · Adjunct Professor at University of St. Thomas · Author, <em>My Favorite Mistakes</em></div>
         <details class="bio-toggle"><summary>Bio</summary><div class="board-human">Turns years of special education experience into practical guidance for dads and families navigating the autism journey.</div></details>
         <div class="board-dad">Dad to Dillon</div>
       </div>
@@ -3236,7 +3272,7 @@
         <div class="board-photo-wrap" data-pos="notice">
           <img class="photo-head" src="assets/members/headshots/notice.jpg" alt="John Notice" loading="lazy">
           <img class="photo-kids" src="assets/members/with_kids/notice.jpg" alt="John Notice with his kids" loading="lazy">
-          <span class="photo-hint" aria-hidden="true">My Inspiration</span>
+          <span class="photo-hint" aria-hidden="true">Meet My Inspiration</span>
         </div>
         <div class="board-name">John Notice, CMHC</div>
         <div class="board-role">Director of Emotional Well-Being</div>
@@ -3777,7 +3813,9 @@
       <a href="https://rs-roofs.com/katy-roofing/" class="sponsor-card sponsor-card--logo" target="_blank" rel="noopener" aria-label="R&amp;S Roofing &amp; Construction"><img src="assets/sponsors/rs-roofing.png" alt="R&amp;S Roofing &amp; Construction" loading="lazy"></a>
     </div>
 
-    <div class="sponsor-lists">
+    <details class="sponsor-lists-toggle">
+      <summary>Partners, Vendors &amp; Past Sponsors</summary>
+      <div class="sponsor-lists">
       <div class="sponsor-list">
         <h4>Past Sponsors</h4>
         <ul>
@@ -3845,7 +3883,8 @@
           <li>Puzzled Dads Podcast</li>
         </ul>
       </div>
-    </div>
+      </div>
+    </details>
 
     <div class="sponsor-ctas">
       <h3>Want to put your business <em>on this page?</em></h3>
