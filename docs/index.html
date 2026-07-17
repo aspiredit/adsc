@@ -250,23 +250,33 @@
     box-shadow: 0 7px 18px -4px rgba(31,94,150,0.5);
   }
 
-  /* Secondary strip — sits BELOW the main bar, right-aligned, small + muted */
+  /* Secondary strip — below the main bar, links styled as rounded pills
+     (echoing the "My Inspiration" photo pill). */
   .nav-utility { border-top: 1px solid var(--line-soft); }
   .nav-utility .container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 24px;
-    padding: 8px 0;
+    gap: 10px;
+    padding: 9px 0;
   }
   .nav-utility a {
-    color: var(--ink-mute);
-    font-size: 0.82rem;
-    font-weight: 500;
+    color: var(--blue-deep);
+    background: var(--bg-warm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     text-decoration: none;
-    transition: color 0.15s ease;
+    padding: 5px 15px;
+    border-radius: 999px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
   }
-  .nav-utility a:hover { color: var(--blue-deep); text-decoration: none; }
+  .nav-utility a:hover {
+    background: var(--blue-deep);
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
   /* Secondary links live in the utility strip on desktop; their in-drawer
      copies (for mobile) are hidden here. */
   .nav-secondary { display: none; }
