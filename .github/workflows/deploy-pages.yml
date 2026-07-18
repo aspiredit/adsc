@@ -7,8 +7,13 @@ name: Deploy site (blue/green)
 # Flow: edit on `staging` -> review at <domain>/preview/ -> merge staging->main
 # to promote (root updates on the next run).
 #
-# REQUIRES: Settings -> Pages -> Source = "GitHub Actions". Until that's set,
-# the deploy step will fail harmlessly and production keeps serving as before.
+# DORMANT until you opt in: this workflow only runs when the repo variable
+# DEPLOY_VIA_ACTIONS is set to "true" (Settings -> Secrets and variables ->
+# Actions -> Variables). Until then it's skipped, so production keeps serving
+# via "Deploy from a branch" with no failed runs.
+#
+# To enable blue/green preview: set DEPLOY_VIA_ACTIONS=true AND switch
+# Settings -> Pages -> Source to "GitHub Actions".
 
 on:
   push:
@@ -27,6 +32,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ vars.DEPLOY_VIA_ACTIONS == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main (production)
@@ -79,6 +85,7 @@ jobs:
 
   deploy:
     needs: build
+    if: ${{ vars.DEPLOY_VIA_ACTIONS == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
