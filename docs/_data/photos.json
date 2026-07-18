@@ -1,5 +1,33 @@
 [
   {
+    "slug": "adsc-bowling-mixer",
+    "title": "ADSC Bowling Mixer",
+    "image": "assets/images/IMG_3297.jpg",
+    "caption": "",
+    "date": "2026-07-17"
+  },
+  {
+    "slug": "adsc-event-at-code-ninjas-in-missouri-city",
+    "title": "ADSC Event at Code Ninjas in Missouri City",
+    "image": "assets/images/IMG_3086.jpg",
+    "caption": "",
+    "date": "2026-07-17"
+  },
+  {
+    "slug": "adsc-event-at-the-holocaust-museum-in-houston",
+    "title": "ADSC Event at the Holocaust Museum in Houston",
+    "image": "assets/images/IMG_2749.jpg",
+    "caption": "Coordinated by Dr. Jesse Esparza",
+    "date": "2026-07-17"
+  },
+  {
+    "slug": "adsc-mixer-at-slick-willys",
+    "title": "ADSC Mixer at Slick Willy's",
+    "image": "assets/images/IMG_2967.jpg",
+    "caption": "",
+    "date": "2026-07-17"
+  },
+  {
     "slug": "dads-mixer-at-the-lounge-at-six",
     "title": "Dads Mixer at the Lounge at Six",
     "image": "assets/images/IMG_2725.jpg",
