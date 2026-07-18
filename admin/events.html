@@ -194,13 +194,17 @@
           <div>
             <label for="fl-date">Event date (optional)</label>
             <input type="date" id="fl-date">
-            <div class="hint">Flier auto-hides after this date.</div>
+            <div class="hint">Used for ordering.</div>
           </div>
           <div>
-            <label for="fl-link">Link (optional)</label>
-            <input type="url" id="fl-link" placeholder="https://… RSVP or details">
+            <label for="fl-expiry">Show until (optional)</label>
+            <input type="date" id="fl-expiry">
+            <div class="hint">Flier hides the day after this date. Defaults to the event date if blank.</div>
           </div>
         </div>
+
+        <label for="fl-link">Link (optional)</label>
+        <input type="url" id="fl-link" placeholder="https://… RSVP or details">
 
         <div class="actions">
           <button type="submit" class="btn-primary" id="btn-add-flier">Add flier</button>

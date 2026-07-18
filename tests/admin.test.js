@@ -130,6 +130,11 @@ describe("fliers", () => {
     const fl = buildFlierObject({ caption: "Mixer", image: "assets/events/flier-x.png", date: "2026-07-20" });
     expect(fl).toMatchObject({ id: "2026-07-20-mixer", image: "assets/events/flier-x.png", caption: "Mixer", date: "2026-07-20" });
     expect(fl).not.toHaveProperty("link");
+    expect(fl).not.toHaveProperty("expiry");
+  });
+  it("buildFlierObject includes an optional expiry", () => {
+    const fl = buildFlierObject({ caption: "Mixer", image: "x.png", expiry: "2026-07-26" });
+    expect(fl.expiry).toBe("2026-07-26");
   });
   it("buildFlierObject includes an optional link", () => {
     const fl = buildFlierObject({ caption: "Mixer", image: "x.png", link: "https://e.com" });

@@ -122,6 +122,7 @@ export function buildFlierObject(form) {
     caption: (form.caption || "").trim(),
   };
   if (form.date) flier.date = form.date;
+  if (form.expiry) flier.expiry = form.expiry;
   if (form.link && form.link.trim()) flier.link = form.link.trim();
   return flier;
 }
@@ -406,6 +407,7 @@ export function init() {
       const values = {
         caption: el("fl-caption").value,
         date: el("fl-date").value,
+        expiry: el("fl-expiry").value,
         link: el("fl-link").value,
         image: hasFile ? fileInput.files[0].name : "",
       };

@@ -260,12 +260,18 @@ export function buildFlierList(standaloneFliers, eventFliers, now = new Date()) 
       sortKey: e.date || (e.starts_at ? String(e.starts_at).slice(0, 10) : "9999"),
     }));
   const fromStandalone = (Array.isArray(standaloneFliers) ? standaloneFliers : [])
-    .filter((f) => f.image && (!f.date || f.date >= today))
+    .filter((f) => {
+      if (!f.image) return false;
+      // Hide once the flier expires. `expiry` is the explicit cutoff; if unset,
+      // fall back to the event `date`. Shown through the cutoff day, hidden after.
+      const cutoff = f.expiry || f.date;
+      return !cutoff || cutoff >= today;
+    })
     .map((f) => ({
       image: resolveFlyer(f.image),
       caption: f.caption ?? "",
       link: f.link ? f.link : resolveFlyer(f.image),
-      sortKey: f.date || "9999",
+      sortKey: f.date || f.expiry || "9999",
     }));
   return [...fromStandalone, ...fromEvents].sort((a, b) =>
     String(a.sortKey).localeCompare(String(b.sortKey))

@@ -173,7 +173,12 @@ content:
             label: Caption (event name)
             type: string
           - name: date
-            label: Event date (optional — hides the flier once it passes)
+            label: Event date (optional — used for ordering)
+            type: date
+            options:
+              format: yyyy-MM-dd
+          - name: expiry
+            label: Show until (optional — flier hides the day after this date; defaults to the event date)
             type: date
             options:
               format: yyyy-MM-dd

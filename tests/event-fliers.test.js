@@ -40,6 +40,21 @@ describe("buildFlierList", () => {
     const item = buildFlierList([standalone[2]], [], now)[0];
     expect(item.image).toBe("assets/events/nd.png");
   });
+  it("hides a flier once its expiry has passed (even if date is future)", () => {
+    const f = { id: "e", caption: "Expired", image: "x.png", date: "2026-12-01", expiry: "2026-05-30" };
+    expect(buildFlierList([f], [], now).map((i) => i.caption)).not.toContain("Expired");
+  });
+  it("shows a flier whose expiry is still in the future (expiry overrides an old date)", () => {
+    const f = { id: "e", caption: "Live", image: "x.png", date: "2026-05-01", expiry: "2026-06-30" };
+    expect(buildFlierList([f], [], now).map((i) => i.caption)).toContain("Live");
+  });
+  it("shows a flier through its expiry day, hides the day after", () => {
+    const onDay = new Date("2026-06-25T23:00:00-05:00");
+    const nextDay = new Date("2026-06-26T09:00:00-05:00");
+    const f = { id: "e", caption: "Edge", image: "x.png", expiry: "2026-06-25" };
+    expect(buildFlierList([f], [], onDay).map((i) => i.caption)).toContain("Edge");
+    expect(buildFlierList([f], [], nextDay).map((i) => i.caption)).not.toContain("Edge");
+  });
 });
 
 describe("renderFliers (DOM)", () => {
