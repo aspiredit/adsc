@@ -70,6 +70,13 @@ jobs:
               [ "$item" = "CNAME" ] && continue
               if [ -e "staging-src/$item" ]; then cp -R "staging-src/$item" _site/preview/; fi
             done
+            # Mark preview pages: never index them, and show a small "PREVIEW"
+            # pill so the client can tell preview apart from the live site.
+            RIBBON='<div style="position:fixed;bottom:14px;left:14px;z-index:99999;background:#B8843D;color:#fff;padding:6px 14px;border-radius:999px;font:600 12px system-ui,sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.3);pointer-events:none;">PREVIEW</div>'
+            find _site/preview -name '*.html' | while read -r f; do
+              sed -i 's|</head>|<meta name="robots" content="noindex,nofollow">\n</head>|' "$f"
+              sed -i "s|</body>|${RIBBON}\n</body>|" "$f"
+            done
           else
             echo "== No staging branch/homepage found — skipping /preview =="
           fi
