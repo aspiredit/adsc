@@ -3,7 +3,7 @@ import {
   isPreviewMode,
   filterDrafts,
   showPreviewBanner,
-} from "../docs/js/events.js";
+} from "../js/events.js";
 
 const drafts = [
   { id: "a", title: "Live A", starts_at: "2026-12-01T19:00:00-05:00", draft: false },

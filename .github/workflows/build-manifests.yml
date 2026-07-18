@@ -1,21 +1,23 @@
 name: Build content manifests
 
-# Regenerates docs/_data/{blogs,photos}.json whenever a CMS edit lands in
-# docs/_data/{blogs,photos}/**. The browser fetches these manifests; the
+# Regenerates _data/{blogs,photos}.json whenever a CMS edit lands in
+# _data/{blogs,photos}/**. The browser fetches these manifests; the
 # script discovers files since the browser can't list a directory.
+# Runs on both main (production) and staging (preview) so each branch's
+# committed manifests stay fresh before the deploy workflow publishes them.
 # See: issues/011-content-manifests.md
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
     paths:
-      - 'docs/_data/blogs/**'
-      - 'docs/_data/photos/**'
+      - '_data/blogs/**'
+      - '_data/photos/**'
       - 'scripts/build_manifests.py'
       - '.github/workflows/build-manifests.yml'
   workflow_dispatch: {}
 
-# Prevent infinite loop: the action commits a manifest back to main, which
+# Prevent infinite loop: the action commits a manifest back to the branch, which
 # would re-trigger itself. Guarded by the actor check below.
 concurrency:
   group: build-manifests-${{ github.ref }}
@@ -53,7 +55,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/_data/blogs.json docs/_data/blogs-all.json docs/_data/photos.json
+          git add _data/blogs.json _data/blogs-all.json _data/photos.json
           if git diff --staged --quiet; then
             echo "No manifest changes to commit."
             exit 0

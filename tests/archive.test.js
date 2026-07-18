@@ -3,7 +3,7 @@ import {
   pickPastEvents,
   formatArchiveDate,
   renderArchive,
-} from "../docs/js/archive.js";
+} from "../js/archive.js";
 
 const HOUR_MS = 60 * 60 * 1000;
 const now = new Date("2026-06-15T19:00:00-05:00");

@@ -5,7 +5,7 @@ import {
   buildCtaLabel,
   renderFeatured,
   resolveFlyer,
-} from "../docs/js/events.js";
+} from "../js/events.js";
 
 describe("resolveFlyer", () => {
   it("strips a leading slash so absolute CMS paths resolve on the subpath host", () => {

@@ -1,5 +1,5 @@
 /**
- * Tests for docs/js/photos.js — issue 013.
+ * Tests for js/photos.js — issue 013.
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
@@ -8,7 +8,7 @@ import {
   openLightbox,
   closeLightbox,
   encodePhotoUrl,
-} from "../docs/js/photos.js";
+} from "../js/photos.js";
 
 const samplePhoto = (overrides = {}) => ({
   slug: "p1",

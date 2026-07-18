@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { pickFlierEvents, buildFlierList, renderFliers } from "../docs/js/events.js";
+import { pickFlierEvents, buildFlierList, renderFliers } from "../js/events.js";
 
 const now = new Date("2026-06-01T12:00:00-05:00");
 

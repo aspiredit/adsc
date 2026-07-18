@@ -3,7 +3,7 @@ import {
   isUpcoming,
   pickFeaturedEvent,
   pickUpcomingEvents,
-} from "../docs/js/events.js";
+} from "../js/events.js";
 
 const HOUR_MS = 60 * 60 * 1000;
 const now = new Date("2026-06-15T19:00:00-05:00");

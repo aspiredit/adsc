@@ -1,5 +1,5 @@
 /**
- * Tests for docs/js/blogs.js — issue 012.
+ * Tests for js/blogs.js — issue 012.
  *
  * Pure-function tests for sort/format/lookup; jsdom-driven tests for
  * the DOM render functions.
@@ -12,7 +12,7 @@ import {
   renderBlogList,
   getPostBySlug,
   renderBlogDetail,
-} from "../docs/js/blogs.js";
+} from "../js/blogs.js";
 
 const samplePost = (overrides = {}) => ({
   slug: "p1",

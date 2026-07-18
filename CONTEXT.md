@@ -19,10 +19,10 @@ An Event the Admin has saved but not yet published. Drafts are stored in `events
 ### Admin / Editor
 A person authorized to add, edit, or delete Events via the [[pages-cms]] interface. Identified by their GitHub account having **Write access on the `aspiredit/adsc` repo** (added as a collaborator with the "Write" role — NOT "Admin"). The role currently maps to 2-3 leadership members. Authentication and MFA are inherited from GitHub itself — the site has no separate user store.
 
-The blast radius of an Admin account is "anything you can do with repo write access" — not just events. That includes pushing changes to any file in the repo. We accept this because (a) Pages CMS uses GitHub OAuth tokens scoped to the admin's account, which inherits GitHub's permission model, and (b) at 2-3 trusted admins, MFA + git history attribution is a sufficient security posture for nonprofit content. If we ever needed truly path-scoped access (write to `docs/_data/events.json` and `docs/assets/events/*` only), we would have to move events to a separate repo or switch off Pages CMS — neither is justified at current scale.
+The blast radius of an Admin account is "anything you can do with repo write access" — not just events. That includes pushing changes to any file in the repo. We accept this because (a) Pages CMS uses GitHub OAuth tokens scoped to the admin's account, which inherits GitHub's permission model, and (b) at 2-3 trusted admins, MFA + git history attribution is a sufficient security posture for nonprofit content. If we ever needed truly path-scoped access (write to `_data/events.json` and `assets/events/*` only), we would have to move events to a separate repo or switch off Pages CMS — neither is justified at current scale.
 
 ### Flyer
-A Canva-designed promotional image attached to an Event. Optional. Locked aspect ratio: 1080×1080 square PNG, exported from Canva's "Instagram Post" template size. Max file size 2 MB enforced by the CMS. When absent, the event card renders a typographic fallback (bold event title, type label as a pill, Carolina blue background) — never a broken image. Stored in `docs/assets/events/<event-id>.png`.
+A Canva-designed promotional image attached to an Event. Optional. Locked aspect ratio: 1080×1080 square PNG, exported from Canva's "Instagram Post" template size. Max file size 2 MB enforced by the CMS. When absent, the event card renders a typographic fallback (bold event title, type label as a pill, Carolina blue background) — never a broken image. Stored in `assets/events/<event-id>.png`.
 
 ### RSVP
 The mechanism by which a member signals attendance. The site uses a single master JotForm (id `231637325042146`) across all Events. Per-event distinction comes from the `?event=<id>` query parameter passed to the form, which JotForm tags onto each submission. An Event can override its `rsvp_url` (e.g., for a paid fundraiser handled via Eventbrite), but the default is the master form. We deliberately do NOT spin up a new JotForm per event — that would force Admins to maintain forms in two places.
@@ -54,4 +54,4 @@ A per-event action that generates an `.ics` file in the browser when clicked. Th
 ### Schema vs Data
 Two distinct files with different lifecycles:
 - **Schema** (`.pages.yml` at repo root): defines what fields an Event has. Hand-edited by developers only. Changes when adding or removing a field from the admin form.
-- **Data** (`docs/_data/events.json`): contains the actual Events. Generated and updated by the CMS on every Admin Save. Never hand-edited.
+- **Data** (`_data/events.json`): contains the actual Events. Generated and updated by the CMS on every Admin Save. Never hand-edited.

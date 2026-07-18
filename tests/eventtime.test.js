@@ -7,7 +7,7 @@ import {
   eventEndIso,
   normalizeEvent,
   formatTimeRangeCT,
-} from "../docs/js/eventtime.js";
+} from "../js/eventtime.js";
 
 describe("chicago timezone offset", () => {
   it("is CDT (-300) in summer", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { wrapIndex } from "../docs/js/testimonials.js";
+import { wrapIndex } from "../js/testimonials.js";
 
 describe("wrapIndex", () => {
   it("returns the same index when in range", () => {

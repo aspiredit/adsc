@@ -12,7 +12,7 @@ import {
   validateFlierForm,
   encodeBase64Utf8,
   decodeBase64Utf8,
-} from "../docs/js/admin.js";
+} from "../js/admin.js";
 
 describe("slugify", () => {
   it("lowercases, trims, and dashes", () => {

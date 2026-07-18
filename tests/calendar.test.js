@@ -5,7 +5,7 @@ import {
   groupEventsByDate,
   dotColorForType,
   renderCalendar,
-} from "../docs/js/calendar.js";
+} from "../js/calendar.js";
 
 describe("monthGrid", () => {
   it("returns 42 cells (6 weeks x 7 days)", () => {

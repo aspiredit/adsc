@@ -14,9 +14,9 @@ import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, "..");
-const BLOGS_JSON = resolve(REPO, "docs/_data/blogs.json");
-const BLOGS_ALL_JSON = resolve(REPO, "docs/_data/blogs-all.json");
-const PHOTOS_JSON = resolve(REPO, "docs/_data/photos.json");
+const BLOGS_JSON = resolve(REPO, "_data/blogs.json");
+const BLOGS_ALL_JSON = resolve(REPO, "_data/blogs-all.json");
+const PHOTOS_JSON = resolve(REPO, "_data/photos.json");
 
 let pythonAvailable = false;
 try {

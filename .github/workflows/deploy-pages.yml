@@ -1,0 +1,89 @@
+name: Deploy site (blue/green)
+
+# Publishes ONE GitHub Pages bundle from TWO branches:
+#   /            <- production, built from `main`
+#   /preview/    <- preview,    built from `staging`
+#
+# Flow: edit on `staging` -> review at <domain>/preview/ -> merge staging->main
+# to promote (root updates on the next run).
+#
+# REQUIRES: Settings -> Pages -> Source = "GitHub Actions". Until that's set,
+# the deploy step will fail harmlessly and production keeps serving as before.
+
+on:
+  push:
+    branches: [main, staging]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Serialize deploys so a main push and a staging push don't clobber each other.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main (production)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-src
+
+      - name: Checkout staging (preview)
+        continue-on-error: true   # staging may not exist yet
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          path: staging-src
+
+      - name: Assemble site bundle
+        run: |
+          set -e
+          # Top-level items that make up the published site. Add new site
+          # folders/files here if the site ever grows a new top-level entry.
+          SITE_ITEMS="index.html .nojekyll CNAME _data assets js admin blog css past-events photos"
+
+          mkdir -p _site
+
+          echo "== Production (root) from main =="
+          for item in $SITE_ITEMS; do
+            if [ -e "main-src/$item" ]; then cp -R "main-src/$item" _site/; fi
+          done
+
+          if [ -f "staging-src/index.html" ]; then
+            echo "== Preview (/preview) from staging =="
+            mkdir -p _site/preview
+            for item in $SITE_ITEMS; do
+              # A CNAME in a subfolder would try to hijack the apex domain — never copy it.
+              [ "$item" = "CNAME" ] && continue
+              if [ -e "staging-src/$item" ]; then cp -R "staging-src/$item" _site/preview/; fi
+            done
+          else
+            echo "== No staging branch/homepage found — skipping /preview =="
+          fi
+
+          # Pages must not run Jekyll over our output.
+          touch _site/.nojekyll
+          echo "== Bundle contents =="; ls -la _site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -6,7 +6,7 @@ The browser can't enumerate files in a directory, and Pages CMS writes each
 record as its own .md file. This script assembles those into a single JSON
 manifest per content type, which the renderer fetches once.
 
-Runs on every push that touches `docs/_data/{blogs,photos}/**` via
+Runs on every push that touches `_data/{blogs,photos}/**` via
 `.github/workflows/build-manifests.yml`. Idempotent — safe to run locally.
 
 See: issues/011-content-manifests.md, ADR-0001 (Pages CMS), ADR-0002 (CSR).
@@ -23,7 +23,7 @@ import markdown
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = REPO_ROOT / "docs" / "_data"
+DATA_DIR = REPO_ROOT / "_data"
 BLOGS_DIR = DATA_DIR / "blogs"
 PHOTOS_DIR = DATA_DIR / "photos"
 BLOGS_OUT = DATA_DIR / "blogs.json"          # public: published posts only
@@ -101,11 +101,11 @@ def render_markdown(body: str) -> str:
 
 
 def normalize_asset(value: str) -> str:
-    """Make a CMS media path relative to the docs/ site root.
+    """Make a CMS media path relative to the site root.
 
     Pages CMS writes media as absolute paths ('/assets/images/...'), which only
     resolve when the site is served from the domain root. This site is served
-    from a subpath (…/adsc/docs/), so an absolute '/assets' 404s. Strip the
+    from a subpath (…/adsc/), so an absolute '/assets' 404s. Strip the
     leading slash to make it root-relative ('assets/images/...'); the renderer
     then prepends the correct depth prefix per page. External URLs are left as-is.
     """
@@ -177,7 +177,7 @@ def build_manifest(src_dir: Path, builder, out_path: Path) -> int:
 
 
 def build_blog_manifests() -> tuple[int, int]:
-    """Build both blog manifests from docs/_data/blogs/.
+    """Build both blog manifests from _data/blogs/.
 
     Writes two files:
       blogs.json      — published posts only (what the public site loads)

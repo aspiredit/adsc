@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { eventToICS, escapeICSText } from "../docs/js/ics.js";
+import { eventToICS, escapeICSText } from "../js/ics.js";
 
 const baseEvent = {
   id: "2026-06-13-slick-willies",

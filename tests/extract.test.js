@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { extractEvents, hasValidDate } from "../docs/js/events.js";
+import { extractEvents, hasValidDate } from "../js/events.js";
 
 describe("extractEvents", () => {
   it("returns the array when given a bare array", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { renderFlyer, renderFeatured } from "../docs/js/events.js";
+import { renderFlyer, renderFeatured } from "../js/events.js";
 
 const eventWithFlyer = {
   id: "with-flyer",

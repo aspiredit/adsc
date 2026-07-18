@@ -1,14 +1,14 @@
 # Pages CMS configuration — see https://pagescms.org/docs/configuration
 
 media:
-  input: docs/assets/images
+  input: assets/images
   output: /assets/images
 
 content:
   # ── EVENTS ──────────────────────────────────────────
   - name: events
     label: Events
-    path: docs/_data/events.json
+    path: _data/events.json
     type: file
     format: json
     fields:
@@ -156,7 +156,7 @@ content:
   # flyers ALSO appear in the same "Save the date" section automatically.
   - name: fliers
     label: Save-the-Date Fliers
-    path: docs/_data/fliers.json
+    path: _data/fliers.json
     type: file
     format: json
     fields:
@@ -184,7 +184,7 @@ content:
   # ── BLOG POSTS ──────────────────────────────────────
   - name: blogs
     label: Blog Posts
-    path: docs/_data/blogs        # ← correct path ✅
+    path: _data/blogs             # ← correct path ✅
     type: collection
     fields:
       - { name: title,            label: Title,            type: string }
@@ -205,7 +205,7 @@ content:
   # ── PHOTOS ──────────────────────────────────────────
   - name: photos
     label: Photos
-    path: docs/_data/photos       # ← correct path ✅
+    path: _data/photos            # ← correct path ✅
     type: collection
     fields:
       - { name: title,   label: Title,   type: string }

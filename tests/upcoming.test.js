@@ -4,7 +4,7 @@ import {
   pickUpcomingEvents,
   formatStartCompactCT,
   renderUpcoming,
-} from "../docs/js/events.js";
+} from "../js/events.js";
 
 const fixedNow = new Date("2026-06-01T12:00:00-05:00");
 

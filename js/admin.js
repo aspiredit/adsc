@@ -1,7 +1,7 @@
 /**
- * On-site Events admin (docs/admin/events.html).
+ * On-site Events admin (admin/events.html).
  *
- * A static-site "mini CMS" for events: it reads and writes docs/_data/events.json
+ * A static-site "mini CMS" for events: it reads and writes _data/events.json
  * directly through the GitHub Contents API using a fine-grained Personal Access
  * Token that the admin pastes in (stored only in this browser's localStorage —
  * never committed). After a save, the normal Pages deploy (~1 min) publishes it,
@@ -20,9 +20,9 @@ import { eventStartIso, eventEndIso } from "./eventtime.js";
 const REPO_OWNER = "aspiredit";
 const REPO_NAME = "adsc";
 const BRANCH = "main";
-const EVENTS_PATH = "docs/_data/events.json";
-const FLIERS_PATH = "docs/_data/fliers.json";
-const FLYER_DIR = "docs/assets/events";
+const EVENTS_PATH = "_data/events.json";
+const FLIERS_PATH = "_data/fliers.json";
+const FLYER_DIR = "assets/events";
 const TOKEN_KEY = "adsc_gh_token";
 const API = "https://api.github.com";
 
@@ -57,7 +57,7 @@ export function makeEventId(dateStr, title) {
   return dateStr ? `${dateStr}-${slug}` : slug;
 }
 
-// Build an event record matching docs/_data/events.json's schema. Date and time
+// Build an event record matching _data/events.json's schema. Date and time
 // are stored as SEPARATE fields (date / start_time / end_time); the site derives
 // ISO starts_at/ends_at from them at load. Optional fields are omitted when empty.
 export function buildEventObject(form) {

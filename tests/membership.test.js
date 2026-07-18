@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { pickPlan, TIERS, JOINIT_BASE } from "../docs/js/membership.js";
+import { pickPlan, TIERS, JOINIT_BASE } from "../js/membership.js";
 
 describe("pickPlan", () => {
   it("returns the monthly plan for a tier that has one", () => {
