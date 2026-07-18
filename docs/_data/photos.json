@@ -35,10 +35,31 @@
     "date": "2026-07-17"
   },
   {
+    "slug": "adsc-event-at-spring-creek-bbq",
+    "title": "ADSC Event at Spring Creek BBQ",
+    "image": "assets/images/ADSC_Image_05.jpg",
+    "caption": "",
+    "date": "2026-07-17"
+  },
+  {
     "slug": "adsc-event-at-the-holocaust-museum-in-houston",
     "title": "ADSC Event at the Holocaust Museum in Houston",
     "image": "assets/images/IMG_2749.jpg",
     "caption": "Coordinated by Dr. Jesse Esparza",
+    "date": "2026-07-17"
+  },
+  {
+    "slug": "adsc-fathers-day-event-at-spring-barbecue",
+    "title": "ADSC Fathers Day Event at Spring Barbecue",
+    "image": "assets/images/ADSC_Image_03.jpg",
+    "caption": "Featuring Angel King and Darius Bradley",
+    "date": "2026-07-17"
+  },
+  {
+    "slug": "adsc-fathers-day-event-at-spring-creek-bbq",
+    "title": "ADSC Father's Day Event at Spring Creek BBQ",
+    "image": "assets/images/ADSC_Image_04.jpg",
+    "caption": "",
     "date": "2026-07-17"
   },
   {
