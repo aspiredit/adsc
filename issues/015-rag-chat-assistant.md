@@ -37,7 +37,7 @@ Frozen up front so the parallel lanes (retrieval, widget, Worker scaffold) can b
   "source_type": "blog",           // "blog" | "faq" | "event"
   "source_id": "my-slug",
   "title": "Human-readable source title",
-  "url": "blog/detail.html?slug=my-slug",  // root-relative link back to the source
+  "url": "blog/post.html?slug=my-slug",  // root-relative link back to the source
   "text": "Plain, sanitized chunk text (no HTML)."
 }
 ```
@@ -71,7 +71,7 @@ Slices are done **strictly in order**; each is **one commit**, gated by **its ow
 Tracer-bullet vertical slices (TDD on AFK slices):
 
 - [ ] **0. Scope + CI** (AFK) — record these decisions here; add `ci.yml` running `npm test` + the chat build on this branch and PRs to `main`. *Test: CI green on branch.*
-- [ ] **A1. Chunker** (AFK, TDD) — `scripts/build_chat_index.py` chunks blog/FAQ/events content → `_data/chat_chunks.json`, deterministic and network-free, mirroring `build_manifests.py`. *Test: `tests/chat-chunks.test.js` — chunk shape, source citations, no HTML/script leakage, stable ordering. Blocked by: 011.*
+- [x] **A1. Chunker** (AFK, TDD) — `scripts/build_chat_index.py` chunks blog/FAQ/events → `_data/chat_chunks.json` (178 chunks: 166 blog / 9 faq / 3 event), deterministic and network-free, mirroring `build_manifests.py`. URLs verified against real routes (`blog/post.html`, `index.html`, `index.html#events`). *Test: `tests/chat-chunks.test.js` — 10 tests green: chunk shape, unique ids, no HTML/script leakage, root-relative URLs, byte-identical reruns.*
 - [ ] **A2. Embed** (HITL) — embed chunks via Workers AI → `_data/chat_embeddings.json`. Needs a Cloudflare token; embed tests skip gracefully without one. *Blocked by: A1.*
 - [x] **B. Retrieval core** (AFK, TDD) — pure cosine-similarity top-k in `worker/retrieve.js`, dependency-free (runs in the Worker and under vitest). Built against a fixture; wires to real embeddings at A2/C. *Test: `tests/chat-retrieve.test.js` — 14 tests green, offline.*
 - [ ] **C. Serverless RAG endpoint** (HITL) — Cloudflare Worker: embed question → retrieve → call Workers AI → return grounded answer + citations; **guardrail system prompt**, **rate limiting**, and a **spend cap**. Needs a Cloudflare account. *Test: Worker unit tests with mocked AI binding. Blocked by: B.*
