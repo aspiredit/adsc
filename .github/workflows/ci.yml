@@ -1,0 +1,56 @@
+name: CI
+
+# Builds and tests the branch. Runs the full vitest suite (which also invokes
+# the Python builders as subprocesses) plus the chat-index build, on every push
+# to the chatbot feature branch and every PR back to main. This is the safety
+# net that keeps main's green bar protected before any merge.
+#
+# Note: main historically had no test-running workflow — only build-manifests
+# and deploy-pages. This adds that. See: issues/015-rag-chat-assistant.md
+
+on:
+  push:
+    branches: [015-rag-chat-assistant]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install Python dependencies
+        run: pip install -r scripts/requirements.txt
+
+      # Guarded: no-op until slice A1 lands the build script. Keeps this workflow
+      # correct now and complete later without a second edit. The chunk step is
+      # network-free by design, so it runs in CI without any Cloudflare secret.
+      - name: Build chat index (if present)
+        run: |
+          if [ -f scripts/build_chat_index.py ]; then
+            python scripts/build_chat_index.py
+          else
+            echo "scripts/build_chat_index.py not present yet — skipping (slice A1)."
+          fi
+
+      - name: Run tests
+        run: npm test

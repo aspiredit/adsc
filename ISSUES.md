@@ -22,7 +22,7 @@ GitHub Issues was skipped (PAT scope friction); tracking lives here instead. Eac
 | [012](issues/012-blog-rendering.md) | Blog rendering: home section + list page + detail page | AFK | Done | 011 |
 | [013](issues/013-photo-gallery.md) | Photo gallery: home strip + gallery page + lightbox | AFK | Done | 011 |
 | [014](issues/014-mobile-app-ios-android.md) | Mobile app (iOS + Android) via PWA + Capacitor — build-ready, publish-gated | Epic | Backlog (parked) | — |
-| [015](issues/015-rag-chat-assistant.md) | Context-aware RAG chat assistant (Gen-AI, minimal cost) | Epic | Backlog (parked) | 011 |
+| [015](issues/015-rag-chat-assistant.md) | Context-aware RAG chat assistant (Gen-AI, minimal cost) | Epic | In progress | 011 |
 
 ## Sideline initiatives (parked — beyond the event system)
 
