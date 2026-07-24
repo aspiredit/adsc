@@ -4,3 +4,9 @@ node_modules/
 *.log
 .vscode/
 .idea/
+
+# Local secrets — Cloudflare Workers AI creds for the chat build (slice A2).
+# Never commit the real .env; the committed template is .env.sample.
+.env
+.env.local
+!.env.sample
