@@ -40,6 +40,20 @@
       "rsvp_url": "https://form.jotform.com/261314725100039",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "ADSC Mixer",
+      "title": "Topgolf Houston (Katy)",
+      "type": "meetup",
+      "date": "2026-08-22",
+      "start_time": "15:00",
+      "end_time": "17:00",
+      "location": "1030 Memorial Brook Blvd, Houston, TX 77084",
+      "description": "Dads join us at our August 2025 Mixer at Top Golf (Katy). Enjoy the Driving Range, Fellowship, and Appetizers.",
+      "flyer": "/assets/images/August 2026 Flier.png",
+      "rsvp_url": "https://form.jotform.com/261314725100039",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
