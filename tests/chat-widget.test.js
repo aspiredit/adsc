@@ -67,6 +67,14 @@ describe("initChatWidget rendering + states", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("shows the AI / not-advice / privacy disclaimer in the panel", () => {
+    initChatWidget({ container, fetch: fetchMock });
+    const note = document.querySelector(".adsc-chat-disclaimer");
+    expect(note).toBeTruthy();
+    expect(note.textContent).toMatch(/not medical or legal advice/i);
+    expect(note.textContent).toMatch(/don't share personal/i);
+  });
+
   it("opening the panel reveals the input", () => {
     const w = initChatWidget({ container, fetch: fetchMock });
     const bubble = document.querySelector(".adsc-chat-bubble");

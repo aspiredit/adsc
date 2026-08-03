@@ -85,6 +85,41 @@ describe("RAG worker", () => {
     expect(data.answer).toMatch(/refused to give up/);
   });
 
+  it.each(["NO_INFO", "no_info", "NO_INFO."])(
+    "suppresses citations for an off-corpus %j answer",
+    async (gen) => {
+      const res = await worker.fetch(ask({ question: "What is the capital of France?" }), mockEnv({ gen }));
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.refused).toBe(false);
+      expect(data.citations).toEqual([]); // never cite when we have no grounded answer
+      expect(data.answer).toMatch(/don't have that specific detail/i);
+      expect(data.answer.toUpperCase()).not.toContain("NO_INFO");
+    },
+  );
+
+  it("deterministically refuses obvious medication/legal questions before the model runs", async () => {
+    // Even when the model WOULD answer, the keyword backstop refuses first.
+    for (const q of [
+      "How much melatonin should I give my son?",
+      "Can I sue the school district?",
+      "What is the right dosage of his meds?",
+    ]) {
+      const res = await worker.fetch(ask({ question: q }), mockEnv({ gen: "Here is some advice." }));
+      const data = await res.json();
+      expect(data.refused, q).toBe(true);
+      expect(data.citations).toEqual([]);
+    }
+  });
+
+  it("does not false-refuse legitimate event/membership questions", async () => {
+    for (const q of ["What happens at a mixer?", "How much is membership?", "Where are events held?"]) {
+      const res = await worker.fetch(ask({ question: q }), mockEnv({ gen: "A grounded answer." }));
+      const data = await res.json();
+      expect(data.refused, q).toBe(false);
+    }
+  });
+
   it("returns 429 when rate limited", async () => {
     const res = await worker.fetch(ask({ question: "hi" }), mockEnv({ allowed: false }));
     expect(res.status).toBe(429);

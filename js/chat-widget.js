@@ -72,10 +72,18 @@ const CSS = `
 .adsc-chat-retry { margin-top: 6px; background: transparent; border: 1px solid #7a1c12;
   color: #7a1c12; border-radius: 6px; padding: 4px 8px; cursor: pointer; font: inherit;
   font-size: 13px; }
+.adsc-chat-disclaimer { margin: 0; padding: 7px 12px 10px; font-size: 11px;
+  line-height: 1.35; color: #6b7280; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .adsc-chat-dot { animation: none; } }
 `;
 
 const STYLE_ID = "adsc-chat-styles";
+
+// Shown at the bottom of the panel: AI disclaimer + "not advice" + privacy ask,
+// all in one line (the site has no separate privacy page). See slice E.
+const DISCLAIMER_TEXT =
+  "AI assistant — answers come from ADSC's own content and may not be perfect. " +
+  "Not medical or legal advice; please don't share personal or health details.";
 
 /**
  * Resolve the endpoint URL, in priority order:
@@ -279,6 +287,11 @@ export function initChatWidget(options = {}) {
   panel.appendChild(header);
   panel.appendChild(log);
   panel.appendChild(form);
+
+  const disclaimer = doc.createElement("p");
+  disclaimer.className = "adsc-chat-disclaimer";
+  disclaimer.textContent = DISCLAIMER_TEXT;
+  panel.appendChild(disclaimer);
   root.appendChild(bubble);
   root.appendChild(panel);
   container.appendChild(root);
