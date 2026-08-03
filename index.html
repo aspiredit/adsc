@@ -4056,11 +4056,13 @@
   import { init as initPhotos } from "./js/photos.js";
   import { init as initTestimonials } from "./js/testimonials.js";
   import { init as initMembership } from "./js/membership.js";
+  import { initChatWidget } from "./js/chat-widget.js";
   initEvents();
   initBlogs();
   initPhotos();
   initTestimonials();
   initMembership();
+  initChatWidget({ endpoint: "https://adsc-chat.krand03.workers.dev/ask" });
 </script>
 
 <script>
