@@ -34,7 +34,7 @@ Frozen up front so the parallel lanes (retrieval, widget, Worker scaffold) can b
 ```json
 {
   "id": "blog:my-slug#0",          // "{source_type}:{source_id}#{ordinal}"
-  "source_type": "blog",           // "blog" | "faq" | "event"
+  "source_type": "blog",           // "blog" | "faq" | "page" | "event"
   "source_id": "my-slug",
   "title": "Human-readable source title",
   "url": "blog/post.html?slug=my-slug",  // root-relative link back to the source

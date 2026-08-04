@@ -18,7 +18,7 @@ const REPO = resolve(HERE, "..");
 const CHUNKS_JSON = resolve(REPO, "_data/chat_chunks.json");
 
 const CONTRACT_KEYS = ["id", "source_type", "source_id", "title", "url", "text"];
-const ALLOWED_TYPES = new Set(["blog", "faq", "event"]);
+const ALLOWED_TYPES = new Set(["blog", "faq", "page", "event"]);
 
 let pythonAvailable = false;
 try {
@@ -65,7 +65,7 @@ describe("chat chunk builder", () => {
     }
   });
 
-  it.runIf(pythonAvailable)("source_type is always one of blog|faq|event", () => {
+  it.runIf(pythonAvailable)("source_type is always one of blog|faq|page|event", () => {
     const data = JSON.parse(readFileSync(CHUNKS_JSON, "utf-8"));
     for (const chunk of data) {
       expect(ALLOWED_TYPES.has(chunk.source_type)).toBe(true);

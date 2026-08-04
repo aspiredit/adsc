@@ -256,6 +256,86 @@ def build_faq_chunks() -> list[dict[str, Any]]:
     return records
 
 
+# Homepage content sections to ingest beyond the FAQ. Without these the chatbot
+# has no idea who the board/leadership are, the origin story, the programs, or
+# how membership works — all of which visitors ask about. id -> display title.
+PAGE_SECTIONS = {
+    "leadership": "Executive Board & Leadership",
+    "advisors": "Advisory Board",
+    "origin": "Our Story",
+    "programs": "Programs",
+    "membership": "Membership",
+}
+
+# Tags whose boundaries mark a break when flattening a section to text, so names,
+# roles, and paragraphs don't run together.
+_SECTION_BLOCK_TAGS = {
+    "section", "div", "p", "h1", "h2", "h3", "h4", "h5", "h6",
+    "li", "ul", "ol", "details", "summary", "br", "tr", "blockquote", "figcaption",
+}
+
+
+class SectionTextParser(HTMLParser):
+    """Collect the visible text of specific `<section id="...">` blocks.
+
+    Captures text only while inside a target section, inserts newlines on block
+    boundaries, and skips <script>/<style>. Text is bucketed per section id.
+    Sections on this page are not nested, so a single current-id is sufficient.
+    """
+
+    def __init__(self, targets: set[str]) -> None:
+        super().__init__(convert_charrefs=True)
+        self.targets = targets
+        self.current_id: str | None = None
+        self.skip = 0
+        self.buckets: dict[str, list[str]] = {t: [] for t in targets}
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "section":
+            sid = dict(attrs).get("id")
+            if sid in self.targets:
+                self.current_id = sid
+            return
+        if self.current_id is None:
+            return
+        if tag in ("script", "style"):
+            self.skip += 1
+        elif tag in _SECTION_BLOCK_TAGS:
+            self.buckets[self.current_id].append("\n")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "section":
+            self.current_id = None  # sections aren't nested here
+            return
+        if self.current_id is None:
+            return
+        if tag in ("script", "style") and self.skip:
+            self.skip -= 1
+        elif tag in _SECTION_BLOCK_TAGS:
+            self.buckets[self.current_id].append("\n")
+
+    def handle_data(self, data: str) -> None:
+        if self.current_id and not self.skip:
+            self.buckets[self.current_id].append(data)
+
+
+def build_page_chunks() -> list[dict[str, Any]]:
+    if not INDEX_HTML.exists():
+        print(f"  (no {INDEX_HTML.name}; skipping page sections)")
+        return []
+    parser = SectionTextParser(set(PAGE_SECTIONS))
+    parser.feed(INDEX_HTML.read_text(encoding="utf-8"))
+    records = []
+    for sid, title in PAGE_SECTIONS.items():
+        raw = "".join(parser.buckets.get(sid, []))
+        pieces = chunk_text(raw)
+        url = f"index.html#{sid}"
+        for ordinal, text in enumerate(pieces):
+            records.append(chunk_record("page", sid, ordinal, title, url, text))
+        print(f"  + page {sid} ({len(pieces)} chunk{'s' if len(pieces) != 1 else ''})")
+    return records
+
+
 def build_event_chunks() -> list[dict[str, Any]]:
     if not EVENTS_JSON.exists():
         print(f"  (no {EVENTS_JSON.name}; skipping events)")
@@ -299,9 +379,11 @@ def main() -> int:
     blog_records = build_blog_chunks()
     print("FAQ:")
     faq_records = build_faq_chunks()
+    print("Page sections:")
+    page_records = build_page_chunks()
     print("Events:")
     event_records = build_event_chunks()
-    records = blog_records + faq_records + event_records
+    records = blog_records + faq_records + page_records + event_records
     # Deterministic ordering independent of dict/file iteration quirks: sort by
     # source_type, then source_id, then ordinal. Running the build twice yields
     # byte-identical output.
@@ -312,7 +394,7 @@ def main() -> int:
     print(
         f"  ->{CHUNKS_OUT.relative_to(REPO_ROOT)} "
         f"({len(records)} chunks: {len(blog_records)} blog, "
-        f"{len(faq_records)} faq, {len(event_records)} event)"
+        f"{len(faq_records)} faq, {len(page_records)} page, {len(event_records)} event)"
     )
     return 0
 
