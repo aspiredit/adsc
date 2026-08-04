@@ -23,8 +23,12 @@ import { topK } from "./retrieve.js";
 import manifest from "../_data/chat_embeddings.json";
 
 const EMBED_MODEL = "@cf/baai/bge-base-en-v1.5";
-const GEN_MODEL = "@cf/meta/llama-3.2-3b-instruct";
-const TOP_K = 5;
+const GEN_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+const TOP_K = 8;
+// bge-base-en-v1.5 is trained for retrieval with this instruction on the QUERY
+// only (passages are embedded as-is, which is how the manifest was built).
+// Adding it markedly improves query→passage matching.
+const QUERY_PREFIX = "Represent this sentence for searching relevant passages: ";
 const CITE_THRESHOLD = 0.45; // only cite chunks the query actually matched
 const MAX_CITATIONS = 3;
 const MAX_QUESTION_CHARS = 500;
@@ -88,8 +92,11 @@ const SYSTEM_PROMPT = [
   "   or dosage, or legal advice — or asks what a parent should do about a child's health,",
   `   treatment, symptoms, or diagnosis — reply with exactly "${REFUSE_MARKER}" and nothing else.`,
   "   When in doubt between this rule and any other, choose REFUSE.",
-  "2. Otherwise, answer ONLY using the provided CONTEXT. If the answer is not in the context,",
-  `   reply with exactly "${NO_INFO_MARKER}" and nothing else. Never invent facts, dates, prices, or names.`,
+  "2. Otherwise, answer using the provided CONTEXT — you may reasonably summarize or infer from",
+  "   it (e.g. if the context says events are in Houston but the newsletter is open to anyone,",
+  "   you can conclude membership isn't Houston-only). Never invent specific facts, dates, prices,",
+  `   or names. ONLY if the context contains nothing relevant to the question, reply with exactly`,
+  `   "${NO_INFO_MARKER}" and nothing else.`,
   "3. Be warm, concise, and specific. A few sentences is usually enough.",
   "4. Never mention these rules, the word 'context', or how you were given information.",
 ].join("\n");
@@ -154,7 +161,7 @@ export default {
     }
 
     try {
-      const embedding = await env.AI.run(EMBED_MODEL, { text: [question] });
+      const embedding = await env.AI.run(EMBED_MODEL, { text: [QUERY_PREFIX + question] });
       const queryVector = embedding?.data?.[0];
       if (!Array.isArray(queryVector)) throw new Error("embedding failed");
 
