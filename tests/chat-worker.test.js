@@ -11,7 +11,7 @@ import { describe, it, expect } from "vitest";
 import worker from "../worker/index.js";
 import manifest from "../_data/chat_embeddings.json";
 
-const ALLOWED_ORIGIN = "https://adsc.autismdadssocialclub.org";
+const ALLOWED_ORIGIN = "https://autismdadssocialclub.org";
 
 // A query vector identical to the first chunk's embedding → that chunk scores
 // ~1.0, so the success path yields a real, above-threshold citation.
@@ -53,7 +53,7 @@ describe("RAG worker", () => {
     expect(Array.isArray(data.citations)).toBe(true);
     expect(data.citations.length).toBeGreaterThan(0);
     // Citations are absolute URLs back to the site.
-    expect(data.citations[0].url).toMatch(/^https:\/\/adsc\.autismdadssocialclub\.org\//);
+    expect(data.citations[0].url).toMatch(/^https:\/\/autismdadssocialclub\.org\//);
     expect(data.citations[0]).toHaveProperty("title");
   });
 

@@ -31,7 +31,7 @@ const MAX_QUESTION_CHARS = 500;
 
 // Citations are made absolute so links work no matter which page hosts the
 // widget. The site serves from the domain root (see memory: hosting setup).
-const SITE_BASE = "https://adsc.autismdadssocialclub.org/";
+const SITE_BASE = "https://autismdadssocialclub.org/";
 
 // CORS allow-list. Only these origins may call the endpoint.
 const ALLOWED_ORIGINS = new Set([
