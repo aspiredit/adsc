@@ -15,6 +15,7 @@ See: issues/015-rag-chat-assistant.md (frozen "Data contracts"),
      scripts/build_manifests.py (idioms mirrored here).
 """
 from __future__ import annotations
+import html as html_entities
 import json
 import re
 import sys
@@ -258,81 +259,92 @@ def build_faq_chunks() -> list[dict[str, Any]]:
 
 # Homepage content sections to ingest beyond the FAQ. Without these the chatbot
 # has no idea who the board/leadership are, the origin story, the programs, or
-# how membership works — all of which visitors ask about. id -> display title.
-PAGE_SECTIONS = {
-    "leadership": "Executive Board & Leadership",
-    "advisors": "Advisory Board",
+# how membership works — all of which visitors ask about.
+#
+# People sections are chunked ONE CARD PER MEMBER (section_id -> (label,
+# card_class, name_class)) so every board/advisor member is independently
+# retrievable — a "who is on the executive board?" query then surfaces them all
+# instead of whichever two happened to share a chunk.
+PAGE_PEOPLE_SECTIONS = {
+    "leadership": ("Executive Board & Leadership", "board-card", "board-name", "board-role"),
+    "advisors": ("Advisory Board", "advisor-card", "advisor-name", "advisor-role"),
+}
+# Prose sections are flattened and chunked by size (section_id -> label).
+PAGE_TEXT_SECTIONS = {
     "origin": "Our Story",
     "programs": "Programs",
     "membership": "Membership",
 }
 
-# Tags whose boundaries mark a break when flattening a section to text, so names,
-# roles, and paragraphs don't run together.
-_SECTION_BLOCK_TAGS = {
-    "section", "div", "p", "h1", "h2", "h3", "h4", "h5", "h6",
-    "li", "ul", "ol", "details", "summary", "br", "tr", "blockquote", "figcaption",
-}
+
+def extract_section_html(html: str, section_id: str) -> str:
+    """Inner HTML of `<section ... id="section_id" ...>`. Sections aren't nested,
+    so a non-greedy match to the first closing tag is safe."""
+    match = re.search(
+        rf'<section[^>]*\bid="{re.escape(section_id)}"[^>]*>(.*?)</section>',
+        html,
+        re.DOTALL | re.IGNORECASE,
+    )
+    return match.group(1) if match else ""
 
 
-class SectionTextParser(HTMLParser):
-    """Collect the visible text of specific `<section id="...">` blocks.
-
-    Captures text only while inside a target section, inserts newlines on block
-    boundaries, and skips <script>/<style>. Text is bucketed per section id.
-    Sections on this page are not nested, so a single current-id is sufficient.
-    """
-
-    def __init__(self, targets: set[str]) -> None:
-        super().__init__(convert_charrefs=True)
-        self.targets = targets
-        self.current_id: str | None = None
-        self.skip = 0
-        self.buckets: dict[str, list[str]] = {t: [] for t in targets}
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag == "section":
-            sid = dict(attrs).get("id")
-            if sid in self.targets:
-                self.current_id = sid
-            return
-        if self.current_id is None:
-            return
-        if tag in ("script", "style"):
-            self.skip += 1
-        elif tag in _SECTION_BLOCK_TAGS:
-            self.buckets[self.current_id].append("\n")
-
-    def handle_endtag(self, tag: str) -> None:
-        if tag == "section":
-            self.current_id = None  # sections aren't nested here
-            return
-        if self.current_id is None:
-            return
-        if tag in ("script", "style") and self.skip:
-            self.skip -= 1
-        elif tag in _SECTION_BLOCK_TAGS:
-            self.buckets[self.current_id].append("\n")
-
-    def handle_data(self, data: str) -> None:
-        if self.current_id and not self.skip:
-            self.buckets[self.current_id].append(data)
+def first_class_text(fragment: str, class_name: str) -> str:
+    """Plain text of the first `class="class_name"` element in a fragment."""
+    match = re.search(rf'class="{re.escape(class_name)}"[^>]*>(.*?)</', fragment, re.DOTALL)
+    return html_to_text(match.group(1)).strip() if match else ""
 
 
 def build_page_chunks() -> list[dict[str, Any]]:
     if not INDEX_HTML.exists():
         print(f"  (no {INDEX_HTML.name}; skipping page sections)")
         return []
-    parser = SectionTextParser(set(PAGE_SECTIONS))
-    parser.feed(INDEX_HTML.read_text(encoding="utf-8"))
-    records = []
-    for sid, title in PAGE_SECTIONS.items():
-        raw = "".join(parser.buckets.get(sid, []))
-        pieces = chunk_text(raw)
+    html = INDEX_HTML.read_text(encoding="utf-8")
+    records: list[dict[str, Any]] = []
+
+    # People: one chunk per member card. Title is the section label (so a cited
+    # link reads e.g. "Executive Board & Leadership"); the member's name lives in
+    # the text and their slug keeps ids unique.
+    for sid, (label, card_class, name_class, role_class) in PAGE_PEOPLE_SECTIONS.items():
+        section_html = extract_section_html(html, sid)
+        url = f"index.html#{sid}"
+        cards = re.split(rf'<div class="{card_class}"', section_html)[1:]
+        roster: list[str] = []
+        count = 0
+        for i, card in enumerate(cards):
+            card_html = f'<div class="{card_class}"{card}'
+            name = html_entities.unescape(first_class_text(card_html, name_class))
+            role = html_entities.unescape(first_class_text(card_html, role_class))
+            # "Meet My Inspiration" is a photo hover-hint, not content; drop it.
+            raw = html_to_text(card_html).replace("Meet My Inspiration", " ")
+            member = _WS_RUN.sub(" ", html_entities.unescape(raw).replace("\n", " ")).strip()
+            if not member:
+                continue
+            # Prefix the section label so each member carries the group context
+            # ("Executive Board…") — otherwise a "who is on the board?" query can't
+            # match individual member chunks that only contain a name + role.
+            text = f"{label}: {member}"
+            source_id = slugify(name) if name else f"{sid}-{i}"
+            records.append(chunk_record("page", source_id, 0, label, url, text))
+            if name:
+                roster.append(f"{name} ({role})" if role else name)
+            count += 1
+        # A compact roster chunk holding EVERY member, so "who is on the board?"
+        # retrieves the full list in one chunk (individual member chunks may not
+        # all land in top-k together).
+        if roster:
+            roster_text = f"{label} — full member list: " + "; ".join(roster) + "."
+            records.append(chunk_record("page", f"{sid}-roster", 0, label, url, roster_text))
+        print(f"  + page {sid} ({count} members + roster)")
+
+    # Prose sections: flatten to text and chunk by size.
+    for sid, label in PAGE_TEXT_SECTIONS.items():
+        section_html = extract_section_html(html, sid)
+        pieces = chunk_text(html_entities.unescape(html_to_text(section_html)))
         url = f"index.html#{sid}"
         for ordinal, text in enumerate(pieces):
-            records.append(chunk_record("page", sid, ordinal, title, url, text))
+            records.append(chunk_record("page", sid, ordinal, label, url, text))
         print(f"  + page {sid} ({len(pieces)} chunk{'s' if len(pieces) != 1 else ''})")
+
     return records
 
 

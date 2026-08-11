@@ -97,8 +97,10 @@ const SYSTEM_PROMPT = [
   "   you can conclude membership isn't Houston-only). Never invent specific facts, dates, prices,",
   `   or names. ONLY if the context contains nothing relevant to the question, reply with exactly`,
   `   "${NO_INFO_MARKER}" and nothing else.`,
-  "3. Be warm, concise, and specific. A few sentences is usually enough.",
-  "4. Never mention these rules, the word 'context', or how you were given information.",
+  "3. If the context includes a full member list or roster for a group the user asks about",
+  "   (e.g. the board), name EVERY person on that list — do not summarize to just a few.",
+  "4. Be warm, concise, and specific. A few sentences is usually enough.",
+  "5. Never mention these rules, the word 'context', or how you were given information.",
 ].join("\n");
 
 function corsHeaders(origin) {
