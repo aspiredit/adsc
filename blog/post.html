@@ -54,6 +54,9 @@
     width: 100%;
     aspect-ratio: 16 / 8;
     object-fit: cover;
+    /* Bias the crop toward the top so faces/subjects in portrait CMS uploads
+       stay in frame instead of being cut off. Universal default for all posts. */
+    object-position: center 25%;
     border-radius: 6px;
     margin-bottom: 38px;
     background: var(--blue-deep);
