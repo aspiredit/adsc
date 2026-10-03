@@ -1,7 +1,7 @@
 {
   "events": [
     {
-      "id": "2026-07-16-fatherhood-huddle",
+      "id": "2026-10-22-fatherhood-huddle",
       "title": "The Fatherhood Huddle",
       "type": "meetup",
       "date": "2026-10-22",
@@ -53,6 +53,19 @@
       "description": "Dads join us at our August 2025 Mixer at Top Golf (Katy). Enjoy the Driving Range, Fellowship, and Appetizers.",
       "flyer": "/assets/images/August 2026 Flier.png",
       "rsvp_url": "https://form.jotform.com/261314725100039",
+      "status": "scheduled",
+      "draft": false
+    },
+    {
+      "id": "2026-10-29-fatherhood-huddle",
+      "title": "The Fatherhood Huddle",
+      "type": "meetup",
+      "date": "2026-10-29",
+      "start_time": "18:30",
+      "end_time": "19:30",
+      "location": "Zoom",
+      "description": "The Fatherhood Huddle is the Autism Dads Social Club's virtual discussion series designed to encourage, equip, and connect fathers raising autistic children. Through conversations with experienced dads and professionals, participants gain practical parenting insights, emotional support, and a welcoming brotherhood where no father has to navigate the autism journey alone.",
+      "rsvp_url": "https://form.jotform.com/252448589365169",
       "status": "scheduled",
       "draft": false
     }
