@@ -107,6 +107,20 @@
       "rsvp_url": "https://form.jotform.com/252448589365169",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2026-10-16-trunk-or-treat",
+      "title": "Trunk or Treat",
+      "type": "family_event",
+      "date": "2026-10-16",
+      "start_time": "18:00",
+      "end_time": "20:00",
+      "location": "We Rock the Spectrum - West Houston, Katy, Texas",
+      "description": "\nJoin us for Trunk or Treat fun tailored just for autism families—safe, sweet, and full of smiles!\n\nGet ready for a fun and friendly event designed especially for autism families as we celebrate One Year of Boo-tiful Memories at We Rock the Spectrum West Houston! 🎃\n\nEnjoy a safe, welcoming space where kids can show off their costumes, collect treats, and make new friends. Don't miss out on this super fun way to connect with autism service providers and other families in the autism community.\n\n\nEvent Highlights\n\nFree Candy\n\nDecorated Trunks\n\nFree Open Play at We Rock the Spectrum-West Houston\n\nCostume Contest\n\nDoor Prizes and More",
+      "flyer": "/assets/images/Final Halloween Trunk or Treat Event Flier.png",
+      "rsvp_url": "https://www.eventbrite.com/e/trunk-or-treat-tickets-2000324069138",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
