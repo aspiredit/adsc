@@ -68,6 +68,32 @@
       "rsvp_url": "https://form.jotform.com/252448589365169",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2026-11-5-fatherhood-huddle",
+      "title": "The Fatherhood Huddle",
+      "type": "meetup",
+      "date": "2026-11-05",
+      "start_time": "18:30",
+      "end_time": "19:30",
+      "location": "Zoom",
+      "description": "The Fatherhood Huddle is the Autism Dads Social Club's virtual discussion series designed to encourage, equip, and connect fathers raising autistic children. Through conversations with experienced dads and professionals, participants gain practical parenting insights, emotional support, and a welcoming brotherhood where no father has to navigate the autism journey alone.",
+      "rsvp_url": "https://form.jotform.com/252448589365169",
+      "status": "scheduled",
+      "draft": false
+    },
+    {
+      "id": "2026-11-12-fatherhood-huddle",
+      "title": "The Fatherhood Huddle",
+      "type": "meetup",
+      "date": "2026-11-12",
+      "start_time": "18:30",
+      "end_time": "19:30",
+      "location": "Zoom",
+      "description": "The Fatherhood Huddle is the Autism Dads Social Club's virtual discussion series designed to encourage, equip, and connect fathers raising autistic children. Through conversations with experienced dads and professionals, participants gain practical parenting insights, emotional support, and a welcoming brotherhood where no father has to navigate the autism journey alone.",
+      "rsvp_url": "https://form.jotform.com/252448589365169",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
