@@ -121,6 +121,20 @@
       "rsvp_url": "https://www.eventbrite.com/e/trunk-or-treat-tickets-2000324069138",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2026-10-24-fishing-excursion",
+      "title": "Fishing Excursion",
+      "type": "meetup",
+      "date": "2026-10-24",
+      "start_time": "08:00",
+      "end_time": "12:00",
+      "location": "Galveston",
+      "description": "ADSC is Going Fishing in Galveston!\n\nOur next Autism Dads Social Club adventure is headed to Galveston! Join us aboard the Galveston Party Boat for a day of fishing, fellowship, and brotherhood. Come connect with fellow dads, build friendships, and enjoy some time on the water.\nCost: $40 per dad (Rod, reel, squid, and stringer are provided.) ADSC will submit payment as a group.\n\nWhether you’re a longtime member or joining us for the first time, we’d love to have you aboard. Let’s fish, fellowship, and have some fun, fellas! \n\nWe’ll see you in Galveston! 🎣",
+      "flyer": "/assets/images/Final Galveston Party Boat Flier.png",
+      "rsvp_url": "https://form.jotform.com/261314725100039",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
