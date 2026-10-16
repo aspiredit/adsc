@@ -6,6 +6,15 @@
 <title>Past Events — Autism Dads Social Club</title>
 <meta name="description" content="A look back at past meetups, family events, and gatherings from the Autism Dads Social Club Houston brotherhood.">
 
+<!-- Installable app (PWA) -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#1F5E96">
+<link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ADSC">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -236,6 +245,7 @@
 <script type="module">
   import { filterDrafts, isPreviewMode, showPreviewBanner, extractEvents, hasValidDate } from "../js/events.js";
   import { pickPastEvents, renderArchive } from "../js/archive.js";
+  import { init as initPWA } from "../js/pwa.js";
 
   async function init() {
     const previewMode = isPreviewMode(window.location.search);
@@ -252,6 +262,7 @@
   }
 
   init();
+  initPWA();
 </script>
 
 </body>

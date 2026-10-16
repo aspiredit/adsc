@@ -69,6 +69,17 @@
     - All deferred items still flagged as placeholders for Donny to fill
 -->
 
+<!-- Installable app (PWA): manifest, icons, and the standalone-mode hints iOS
+     needs. Service worker is registered from js/pwa.js. -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#1F5E96">
+<link rel="icon" href="/assets/icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ADSC">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -4061,11 +4072,13 @@
   import { init as initPhotos } from "./js/photos.js";
   import { init as initTestimonials } from "./js/testimonials.js";
   import { init as initMembership } from "./js/membership.js";
+  import { init as initPWA } from "./js/pwa.js";
   initEvents();
   initBlogs();
   initPhotos();
   initTestimonials();
   initMembership();
+  initPWA();
 </script>
 
 <script>

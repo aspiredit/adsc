@@ -98,3 +98,67 @@ describe("eventToICS", () => {
     expect(ics).not.toContain("undefined");
   });
 });
+
+describe("eventToICS reminders", () => {
+  function alarmBlocks(ics) {
+    return ics.split("BEGIN:VALARM").slice(1).map((b) => b.split("END:VALARM")[0]);
+  }
+
+  it("attaches both default reminders", () => {
+    const blocks = alarmBlocks(eventToICS(baseEvent));
+    expect(blocks).toHaveLength(2);
+  });
+
+  it("reminds the day before and two hours ahead", () => {
+    const ics = eventToICS(baseEvent);
+    expect(ics).toContain("TRIGGER:-P1D");
+    expect(ics).toContain("TRIGGER:-PT2H");
+  });
+
+  it("every alarm is a DISPLAY alarm with a description", () => {
+    for (const block of alarmBlocks(eventToICS(baseEvent))) {
+      expect(block).toContain("ACTION:DISPLAY");
+      expect(block).toMatch(/DESCRIPTION:.+/);
+    }
+  });
+
+  it("alarm text names the event", () => {
+    const ics = eventToICS(baseEvent);
+    expect(ics).toContain("DESCRIPTION:Tomorrow: Dads Social — June Edition");
+    expect(ics).toContain("DESCRIPTION:Starting soon: Dads Social — June Edition");
+  });
+
+  it("escapes punctuation in alarm text", () => {
+    const ics = eventToICS({ ...baseEvent, title: "Pool, beers; fun" });
+    expect(ics).toContain("DESCRIPTION:Tomorrow: Pool\\, beers\\; fun");
+  });
+
+  it("falls back to a generic label when the event has no title", () => {
+    const ics = eventToICS({ ...baseEvent, title: undefined });
+    expect(ics).toContain("DESCRIPTION:Tomorrow: ADSC event");
+    expect(ics).not.toContain("undefined");
+  });
+
+  it("event DESCRIPTION still parses ahead of any alarm description", () => {
+    const ics = eventToICS(baseEvent);
+    const first = ics.split(/\r?\n/).find((l) => l.startsWith("DESCRIPTION:"));
+    expect(first).toBe("DESCRIPTION:Pool\\, beers\\, no agenda.");
+  });
+
+  it("alarms close before the VEVENT does", () => {
+    const ics = eventToICS(baseEvent);
+    expect(ics.lastIndexOf("END:VALARM")).toBeLessThan(ics.indexOf("END:VEVENT"));
+  });
+
+  it("accepts a custom alarm set", () => {
+    const ics = eventToICS(baseEvent, new Date(), [{ trigger: "-PT30M", prefix: "Heads up" }]);
+    expect(alarmBlocks(ics)).toHaveLength(1);
+    expect(ics).toContain("TRIGGER:-PT30M");
+  });
+
+  it("omits alarms entirely when passed an empty set", () => {
+    const ics = eventToICS(baseEvent, new Date(), []);
+    expect(ics).not.toContain("BEGIN:VALARM");
+    expect(ics).toContain("BEGIN:VEVENT");
+  });
+});
