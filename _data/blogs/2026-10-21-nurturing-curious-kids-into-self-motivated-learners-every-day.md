@@ -64,3 +64,7 @@ Pick a few ideas from this menu and try them for just one week. When kids feel a
 ## Small Learning Rituals That Build Confident, Curious Kids
 
 Some days it feels like you’re juggling screens, short attention spans, and big feelings, while still hoping learning stays joyful. The steadier path is the mindset this article has pointed to: treat everyday moments as practice, use supportive parenting strategies with continuous encouragement, and notice effort more than outcomes, empowering parents as educators right where they are. Over time, that approach nurtures lifelong curiosity and building learner confidence, because kids start to trust their own ability to try again. Curiosity grows when effort is seen and small wins are celebrated.
+
+
+
+***ABOUT THE AUTHOR***:  *Don Lewis created Ability Labs to help family members of people with disabilities. When Don’s son, Randy, was a junior in college he was in a terrible motorcycle accident and suffered a severe head trauma among many other injuries. From that day on, Randy’s physical and cognitive abilities have changed, but he’s still Don’s favorite person in the world. Through Randy’s journey, Don has learned a lot about how different life is for people who are differently-abled. Don believes that everyone is special and no one should be defined by their unique abilities. He hopes Ability Labs will inspire others to promote or even adopt this way of thinking.*
