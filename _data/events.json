@@ -135,6 +135,20 @@
       "rsvp_url": "https://form.jotform.com/261314725100039",
       "status": "scheduled",
       "draft": false
+    },
+    {
+      "id": "2026-11-21-dave-n-busters",
+      "title": "Dads Mixers at Dave N Busters",
+      "type": "meetup",
+      "date": "2026-11-01",
+      "start_time": "15:00",
+      "end_time": "17:00",
+      "location": "Dave N Busters",
+      "description": "Autism Dads Social Club Mixer at Dave & Buster’s!\n\nJoin us for an evening of food, fun, and fellowship at Dave & Buster’s! Connect with fellow autism dads, share experiences, and enjoy some much-needed downtime. Feel free to bring your autistic loved one along to enjoy the games and hang out! Whether you come solo or with your loved one, we look forward to seeing you for another great time of brotherhood and connection!",
+      "flyer": "/assets/images/November 2026 ADSC Mixer at Double Daves.png",
+      "rsvp_url": "https://form.jotform.com/261314725100039",
+      "status": "scheduled",
+      "draft": false
     }
   ]
 }
